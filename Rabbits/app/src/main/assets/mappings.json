@@ -1,0 +1,6 @@
+{
+  "version":1,
+  "mappings":{
+    "demo://com.kyleduo.rabbits/test":"TEST"
+  }
+}
