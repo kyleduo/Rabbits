@@ -15,6 +15,7 @@ import com.kyleduo.rabbits.navigator.INavigatorFactory;
 import com.kyleduo.rabbits.navigator.IProvider;
 import com.kyleduo.rabbits.navigator.MuteNavigator;
 
+import java.io.File;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -110,6 +111,14 @@ public class Rabbit {
 		sAppScheme = scheme;
 		sNavigatorFactory = navigatorFactory;
 		Mappings.setup(context, async, callback);
+	}
+
+	public static void updateMappings(Context context, File file) {
+		Mappings.update(context, file);
+	}
+
+	public static void updateMappings(Context context, String json) {
+		Mappings.update(context, json);
 	}
 
 	public static Rabbit from(Object from) {

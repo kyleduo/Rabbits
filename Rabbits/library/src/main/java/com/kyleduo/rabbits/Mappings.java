@@ -1,7 +1,9 @@
 package com.kyleduo.rabbits;
 
+import android.app.Application;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +30,8 @@ import java.util.Set;
  */
 
 class Mappings {
+	public static final String TAG = "Rabbits.Mappings";
+
 	private static final String MAPPING_FILE = "mappings.json";
 	private static final String MAPPING_KEY_VERSION = "version";
 	private static final String MAPPING_KEY_MAPPINGS = "mappings";
@@ -71,6 +76,29 @@ class Mappings {
 		}
 	}
 
+	static void update(Context context, File file) {
+		final Context app = context.getApplicationContext();
+		try {
+			InputStream is = new FileInputStream(file);
+			String json = doLoad(is);
+			if (json != null) {
+				Log.d(TAG, "Update success from file, start persisting.");
+				persist(app, json);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	static void update(Context context, String json) {
+		final Context app = context.getApplicationContext();
+		String ret = parse(json);
+		if (ret != null) {
+			Log.d(TAG, "Update success, start persisting.");
+			persist(app, ret);
+		}
+	}
+
 	private static String load(Context context) {
 		try {
 			File filesDir = context.getFilesDir();
@@ -105,9 +133,19 @@ class Mappings {
 			}
 			reader.close();
 			String json = jsonBuilder.toString();
+			return parse(json);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private static String parse(String json) {
+		try {
 			JSONObject jo = new JSONObject(json);
 			int version = jo.optInt(MAPPING_KEY_VERSION);
 			if (version <= sVERSION) {
+				Log.d("Rabbits.Mappings", "No need to update, already has the latest version: " + sVERSION);
 				return null;
 			}
 			sVERSION = version;
@@ -118,14 +156,11 @@ class Mappings {
 				String page = mappings.optString(uri);
 				sMAPPING.put(uri, page);
 			}
-
-			return json;
-		} catch (IOException e) {
-			e.printStackTrace();
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-		return null;
+
+		return json;
 	}
 
 	private synchronized static void persist(final Context context, String json) {
@@ -219,6 +254,7 @@ class Mappings {
 	}
 
 	static String match(String uri) {
+		Log.i("Mappings", "sMAPPINGS: " + sMAPPING.toString());
 		return sMAPPING.get(uri);
 	}
 
