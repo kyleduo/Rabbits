@@ -15,7 +15,7 @@ public class DemoApplication extends Application {
 		super.onCreate();
 
 		// syc setup
-		Rabbit.setup(this, "demo");
+//		Rabbit.setup(this, "demo");
 
 		// async setup
 		Rabbit.asyncSetup(this, "demo", new Runnable() {
