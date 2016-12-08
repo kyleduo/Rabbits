@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.kyleduo.rabbits.Rabbit;
+import com.kyleduo.rabbits.annotations.Page;
 
+@Page(name = "MAIN")
 public class MainActivity extends AppCompatActivity {
 
 	@Override

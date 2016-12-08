@@ -19,4 +19,14 @@
 		android:layout_centerHorizontal="true"
 		android:layout_marginTop="45dp"
 		android:text="--"/>
+
+	<Button
+		android:text="Back Home and clearTop."
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/params_tv"
+		android:layout_centerHorizontal="true"
+		android:layout_marginTop="35dp"
+		android:textAllCaps="false"
+		android:id="@+id/back_home_bt"/>
 </RelativeLayout>

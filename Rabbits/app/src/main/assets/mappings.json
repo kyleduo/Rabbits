@@ -1,6 +1,7 @@
 {
-  "version":1,
-  "mappings":{
-    "demo://com.kyleduo.rabbits/test":"TEST"
+  "version": 1,
+  "mappings": {
+    "demo://com.kyleduo.rabbits/test": "TEST",
+    "demo://com.kyleduo.rabbits": "MAIN"
   }
 }

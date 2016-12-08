@@ -1,6 +1,7 @@
 package com.kyleduo.rabbits;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -94,7 +95,7 @@ public class Rabbit {
 	}
 
 	public static void asyncSetup(Context context, String scheme, INavigatorFactory navigatorFactory, Runnable callback) {
-		setup(context, scheme, navigatorFactory, false, callback);
+		setup(context, scheme, navigatorFactory, true, callback);
 	}
 
 	public static void setup(Context context, String scheme) {
@@ -143,13 +144,14 @@ public class Rabbit {
 		if (!TextUtils.isEmpty(page)) {
 			to = sRouter.obtain(page);
 		}
+		int flags = parseFlags(uri);
 		if (to == null) {
-			AbstractPageNotFoundHandler pageNotFoundHandler = sNavigatorFactory.createPageNotFoundHandler(mFrom, uri, page, 0, null, assembleInterceptor());
+			AbstractPageNotFoundHandler pageNotFoundHandler = sNavigatorFactory.createPageNotFoundHandler(mFrom, uri, page, flags, null, assembleInterceptor());
 			if (pageNotFoundHandler != null) {
 				return pageNotFoundHandler;
 			}
 		}
-		return sNavigatorFactory.createNavigator(uri, mFrom, to, page, 0, parseParams(uri), assembleInterceptor());
+		return sNavigatorFactory.createNavigator(uri, mFrom, to, page, flags, parseParams(uri), assembleInterceptor());
 	}
 
 	/**
@@ -176,13 +178,14 @@ public class Rabbit {
 		if (!TextUtils.isEmpty(page)) {
 			to = sRouter.route(page);
 		}
+		int flags = parseFlags(uri);
 		if (to == null) {
-			AbstractPageNotFoundHandler pageNotFoundHandler = sNavigatorFactory.createPageNotFoundHandler(mFrom, uri, page, 0, null, assembleInterceptor());
+			AbstractPageNotFoundHandler pageNotFoundHandler = sNavigatorFactory.createPageNotFoundHandler(mFrom, uri, page, flags, null, assembleInterceptor());
 			if (pageNotFoundHandler != null) {
 				return pageNotFoundHandler;
 			}
 		}
-		return sNavigatorFactory.createNavigator(uri, mFrom, to, page, 0, parseParams(uri), assembleInterceptor());
+		return sNavigatorFactory.createNavigator(uri, mFrom, to, page, flags, parseParams(uri), assembleInterceptor());
 	}
 
 	/**
@@ -222,10 +225,27 @@ public class Rabbit {
 		if (!TextUtils.isEmpty(page)) {
 			to = sRouter.route(page);
 		}
+		int flags = parseFlags(uri);
 		if (to == null) {
-			return new MuteNavigator(uri, mFrom, null, page, 0, null, mInterceptors);
+			return new MuteNavigator(uri, mFrom, null, page, flags, null, mInterceptors);
 		}
-		return sNavigatorFactory.createNavigator(uri, mFrom, to, page, 0, parseParams(uri), mInterceptors);
+		return sNavigatorFactory.createNavigator(uri, mFrom, to, page, flags, parseParams(uri), mInterceptors);
+	}
+
+	private static int parseFlags(Uri uri) {
+		String mode = uri.getQueryParameter(Mappings.MAPPING_QUERY_MODE);
+		int flags = 0;
+		if (TextUtils.isEmpty(mode)) {
+			flags = 0;
+		} else {
+			if (mode.contains(Mappings.MODE_CLEAR_TOP)) {
+				flags |= Intent.FLAG_ACTIVITY_CLEAR_TOP;
+			}
+			if (mode.contains(Mappings.MODE_NEW_TASK)) {
+				flags |= Intent.FLAG_ACTIVITY_NEW_TASK;
+			}
+		}
+		return flags;
 	}
 
 	private static Bundle parseParams(Uri uri) {

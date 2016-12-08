@@ -14,6 +14,15 @@ public class DemoApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 
+		// syc setup
 		Rabbit.setup(this, "demo");
+
+		// async setup
+		Rabbit.asyncSetup(this, "demo", new Runnable() {
+			@Override
+			public void run() {
+
+			}
+		});
 	}
 }
