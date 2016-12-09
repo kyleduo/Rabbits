@@ -7,6 +7,8 @@ import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.kyleduo.rabbits.Rabbit;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +18,7 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -44,5 +47,13 @@ public class ExampleInstrumentedTest {
 
 		onView(withId(R.id.back_home_bt)).perform(click());
 		onView(withId(R.id.start_test_bt)).check(matches(isDisplayed()));
+	}
+
+	@Test
+	public void testRabbitsParams() {
+		Rabbit.from(mMainActivityRule.getActivity())
+				.to("demo://kyleduo.com/rabbits/test?Testing=testing")
+				.start();
+		onView(withId(R.id.params_tv)).check(matches(withText("testing")));
 	}
 }
