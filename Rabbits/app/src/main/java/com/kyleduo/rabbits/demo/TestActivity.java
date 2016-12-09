@@ -23,7 +23,7 @@ public class TestActivity extends AppCompatActivity {
 			@Override
 			public void onClick(View view) {
 				Rabbit.from(TestActivity.this)
-						.to("demo://com.kyleduo.rabbits")
+						.to("demo://kyleduo.com/rabbits")
 						.clearTop()
 						.start();
 			}

@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 				Rabbit.updateMappings(MainActivity.this, file);*/
 
 				Rabbit.from(MainActivity.this)
-						.to("demo://com.kyleduo.rabbits/test?Testing=This is a 参数.")
+						.to("demo://kyleduo.com/rabbits/test?Testing=This is a 参数.")
 						.start();
 			}
 		});

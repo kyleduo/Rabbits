@@ -21,10 +21,16 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    // App's dependencies, including test
+    compile 'com.android.support:support-annotations:25.0.1'
+    compile 'com.android.support:appcompat-v7:25.0.1'
+
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.0.1'
+    androidTestCompile('com.android.support.test:runner:0.5', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
     testCompile 'junit:junit:4.12'
     compile project(':library')
     annotationProcessor project(':compiler')

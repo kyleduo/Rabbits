@@ -49,6 +49,12 @@ class Mappings {
 	private static Map<String, String> sMAPPING = new HashMap<>();
 	private static int sVERSION = 0;
 
+	/**
+	 * Load mappings to memory.
+	 * @param context
+	 * @param async
+	 * @param callback
+	 */
 	static void setup(final Context context, boolean async, final Runnable callback) {
 		final Context app = context.getApplicationContext();
 		if (async) {
@@ -76,6 +82,11 @@ class Mappings {
 		}
 	}
 
+	/**
+	 * Update mappings using a file.
+	 * @param context
+	 * @param file
+	 */
 	static void update(Context context, File file) {
 		final Context app = context.getApplicationContext();
 		try {
@@ -90,6 +101,11 @@ class Mappings {
 		}
 	}
 
+	/**
+	 * Update mappings using json string.
+	 * @param context
+	 * @param json
+	 */
 	static void update(Context context, String json) {
 		final Context app = context.getApplicationContext();
 		String ret = parse(json);
