@@ -52,10 +52,21 @@ public class ExampleInstrumentedTest {
 
 	@Test
 	public void testRabbitsParams() {
-		Rabbit.from(mMainActivityRule.getActivity())
-				.to("demo://kyleduo.com/rabbits/test/testing")
-				.start();
-		onView(withId(R.id.params_tv)).check(matches(withText("testing")));
+		String[] urls = new String[]{
+				"demo://rabbits.kyleduo.com/test/testing",
+				"/test/testing",
+				"test/testing",
+				"test?Testing=testing"
+		};
+
+		for (String url : urls) {
+			Rabbit.from(mMainActivityRule.getActivity())
+					.to(url)
+					.start();
+			onView(withId(R.id.params_tv)).check(matches(withText("testing")));
+			onView(withId(R.id.back_home_bt)).perform(click());
+			onView(withId(R.id.start_test_bt)).check(matches(isDisplayed()));
+		}
 	}
 
 	@Test
