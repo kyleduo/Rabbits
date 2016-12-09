@@ -14,11 +14,13 @@ public class DemoApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 
+		Rabbit.init("demo", "rabbits.kyleduo.com");
+
 		// syc setup
-//		Rabbit.setup(this, "demo");
+//		Rabbit.setup(this);
 
 		// async setup
-		Rabbit.asyncSetup(this, "demo", "rabbits.kyleduo.com", new Runnable() {
+		Rabbit.asyncSetup(this, new Runnable() {
 			@Override
 			public void run() {
 

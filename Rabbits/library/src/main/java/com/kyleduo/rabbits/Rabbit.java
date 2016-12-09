@@ -1,7 +1,9 @@
 package com.kyleduo.rabbits;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 
 import com.kyleduo.rabbits.annotations.utils.NameParser;
@@ -93,41 +95,90 @@ public class Rabbit {
 		}
 	}
 
-	public static void asyncSetup(Context context, String scheme, String defaultHost, Runnable callback) {
-		asyncSetup(context, scheme, defaultHost, new DefaultNavigatorFactory(), callback);
+	/**
+	 * Initial rabbits with basic elements, using default Navigators.
+	 *
+	 * @param scheme      Scheme for this application.
+	 * @param defaultHost Default host when try to match uri without a host.
+	 */
+	public static void init(String scheme, String defaultHost) {
+		init(scheme, defaultHost, new DefaultNavigatorFactory());
 	}
 
-	public static void asyncSetup(Context context, String scheme, String defaultHost, INavigatorFactory navigatorFactory, Runnable callback) {
-		setup(context, scheme, defaultHost, navigatorFactory, true, callback);
-	}
-
-	public static void setup(Context context, String scheme, String defaultHost) {
-		setup(context, scheme, defaultHost, new DefaultNavigatorFactory());
-	}
-
-	public static void setup(Context context, String scheme, String defaultHost, INavigatorFactory navigatorFactory) {
-		setup(context, scheme, defaultHost, navigatorFactory, false, null);
-	}
-
-	private static void setup(Context context, String scheme, String defaultHost, INavigatorFactory navigatorFactory, boolean async, Runnable callback) {
+	/**
+	 * Initial rabbits with basic elements.
+	 *
+	 * @param scheme           Scheme for this application.
+	 * @param defaultHost      Default host when try to match uri without a host.
+	 * @param navigatorFactory Custom navigator factory.
+	 */
+	public static void init(String scheme, String defaultHost, INavigatorFactory navigatorFactory) {
 		sAppScheme = scheme;
 		sDefaultHost = defaultHost;
 		sNavigatorFactory = navigatorFactory;
+	}
+
+	/**
+	 * Setup in sub-thread.
+	 *
+	 * @param context  Used for io operation.
+	 * @param callback callback run after setup finished.
+	 */
+	public static void asyncSetup(Context context, Runnable callback) {
+		setup(context, true, callback);
+	}
+
+	/**
+	 * Synchronously setup.
+	 *
+	 * @param context Used for io operation.
+	 */
+	public static void setup(Context context) {
+		setup(context, false, null);
+	}
+
+	private static void setup(Context context, boolean async, Runnable callback) {
 		Mappings.setup(context, async, callback);
 	}
 
+	/**
+	 * Update mappings from a file.
+	 *
+	 * @param context Used for io operation.
+	 * @param file    Json file.
+	 */
 	public static void updateMappings(Context context, File file) {
 		Mappings.update(context, file);
 	}
 
+	/**
+	 * Update mappings using a json string.
+	 *
+	 * @param context Used for io operation.
+	 * @param json    Json string.
+	 */
 	public static void updateMappings(Context context, String json) {
 		Mappings.update(context, json);
 	}
 
+	/**
+	 * Create a rabbit who has ability to navigate through your pages.
+	 *
+	 * @param from Whether an Activity or a Fragment instance.
+	 * @return Rabbit instance.
+	 */
 	public static Rabbit from(Object from) {
+		if (!(from instanceof Activity) && !(from instanceof Fragment || from instanceof android.app.Fragment)) {
+			throw new IllegalArgumentException("From object must be whether an Activity or a Fragment instance.");
+		}
 		return new Rabbit(from);
 	}
 
+	/**
+	 * Add global interceptor. These Interceptors' methods will be invoked in every navigation.
+	 *
+	 * @param interceptor Interceptor instance.
+	 */
 	public static void addGlobalInterceptor(INavigationInterceptor interceptor) {
 		if (sInterceptors == null) {
 			sInterceptors = new ArrayList<>();
@@ -135,6 +186,12 @@ public class Rabbit {
 		sInterceptors.add(interceptor);
 	}
 
+	/**
+	 * Add an interceptor used for this navigation. This is useful when you want to check whether a
+	 * uri matches a specific page using {@link com.kyleduo.rabbits.Rabbit#tryTo(Uri)} method.
+	 *
+	 * @param interceptor Interceptor instance.
+	 */
 	public Rabbit addInterceptor(INavigationInterceptor interceptor) {
 		if (mInterceptors == null) {
 			mInterceptors = new ArrayList<>();
@@ -199,14 +256,14 @@ public class Rabbit {
 	}
 
 	/**
-	 * First replace scheme to app scheme.
-	 * <p>
-	 * Navigate to page, or just return null if not found.
+	 * Only if there was a mapping from uri with app scheme and given path exists a valid navigator
+	 * will returned.
 	 *
 	 * @param uri uri
 	 * @return AbstractNavigator
 	 */
 	public AbstractNavigator tryTo(Uri uri) {
+		uri = uri.buildUpon().scheme(sAppScheme).build();
 		Target target = Mappings.match(uri).route(sRouter);
 		return dispatch(target, true);
 	}
