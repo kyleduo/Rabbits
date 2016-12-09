@@ -36,8 +36,6 @@ public class ExampleInstrumentedTest {
 
 	@Rule
 	public ActivityTestRule<MainActivity> mMainActivityRule = new ActivityTestRule<>(MainActivity.class, true);
-	@Rule
-	public ActivityTestRule<TestActivity> mTestActivityRule = new ActivityTestRule<>(TestActivity.class, true);
 
 	@Test
 	public void testGoTest() throws Exception {
