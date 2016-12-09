@@ -1,10 +1,8 @@
 package com.kyleduo.rabbits;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
-import android.text.TextUtils;
+import android.util.Log;
 
 import com.kyleduo.rabbits.annotations.utils.NameParser;
 import com.kyleduo.rabbits.navigator.AbstractNavigator;
@@ -23,7 +21,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Rabbit instance can be obtained by {@link com.kyleduo.rabbits.Rabbit#from(Object)} method.
@@ -38,8 +35,13 @@ import java.util.Set;
  */
 
 public class Rabbit {
+	private static final String TAG = "Rabbit";
+	private static final String ROUTER_CLASS = "com.kyleduo.rabbits.Router";
+	public static final String KEY_ORIGIN_URI = "Rabbits_Origin_Uri";
+
 	private static IRouter sRouter;
-	private static String sAppScheme;
+	static String sAppScheme;
+	static String sDefaultHost;
 	private static INavigatorFactory sNavigatorFactory;
 	private static List<INavigationInterceptor> sInterceptors;
 
@@ -57,7 +59,7 @@ public class Rabbit {
 				@Override
 				public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
 					if (clz == null) {
-						clz = Class.forName("com.kyleduo.rabbits.Router");
+						clz = Class.forName(ROUTER_CLASS);
 					}
 					String page = (String) objects[0];
 					String name = method.getName();
@@ -91,24 +93,25 @@ public class Rabbit {
 		}
 	}
 
-	public static void asyncSetup(Context context, String scheme, Runnable callback) {
-		asyncSetup(context, scheme, new DefaultNavigatorFactory(), callback);
+	public static void asyncSetup(Context context, String scheme, String defaultHost, Runnable callback) {
+		asyncSetup(context, scheme, defaultHost, new DefaultNavigatorFactory(), callback);
 	}
 
-	public static void asyncSetup(Context context, String scheme, INavigatorFactory navigatorFactory, Runnable callback) {
-		setup(context, scheme, navigatorFactory, true, callback);
+	public static void asyncSetup(Context context, String scheme, String defaultHost, INavigatorFactory navigatorFactory, Runnable callback) {
+		setup(context, scheme, defaultHost, navigatorFactory, true, callback);
 	}
 
-	public static void setup(Context context, String scheme) {
-		setup(context, scheme, new DefaultNavigatorFactory());
+	public static void setup(Context context, String scheme, String defaultHost) {
+		setup(context, scheme, defaultHost, new DefaultNavigatorFactory());
 	}
 
-	public static void setup(Context context, String scheme, INavigatorFactory navigatorFactory) {
-		setup(context, scheme, navigatorFactory, false, null);
+	public static void setup(Context context, String scheme, String defaultHost, INavigatorFactory navigatorFactory) {
+		setup(context, scheme, defaultHost, navigatorFactory, false, null);
 	}
 
-	private static void setup(Context context, String scheme, INavigatorFactory navigatorFactory, boolean async, Runnable callback) {
+	private static void setup(Context context, String scheme, String defaultHost, INavigatorFactory navigatorFactory, boolean async, Runnable callback) {
 		sAppScheme = scheme;
+		sDefaultHost = defaultHost;
 		sNavigatorFactory = navigatorFactory;
 		Mappings.setup(context, async, callback);
 	}
@@ -143,29 +146,6 @@ public class Rabbit {
 	/**
 	 * Used for obtain page object. Intent or Fragment instance.
 	 *
-	 * @param uri uri
-	 * @return IProvider
-	 */
-	public IProvider obtain(Uri uri) {
-		String path = uri.buildUpon().clearQuery().build().toString();
-		String page = Mappings.match(path);
-		Object to = null;
-		if (!TextUtils.isEmpty(page)) {
-			to = sRouter.obtain(page);
-		}
-		int flags = parseFlags(uri);
-		if (to == null) {
-			AbstractPageNotFoundHandler pageNotFoundHandler = sNavigatorFactory.createPageNotFoundHandler(mFrom, uri, page, flags, null, assembleInterceptor());
-			if (pageNotFoundHandler != null) {
-				return pageNotFoundHandler;
-			}
-		}
-		return sNavigatorFactory.createNavigator(uri, mFrom, to, page, flags, parseParams(uri), assembleInterceptor());
-	}
-
-	/**
-	 * Used for obtain page object. Intent or Fragment instance.
-	 *
 	 * @param uriStr uriStr
 	 * @return IProvider
 	 */
@@ -175,26 +155,14 @@ public class Rabbit {
 	}
 
 	/**
-	 * Navigate to page, or perform a not found strategy.
+	 * Used for obtain page object. Intent or Fragment instance.
 	 *
 	 * @param uri uri
-	 * @return AbstractNavigator
+	 * @return IProvider
 	 */
-	public AbstractNavigator to(Uri uri) {
-		String path = uri.buildUpon().clearQuery().build().toString();
-		String page = Mappings.match(path);
-		Object to = null;
-		if (!TextUtils.isEmpty(page)) {
-			to = sRouter.route(page);
-		}
-		int flags = parseFlags(uri);
-		if (to == null) {
-			AbstractPageNotFoundHandler pageNotFoundHandler = sNavigatorFactory.createPageNotFoundHandler(mFrom, uri, page, flags, null, assembleInterceptor());
-			if (pageNotFoundHandler != null) {
-				return pageNotFoundHandler;
-			}
-		}
-		return sNavigatorFactory.createNavigator(uri, mFrom, to, page, flags, parseParams(uri), assembleInterceptor());
+	public IProvider obtain(Uri uri) {
+		Target target = Mappings.match(uri).obtain(sRouter);
+		return dispatch(target, false);
 	}
 
 	/**
@@ -206,6 +174,17 @@ public class Rabbit {
 	public AbstractNavigator to(String uriStr) {
 		Uri uri = Uri.parse(uriStr);
 		return to(uri);
+	}
+
+	/**
+	 * Navigate to page, or perform a not found strategy.
+	 *
+	 * @param uri uri
+	 * @return AbstractNavigator
+	 */
+	public AbstractNavigator to(Uri uri) {
+		Target target = Mappings.match(uri).route(sRouter);
+		return dispatch(target, false);
 	}
 
 	/**
@@ -228,46 +207,30 @@ public class Rabbit {
 	 * @return AbstractNavigator
 	 */
 	public AbstractNavigator tryTo(Uri uri) {
-		String path = uri.buildUpon().clearQuery().scheme(sAppScheme).build().toString();
-		String page = Mappings.match(path);
-		Object to = null;
-		if (!TextUtils.isEmpty(page)) {
-			to = sRouter.route(page);
-		}
-		int flags = parseFlags(uri);
-		if (to == null) {
-			return new MuteNavigator(uri, mFrom, null, page, flags, null, mInterceptors);
-		}
-		return sNavigatorFactory.createNavigator(uri, mFrom, to, page, flags, parseParams(uri), mInterceptors);
+		Target target = Mappings.match(uri).route(sRouter);
+		return dispatch(target, true);
 	}
 
-	private static int parseFlags(Uri uri) {
-		String mode = uri.getQueryParameter(Mappings.MAPPING_QUERY_MODE);
-		int flags = 0;
-		if (TextUtils.isEmpty(mode)) {
-			flags = 0;
-		} else {
-			if (mode.contains(Mappings.MODE_CLEAR_TOP)) {
-				flags |= Intent.FLAG_ACTIVITY_CLEAR_TOP;
+	/**
+	 * Handle the dispatch operation.
+	 *
+	 * @param target
+	 * @param mute
+	 * @return
+	 */
+	private AbstractNavigator dispatch(Target target, boolean mute) {
+		Log.d(TAG, target.toString());
+		if (!target.hasMatched()) {
+			if (!mute) {
+				AbstractPageNotFoundHandler pageNotFoundHandler = sNavigatorFactory.createPageNotFoundHandler(mFrom, target.getUri(), target.getPage(), target.getFlags(), target.getExtras(), assembleInterceptor());
+				if (pageNotFoundHandler != null) {
+					return pageNotFoundHandler;
+				}
+			} else if (target.getTo() == null) {
+				return new MuteNavigator(target.getUri(), mFrom, null, target.getPage(), target.getFlags(), null, mInterceptors);
 			}
-			if (mode.contains(Mappings.MODE_NEW_TASK)) {
-				flags |= Intent.FLAG_ACTIVITY_NEW_TASK;
-			}
 		}
-		return flags;
-	}
-
-	private static Bundle parseParams(Uri uri) {
-		Set<String> keys = uri.getQueryParameterNames();
-		if (keys == null || keys.size() == 0) {
-			return null;
-		}
-		Bundle bundle = new Bundle();
-		for (String key : keys) {
-			String params = uri.getQueryParameter(key);
-			bundle.putString(key, params);
-		}
-		return bundle;
+		return sNavigatorFactory.createNavigator(target.getUri(), mFrom, target.getTo(), target.getPage(), target.getFlags(), target.getExtras(), assembleInterceptor());
 	}
 
 	/**

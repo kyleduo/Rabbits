@@ -1,7 +1,9 @@
 {
   "version": 1,
+  "force_override": 1,
   "mappings": {
-    "demo://kyleduo.com/rabbits/test": "TEST",
-    "demo://kyleduo.com/rabbits": "MAIN"
+    "demo://rabbits.kyleduo.com/test": "TEST",
+    "demo://rabbits.kyleduo.com/test/{Testing}": "TEST",
+    "demo://rabbits.kyleduo.com": "MAIN"
   }
 }

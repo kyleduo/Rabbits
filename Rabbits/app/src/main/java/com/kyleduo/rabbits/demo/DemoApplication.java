@@ -18,7 +18,7 @@ public class DemoApplication extends Application {
 //		Rabbit.setup(this, "demo");
 
 		// async setup
-		Rabbit.asyncSetup(this, "demo", new Runnable() {
+		Rabbit.asyncSetup(this, "demo", "rabbits.kyleduo.com", new Runnable() {
 			@Override
 			public void run() {
 

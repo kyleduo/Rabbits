@@ -1,8 +1,11 @@
 package com.kyleduo.rabbits;
 
-import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -30,10 +33,11 @@ import java.util.Set;
  */
 
 class Mappings {
-	public static final String TAG = "Rabbits.Mappings";
+	private static final String TAG = "Rabbits.Mappings";
 
 	private static final String MAPPING_FILE = "mappings.json";
 	private static final String MAPPING_KEY_VERSION = "version";
+	private static final String MAPPING_KEY_FORCE_OVERRIDE = "force_override";
 	private static final String MAPPING_KEY_MAPPINGS = "mappings";
 
 	private static final String PERSIST_MAPPING_FILE = "rabbits_mappings.json";
@@ -51,6 +55,7 @@ class Mappings {
 
 	/**
 	 * Load mappings to memory.
+	 *
 	 * @param context
 	 * @param async
 	 * @param callback
@@ -84,6 +89,7 @@ class Mappings {
 
 	/**
 	 * Update mappings using a file.
+	 *
 	 * @param context
 	 * @param file
 	 */
@@ -103,6 +109,7 @@ class Mappings {
 
 	/**
 	 * Update mappings using json string.
+	 *
 	 * @param context
 	 * @param json
 	 */
@@ -160,7 +167,8 @@ class Mappings {
 		try {
 			JSONObject jo = new JSONObject(json);
 			int version = jo.optInt(MAPPING_KEY_VERSION);
-			if (version <= sVERSION) {
+			int forceOverride = jo.optInt(MAPPING_KEY_FORCE_OVERRIDE);
+			if (version <= sVERSION && forceOverride == 0) {
 				Log.d("Rabbits.Mappings", "No need to update, already has the latest version: " + sVERSION);
 				return null;
 			}
@@ -265,16 +273,129 @@ class Mappings {
 				sPersisting = false;
 			}
 		}.execute(json);
-
-
 	}
 
-	static String match(String uri) {
-		Log.i("Mappings", "sMAPPINGS: " + sMAPPING.toString());
-		return sMAPPING.get(uri);
+	static Target match(Uri uri) {
+		Uri.Builder builder = uri.buildUpon();
+		if (uri.getScheme() == null) {
+			builder.scheme(Rabbit.sAppScheme);
+		}
+		if (uri.getHost() == null) {
+			builder.authority(Rabbit.sDefaultHost);
+		}
+		uri = builder.build();
+		String pureUri = builder.clearQuery().build().toString();
+
+		// Try to completely match.
+		String page = sMAPPING.get(pureUri);
+		Bundle bundle = null;
+		if (page == null) {
+			// Deep match.
+			bundle = new Bundle();
+			page = deepMatch(pureUri, bundle);
+		}
+		if (page != null) {
+			// Match.
+			Target target = new Target(uri);
+			target.setPage(page);
+			target.setExtras(parseParams(uri, bundle));
+			target.setFlags(parseFlags(uri));
+			return target;
+		} else {
+			Target target = new Target(uri);
+			target.setExtras(parseParams(uri, bundle));
+			return target;
+		}
 	}
 
-	static int version() {
-		return sVERSION;
+	private static String deepMatch(String pureUri, Bundle bundle) {
+		Set<String> uris = sMAPPING.keySet();
+		UriLoop:
+		for (String uri : uris) {
+			// Check match for each uri.
+			String[] template = uri.split("(://|/)");
+			String[] source = pureUri.split("(://|/)");
+			if (template.length != source.length) {
+				continue;
+			}
+			// Compare each part, parse params.
+			for (int i = 0; i < source.length; i++) {
+				if (template[i].equals(source[i])) {
+					continue;
+				}
+				// Check whether a param field.
+				if (template[i].matches("\\{\\S+(:\\S+)?\\}")) {
+					String[] tt = template[i].substring(1, template[i].length() - 1).split(":");
+					String key = tt[0];
+					String type = tt.length == 2 ? tt[1].toLowerCase() : "";
+					if (type.equals("int")) {
+						try {
+							bundle.putInt(key, Integer.parseInt(source[i]));
+						} catch (NumberFormatException e) {
+							Log.d(TAG, "params parse error, need int.", e);
+							bundle.putString(key, source[i]);
+						}
+					} else if (type.equals("long")) {
+						try {
+							bundle.putLong(key, Long.parseLong(source[i]));
+						} catch (NumberFormatException e) {
+							Log.d(TAG, "params parse error, need long.", e);
+							bundle.putString(key, source[i]);
+						}
+					} else {
+						bundle.putString(key, source[i]);
+					}
+					continue;
+				}
+				continue UriLoop;
+			}
+			return sMAPPING.get(uri);
+		}
+		return null;
+	}
+
+	/**
+	 * Fetch params for uri.
+	 *
+	 * @param uri
+	 * @param bundle
+	 * @return
+	 */
+	private static Bundle parseParams(Uri uri, Bundle bundle) {
+		if (bundle == null) {
+			bundle = new Bundle();
+		}
+		bundle.putString(Rabbit.KEY_ORIGIN_URI, uri.toString());
+		Set<String> keys = uri.getQueryParameterNames();
+		if (keys == null || keys.size() == 0) {
+			return bundle;
+		}
+		for (String key : keys) {
+			String params = uri.getQueryParameter(key);
+			bundle.putString(key, params);
+		}
+		return bundle;
+	}
+
+	/**
+	 * Fetch flags from uri.
+	 *
+	 * @param uri
+	 * @return
+	 */
+	private static int parseFlags(Uri uri) {
+		String mode = uri.getQueryParameter(Mappings.MAPPING_QUERY_MODE);
+		int flags = 0;
+		if (TextUtils.isEmpty(mode)) {
+			flags = 0;
+		} else {
+			if (mode.contains(Mappings.MODE_CLEAR_TOP)) {
+				flags |= Intent.FLAG_ACTIVITY_CLEAR_TOP;
+			}
+			if (mode.contains(Mappings.MODE_NEW_TASK)) {
+				flags |= Intent.FLAG_ACTIVITY_NEW_TASK;
+			}
+		}
+		return flags;
 	}
 }

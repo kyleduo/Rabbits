@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * Default implements of AbstractNavigator witch has ability of navigate from activities or fragments to Activities.
- *
+ * <p>
  * Created by kyle on 2016/12/7.
  */
 
@@ -46,7 +46,9 @@ public class DefaultNavigator extends AbstractNavigator {
 
 	@Override
 	public boolean start() {
-		assert mTo != null;
+		if (mTo == null) {
+			return false;
+		}
 		if (mInterceptors != null) {
 			for (INavigationInterceptor i : mInterceptors) {
 				if (i.intercept(mUri, mFrom, mTo, mTag, mIntentFlags, mExtras)) {
@@ -77,7 +79,9 @@ public class DefaultNavigator extends AbstractNavigator {
 
 	@Override
 	public Object obtain() {
-		assert mTo != null;
+		if (mTo == null) {
+			return null;
+		}
 		if (mTo instanceof Class<?> && Activity.class.isAssignableFrom(((Class<?>) mTo))) {
 			return buildIntent();
 		}
@@ -86,7 +90,9 @@ public class DefaultNavigator extends AbstractNavigator {
 
 	@Override
 	public boolean startForResult(int requestCode) {
-		assert mTo != null;
+		if (mTo == null) {
+			return false;
+		}
 		if (mInterceptors != null) {
 			for (INavigationInterceptor i : mInterceptors) {
 				if (i.intercept(mUri, mFrom, mTo, mTag, mIntentFlags, mExtras)) {
@@ -103,6 +109,11 @@ public class DefaultNavigator extends AbstractNavigator {
 				((Fragment) mFrom).startActivityForResult(intent, requestCode);
 				return true;
 			}
+		} else if (mTo instanceof AbstractNavigator) {
+			return ((AbstractNavigator) mTo).setFrom(mFrom)
+					.setIntentFlags(mIntentFlags)
+					.mergeExtras(mExtras)
+					.startForResult(requestCode);
 		}
 		return false;
 	}
