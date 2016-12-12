@@ -369,7 +369,7 @@ class Mappings {
 								continue UriLoop;
 							}
 							break;
-						case "B":
+						case "b":
 							try {
 								bundle.putBoolean(key, Boolean.parseBoolean(source[i].toLowerCase()));
 							} catch (NumberFormatException e) {
