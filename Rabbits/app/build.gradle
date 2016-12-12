@@ -32,6 +32,11 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testCompile 'junit:junit:4.12'
+
+    // Rabbits
     compile project(':library')
     annotationProcessor project(':compiler')
+
+    // Fragmentation
+    compile 'me.yokeyword:fragmentation:0.8.4'
 }

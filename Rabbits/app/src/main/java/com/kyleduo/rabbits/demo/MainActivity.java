@@ -4,40 +4,39 @@ import android.os.Environment;
 import android.support.v4.os.EnvironmentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.annotations.Page;
+import com.kyleduo.rabbits.demo.base.BaseActivity;
+
+import java.util.zip.Inflater;
 
 @Page(name = "MAIN")
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		ViewGroup view = (ViewGroup) LayoutInflater.from(this).inflate(R.layout.activity_main, null);
+		setContentView(view);
 
-		findViewById(R.id.start_test_bt).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-
-				/* Testing update mappings.
-				String json = "{\n" +
-						"  \"version\": 2,\n" +
-						"  \"mappings\": {\n" +
-						"    \"demo://com.kyleduo.rabbits/test\": \"TEST\",\n" +
-						"    \"demo://com.kyleduo.rabbits\": \"MAIN\",\n" +
-						"    \"demo://com.kyleduo.rabbits/\": \"MAIN\"\n" +
-						"  }\n" +
-						"}";
-
-				File file = new File(Environment.getExternalStorageDirectory(), "testing.json");
-				Rabbit.updateMappings(MainActivity.this, file);*/
-
-				Rabbit.from(MainActivity.this)
-						.to("test/This is a 参数.")
-						.start();
+		for (int i = 0; i < view.getChildCount(); i++) {
+			View v = view.getChildAt(i);
+			if (!(v instanceof TextView)) {
+				continue;
 			}
-		});
+			v.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					Rabbit.from(MainActivity.this)
+							.to(((TextView) view).getText().toString())
+							.start();
+				}
+			});
+		}
 	}
 }

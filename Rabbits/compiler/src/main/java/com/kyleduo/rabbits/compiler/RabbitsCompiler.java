@@ -63,7 +63,17 @@ public class RabbitsCompiler extends AbstractProcessor {
 				if (type == PageType.ACTIVTY) {
 					String methodName = NameParser.parseRoute(name);
 					ClassName className = ClassName.get((TypeElement) e);
+
+					// route
 					MethodSpec.Builder methodSpecBuilder = MethodSpec.methodBuilder(methodName)
+							.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+							.returns(Class.class)
+							.addStatement("return $T.class", className);
+					methods.add(methodSpecBuilder.build());
+
+					// obtain
+					methodName = NameParser.parseObtain(name);
+					methodSpecBuilder = MethodSpec.methodBuilder(methodName)
 							.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
 							.returns(Class.class)
 							.addStatement("return $T.class", className);
@@ -71,15 +81,12 @@ public class RabbitsCompiler extends AbstractProcessor {
 				} else if (type == PageType.FRAGMENT) {
 					String parent = page.parent();
 					boolean hasParent = !parent.equals("");
-					String methodName = hasParent ? NameParser.parseObtain(name) : NameParser.parseRoute(name);
+
 					ClassName className = ClassName.get((TypeElement) e);
-					MethodSpec.Builder methodSpecBuilder = MethodSpec.methodBuilder(methodName)
-							.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC);
-					methodSpecBuilder.returns(className)
-							.addStatement("return $T.newInstance()", className);
-					methods.add(methodSpecBuilder.build());
+					// route
+					String methodName = NameParser.parseRoute(name);
+					MethodSpec.Builder methodSpecBuilder;
 					if (hasParent) {
-						methodName = NameParser.parseRoute(name);
 						methodSpecBuilder = MethodSpec.methodBuilder(methodName)
 								.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC);
 						methodSpecBuilder.returns(ClassName.get(NAVIGATOR_PACKAGE, "AbstractNavigator"));
@@ -88,7 +95,21 @@ public class RabbitsCompiler extends AbstractProcessor {
 						parseExtras(methodSpecBuilder, page);
 						methodSpecBuilder.addStatement("return new $T(null, null, $L(), null, 0, bundle, null)", ClassName.get(NAVIGATOR_PACKAGE, "DefaultNavigator"), parentMethodName);
 						methods.add(methodSpecBuilder.build());
+					} else {
+						methodSpecBuilder = MethodSpec.methodBuilder(methodName)
+								.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC);
+						methodSpecBuilder.returns(className)
+								.addStatement("return $T.newInstance()", className);
+						methods.add(methodSpecBuilder.build());
 					}
+
+					// obtain
+					methodName = NameParser.parseObtain(name);
+					methodSpecBuilder = MethodSpec.methodBuilder(methodName)
+							.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC);
+					methodSpecBuilder.returns(className)
+							.addStatement("return $T.newInstance()", className);
+					methods.add(methodSpecBuilder.build());
 				}
 			}
 		}
