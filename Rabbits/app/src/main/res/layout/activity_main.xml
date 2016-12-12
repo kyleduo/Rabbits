@@ -36,4 +36,9 @@
 		style="@style/Contents"
 		android:text="demo://rabbits.kyleduo.com/test_fragment"
 		/>
+
+	<TextView
+		style="@style/Contents"
+		android:text="demo://rabbits.kyleduo.com/web"
+		/>
 </LinearLayout>
