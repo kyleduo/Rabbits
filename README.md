@@ -286,7 +286,8 @@ public class DemoNotFoundHandler extends AbstractPageNotFoundHandler {
 
 Last but not least, to support custom Fragment navigation or other custom operations, Rabbits support inject custom `Navigator` by create a custom `INavigatorFactory` instance, as mentioned before.
 
-This is a major flexible design part of Rabbits, not just finish the navigation job but give you a chance to handle the key part —— Navigation —— and without care about the tough parts: mappings, params, flags and so on.
+This is a major flexible part of Rabbits design, not just finish the navigation job but give you a chance to handle the key part —— **Navigation** —— and without care about the tough parts: mappings, params, flags and so on.
+
 
 
 
