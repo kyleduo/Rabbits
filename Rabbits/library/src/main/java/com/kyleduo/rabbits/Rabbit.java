@@ -40,7 +40,7 @@ import java.util.Map;
 public class Rabbit {
 	private static final String TAG = "Rabbit";
 	private static final String ROUTER_CLASS = "com.kyleduo.rabbits.Router";
-	public static final String KEY_ORIGIN_URI = "Rabbits_Origin_Uri";
+	public static final String KEY_ORIGIN_URI = "rabbits_origin_uri";
 
 	private static IRouter sRouter;
 	static String sAppScheme;
