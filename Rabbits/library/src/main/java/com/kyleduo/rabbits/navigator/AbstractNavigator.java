@@ -23,6 +23,7 @@ import java.util.List;
  * Created by kyle on 2016/12/7.
  */
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class AbstractNavigator implements IProvider {
 
 	/**
@@ -65,7 +66,8 @@ public abstract class AbstractNavigator implements IProvider {
 	/**
 	 * Check out whether there are flag witch specific this navigation should start a new task.
 	 * For Fragments, maybe it should start a new activity.
-	 * @return
+	 *
+	 * @return should start in new task
 	 */
 	protected boolean shouldNewTask() {
 		return (mIntentFlags & Intent.FLAG_ACTIVITY_NEW_TASK) != 0;
@@ -74,7 +76,8 @@ public abstract class AbstractNavigator implements IProvider {
 	/**
 	 * Check out whether there are flag witch specific this navigation should clear top of its task.
 	 * For Fragments, maybe it should remove top fragments.
-	 * @return
+	 *
+	 * @return should start with clear top
 	 */
 	protected boolean shouldClearTop() {
 		return (mIntentFlags & Intent.FLAG_ACTIVITY_CLEAR_TOP) != 0;
