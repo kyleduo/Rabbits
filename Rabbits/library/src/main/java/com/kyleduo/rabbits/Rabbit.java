@@ -36,6 +36,7 @@ import java.util.Map;
  * Created by kyle on 2016/12/7.
  */
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class Rabbit {
 	private static final String TAG = "Rabbit";
 	private static final String ROUTER_CLASS = "com.kyleduo.rabbits.Router";
@@ -271,9 +272,9 @@ public class Rabbit {
 	/**
 	 * Handle the dispatch operation.
 	 *
-	 * @param target
-	 * @param mute
-	 * @return
+	 * @param target target
+	 * @param mute whether mute
+	 * @return navigator
 	 */
 	private AbstractNavigator dispatch(Target target, boolean mute) {
 		Log.d(TAG, target.toString());
@@ -294,7 +295,7 @@ public class Rabbit {
 	 * Assemble interceptors and static interceptors.
 	 * order static interceptors after instance's interceptors.
 	 *
-	 * @return
+	 * @return a list of valid navigation interceptor
 	 */
 	private List<INavigationInterceptor> assembleInterceptor() {
 		if (sInterceptors == null) {
