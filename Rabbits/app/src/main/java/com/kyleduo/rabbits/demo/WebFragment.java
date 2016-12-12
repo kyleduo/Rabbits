@@ -40,6 +40,8 @@ public class WebFragment extends BaseFragment {
 		mWebView = new WebView(getContext());
 		mWebView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 		mWebView.setWebViewClient(new DefaultWebViewClient());
+		mWebView.getSettings().setUseWideViewPort(false);
+		mWebView.getSettings().setJavaScriptEnabled(true);
 		return mWebView;
 	}
 
@@ -83,5 +85,14 @@ public class WebFragment extends BaseFragment {
 		public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
 			super.onReceivedError(view, request, error);
 		}
+	}
+
+	@Override
+	public boolean onBackPressedSupport() {
+		if (mWebView.canGoBack()) {
+			mWebView.goBack();
+			return true;
+		}
+		return super.onBackPressedSupport();
 	}
 }

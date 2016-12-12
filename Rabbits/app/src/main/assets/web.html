@@ -6,10 +6,20 @@
 
 <body>
 <p>
-    <a href="http://rabbits.kyleduo.com">http://rabbits.kyleduo.com</a>
+    Load normally.
 </p>
 <p>
-    <a href="http://rabbits.kyleduo.com/tobeintercept?Testing=UrlParams">http://rabbits.kyleduo.com/tobeintercept?Testing=UrlParams</a>
+    <a href="http://kyleduo.com">http://kyleduo.com</a>
+</p>
+<p>
+    <a href="http://blog.kyleduo.com">http://blog.kyleduo.com</a>
+</p>
+<br/>
+<p>
+    Intercepted by Mappings.
+</p>
+<p>
+    <a href="http://rabbits.kyleduo.com">http://rabbits.kyleduo.com</a>
 </p>
 <p>
     <a href="http://rabbits.kyleduo.com/test/this is a param">http://rabbits.kyleduo.com/test</a>
@@ -18,7 +28,24 @@
     <a href="http://rabbits.kyleduo.com/test/listing">http://rabbits.kyleduo.com/test/listing</a>
 </p>
 <p>
-    <a href="http://kyleduo.com">http://kyleduo.com</a>
+    Url load mode
+</p>
+<p>
+    <a href="http://rabbits.kyleduo.com?rabbitsMode=clearTop">http://rabbits.kyleduo.com?rabbitsMode=clearTop</a>
+</p>
+<br/>
+<p>
+    Intercepted by Local Interceptor.
+</p>
+<p>
+    <a href="http://rabbits.kyleduo.com/tobeintercept?Testing=UrlParams">http://rabbits.kyleduo.com/tobeintercept?Testing=UrlParams</a>
+</p>
+<br/>
+<p>
+    Intercepted by Static Interceptor.
+</p>
+<p>
+    <a href="http://rabbits.kyleduo.com/intercept/dump">http://rabbits.kyleduo.com/intercept/dump</a>
 </p>
 </body>
 </html>

@@ -277,7 +277,7 @@ public class Rabbit {
 	 * Handle the dispatch operation.
 	 *
 	 * @param target target
-	 * @param mute whether mute
+	 * @param mute   whether mute
 	 * @return navigator
 	 */
 	private AbstractNavigator dispatch(Target target, boolean mute) {
@@ -289,7 +289,7 @@ public class Rabbit {
 					return pageNotFoundHandler;
 				}
 			} else if (target.getTo() == null) {
-				return new MuteNavigator(target.getUri(), mFrom, null, target.getPage(), target.getFlags(), target.getExtras(), mInterceptors);
+				return new MuteNavigator(target.getUri(), mFrom, null, target.getPage(), target.getFlags(), target.getExtras(), assembleInterceptor());
 			}
 		}
 		return sNavigatorFactory.createNavigator(target.getUri(), mFrom, target.getTo(), target.getPage(), target.getFlags(), target.getExtras(), assembleInterceptor());
