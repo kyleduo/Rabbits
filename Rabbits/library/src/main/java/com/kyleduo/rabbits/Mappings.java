@@ -196,8 +196,8 @@ class Mappings {
 			if (sMAPPING.size() > 0) {
 				try {
 					JSONObject mappings = new JSONObject();
-					Set<Map.Entry<String, String>> entrys = sMAPPING.entrySet();
-					for (Map.Entry<String, String> entry : entrys) {
+					Set<Map.Entry<String, String>> entries = sMAPPING.entrySet();
+					for (Map.Entry<String, String> entry : entries) {
 						mappings.put(entry.getKey(), entry.getValue());
 					}
 					JSONObject wrapper = new JSONObject();
