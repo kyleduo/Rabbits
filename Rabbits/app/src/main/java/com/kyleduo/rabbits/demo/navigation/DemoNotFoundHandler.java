@@ -3,6 +3,7 @@ package com.kyleduo.rabbits.demo.navigation;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.navigator.AbstractPageNotFoundHandler;
 import com.kyleduo.rabbits.navigator.INavigationInterceptor;
 
@@ -20,16 +21,30 @@ public class DemoNotFoundHandler extends AbstractPageNotFoundHandler {
 
 	@Override
 	public boolean start() {
-		return false;
+		String httpUrl = mUri.buildUpon().scheme("http").build().toString();
+		Rabbit.from(mFrom)
+				.to("/web")
+				.putString("url", httpUrl)
+				.start();
+		return true;
 	}
 
 	@Override
 	public boolean startForResult(int requestCode) {
-		return false;
+		String httpUrl = mUri.buildUpon().scheme("http").build().toString();
+		Rabbit.from(mFrom)
+				.to("/web")
+				.putString("url", httpUrl)
+				.startForResult(requestCode);
+		return true;
 	}
 
 	@Override
 	public Object obtain() {
-		return null;
+		String httpUrl = mUri.buildUpon().scheme("http").build().toString();
+		return Rabbit.from(mFrom)
+				.obtain("/web")
+				.putString("url", httpUrl)
+				.obtain();
 	}
 }

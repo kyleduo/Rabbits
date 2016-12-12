@@ -209,9 +209,9 @@ public class Rabbit {
 	 * Used for obtain page object. Intent or Fragment instance.
 	 *
 	 * @param uriStr uriStr
-	 * @return IProvider
+	 * @return AbstractNavigator
 	 */
-	public IProvider obtain(String uriStr) {
+	public AbstractNavigator obtain(String uriStr) {
 		Uri uri = Uri.parse(uriStr);
 		return obtain(uri);
 	}
@@ -220,9 +220,9 @@ public class Rabbit {
 	 * Used for obtain page object. Intent or Fragment instance.
 	 *
 	 * @param uri uri
-	 * @return IProvider
+	 * @return AbstractNavigator
 	 */
-	public IProvider obtain(Uri uri) {
+	public AbstractNavigator obtain(Uri uri) {
 		Target target = Mappings.match(uri).obtain(sRouter);
 		return dispatch(target, false);
 	}

@@ -41,4 +41,9 @@
 		style="@style/Contents"
 		android:text="demo://rabbits.kyleduo.com/web"
 		/>
+
+	<TextView
+		style="@style/Contents"
+		android:text="demo://blog.kyleduo.com?this_will_be_handled_by_not_found_handler"
+		/>
 </LinearLayout>

@@ -48,11 +48,14 @@ public class WebFragment extends BaseFragment {
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		Bundle extras = getArguments();
+		if (extras != null) {
+			extras.putAll(getActivity().getIntent().getExtras());
+		}
 		String url = "file:///android_asset/web.html";
-		mWebView.loadUrl(url);
-	}
-
-	public void load(String url) {
+		if (extras != null) {
+			url = extras.getString("url", url);
+		}
 		mWebView.loadUrl(url);
 	}
 
