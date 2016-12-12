@@ -96,6 +96,10 @@ public class Rabbit {
 		}
 	}
 
+	public static String dumpMappings() {
+		return Mappings.dump();
+	}
+
 	/**
 	 * Initial rabbits with basic elements, using default Navigators.
 	 *

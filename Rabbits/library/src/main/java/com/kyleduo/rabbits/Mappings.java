@@ -436,4 +436,16 @@ class Mappings {
 		}
 		return flags;
 	}
+
+	static String dump() {
+		StringBuilder sb = new StringBuilder();
+		Set<Map.Entry<String, String>> entries = sMAPPING.entrySet();
+		sb.append("{").append("\n");
+		for (Map.Entry<String, String> e : entries) {
+			sb.append(e.getKey()).append(" -> ").append(e.getValue()).append("\n\n");
+		}
+		sb.deleteCharAt(sb.length() - 1);
+		sb.append("}");
+		return sb.toString();
+	}
 }

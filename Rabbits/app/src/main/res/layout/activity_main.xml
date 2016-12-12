@@ -24,12 +24,12 @@
 
 	<TextView
 		style="@style/Contents"
-		android:text="demo://rabbits.kyleduo.com/test/listing"
+		android:text="demo://rabbits.kyleduo.com/test?Testing=Params"
 		/>
 
 	<TextView
 		style="@style/Contents"
-		android:text="demo://rabbits.kyleduo.com/test?Testing=Params"
+		android:text="demo://rabbits.kyleduo.com/test/listing"
 		/>
 
 	<TextView

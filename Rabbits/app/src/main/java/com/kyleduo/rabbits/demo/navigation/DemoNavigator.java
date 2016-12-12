@@ -50,7 +50,11 @@ public class DemoNavigator extends DefaultNavigator {
 		if (mTo instanceof Fragment) {
 			final Fragment f = (Fragment) mTo;
 			if (mExtras != null) {
-				f.setArguments(mExtras);
+				if (f.getArguments() != null) {
+					f.getArguments().putAll(mExtras);
+				} else {
+					f.setArguments(mExtras);
+				}
 			}
 			return f;
 		}
