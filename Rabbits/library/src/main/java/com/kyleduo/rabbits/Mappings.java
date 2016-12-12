@@ -43,10 +43,9 @@ class Mappings {
 	private static final String PERSIST_MAPPING_FILE = "rabbits_mappings.json";
 	private static final String PERSIST_MAPPING_TEMP_FILE = "rabbits_mappings_temp.json";
 
-	static final String MAPPING_QUERY_MODE = "rabbitsMode";
-
-	static final String MODE_CLEAR_TOP = "clearTop";
-	static final String MODE_NEW_TASK = "newTask";
+	private static final String MAPPING_QUERY_MODE = "rabbitsMode";
+	private static final String MODE_CLEAR_TOP = "clearTop";
+	private static final String MODE_NEW_TASK = "newTask";
 
 	private static boolean sPersisting;
 
@@ -56,9 +55,9 @@ class Mappings {
 	/**
 	 * Load mappings to memory.
 	 *
-	 * @param context
-	 * @param async
-	 * @param callback
+	 * @param context  context
+	 * @param async    whether the operation run in work thread
+	 * @param callback callback used for async task.
 	 */
 	static void setup(final Context context, boolean async, final Runnable callback) {
 		final Context app = context.getApplicationContext();
@@ -90,8 +89,8 @@ class Mappings {
 	/**
 	 * Update mappings using a file.
 	 *
-	 * @param context
-	 * @param file
+	 * @param context context
+	 * @param file    file
 	 */
 	static void update(Context context, File file) {
 		final Context app = context.getApplicationContext();
@@ -110,8 +109,8 @@ class Mappings {
 	/**
 	 * Update mappings using json string.
 	 *
-	 * @param context
-	 * @param json
+	 * @param context context
+	 * @param json    json
 	 */
 	static void update(Context context, String json) {
 		final Context app = context.getApplicationContext();
@@ -308,6 +307,26 @@ class Mappings {
 		}
 	}
 
+	/**
+	 * Deep checking whether a match uri exist with support for REST uri.
+	 * <p>
+	 * To support REST uri, witch may contains params in path, using "{key:type}"
+	 * format representing a params.
+	 * <p>
+	 * Either KEY or TYPE part should contains none blank characters and TYPE part just support
+	 * these ones (case matters):
+	 * <pre>
+	 * 		"i" : an int params.
+	 * 		"l" : a long params.
+	 * 		"d" : a double params.
+	 * 		"B" : a boolean params.
+	 * 		"s" : a String params.
+	 * </pre>
+	 *
+	 * @param pureUri uri need to be matched, without queries.
+	 * @param bundle  bundle object used to store params of REST uri.
+	 * @return page name when found a match.
+	 */
 	private static String deepMatch(String pureUri, Bundle bundle) {
 		Set<String> uris = sMAPPING.keySet();
 		UriLoop:
@@ -328,22 +347,41 @@ class Mappings {
 					String[] tt = template[i].substring(1, template[i].length() - 1).split(":");
 					String key = tt[0];
 					String type = tt.length == 2 ? tt[1].toLowerCase() : "";
-					if (type.equals("int")) {
-						try {
-							bundle.putInt(key, Integer.parseInt(source[i]));
-						} catch (NumberFormatException e) {
-							Log.d(TAG, "params parse error, need int.", e);
+					switch (type) {
+						case "i":
+							try {
+								bundle.putInt(key, Integer.parseInt(source[i]));
+							} catch (NumberFormatException e) {
+								continue UriLoop;
+							}
+							break;
+						case "l":
+							try {
+								bundle.putLong(key, Long.parseLong(source[i]));
+							} catch (NumberFormatException e) {
+								continue UriLoop;
+							}
+							break;
+						case "d":
+							try {
+								bundle.putDouble(key, Double.parseDouble(source[i]));
+							} catch (NumberFormatException e) {
+								continue UriLoop;
+							}
+							break;
+						case "B":
+							try {
+								bundle.putBoolean(key, Boolean.parseBoolean(source[i].toLowerCase()));
+							} catch (NumberFormatException e) {
+								continue UriLoop;
+							}
+							break;
+						case "s":
 							bundle.putString(key, source[i]);
-						}
-					} else if (type.equals("long")) {
-						try {
-							bundle.putLong(key, Long.parseLong(source[i]));
-						} catch (NumberFormatException e) {
-							Log.d(TAG, "params parse error, need long.", e);
+							break;
+						default:
 							bundle.putString(key, source[i]);
-						}
-					} else {
-						bundle.putString(key, source[i]);
+							break;
 					}
 					continue;
 				}
@@ -357,9 +395,9 @@ class Mappings {
 	/**
 	 * Fetch params for uri.
 	 *
-	 * @param uri
-	 * @param bundle
-	 * @return
+	 * @param uri    target uri.
+	 * @param bundle bundle object where the params should be stored.
+	 * @return A bundle object witch store the params.
 	 */
 	private static Bundle parseParams(Uri uri, Bundle bundle) {
 		if (bundle == null) {
@@ -380,8 +418,8 @@ class Mappings {
 	/**
 	 * Fetch flags from uri.
 	 *
-	 * @param uri
-	 * @return
+	 * @param uri target uri.
+	 * @return flags fetched from uri.
 	 */
 	private static int parseFlags(Uri uri) {
 		String mode = uri.getQueryParameter(Mappings.MAPPING_QUERY_MODE);
