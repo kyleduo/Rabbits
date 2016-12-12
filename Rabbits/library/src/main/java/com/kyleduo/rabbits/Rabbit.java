@@ -29,7 +29,7 @@ import java.util.Map;
  * Normal usage likes this.
  * <pre>
  * Rabbit.from(activity)
- * 		.to("http://com.kyleduo.rabbits/some/path")
+ * 		.to("http://rabbits.kyleduo.com/some/path")
  * 		.start();
  * </pre>
  * <p>
