@@ -289,7 +289,7 @@ public class Rabbit {
 					return pageNotFoundHandler;
 				}
 			} else if (target.getTo() == null) {
-				return new MuteNavigator(target.getUri(), mFrom, null, target.getPage(), target.getFlags(), null, mInterceptors);
+				return new MuteNavigator(target.getUri(), mFrom, null, target.getPage(), target.getFlags(), target.getExtras(), mInterceptors);
 			}
 		}
 		return sNavigatorFactory.createNavigator(target.getUri(), mFrom, target.getTo(), target.getPage(), target.getFlags(), target.getExtras(), assembleInterceptor());

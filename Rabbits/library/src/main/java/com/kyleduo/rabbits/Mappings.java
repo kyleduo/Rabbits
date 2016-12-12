@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,7 +50,7 @@ class Mappings {
 
 	private static boolean sPersisting;
 
-	private static Map<String, String> sMAPPING = new HashMap<>();
+	private static Map<String, String> sMAPPING = new LinkedHashMap<>();
 	private static int sVERSION = 0;
 
 	/**
