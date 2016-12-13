@@ -42,15 +42,6 @@ public class ExampleInstrumentedTest {
 	public ActivityTestRule<MainActivity> mMainActivityRule = new ActivityTestRule<>(MainActivity.class, true);
 
 	@Test
-	public void testGoTest() throws Exception {
-//		onView(withId(R.id.start_test_bt)).perform(click());
-//		onView(withId(R.id.back_home_bt)).check(matches(isDisplayed()));
-//
-//		onView(withId(R.id.back_home_bt)).perform(click());
-//		onView(withId(R.id.start_test_bt)).check(matches(isDisplayed()));
-	}
-
-	@Test
 	public void testRabbitsParams() {
 		String[] urls = new String[]{
 				"demo://rabbits.kyleduo.com/test/testing",
