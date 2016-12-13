@@ -65,7 +65,7 @@ public class WebFragment extends BaseFragment {
 			INavigationInterceptor webInterceptor = new INavigationInterceptor() {
 				@Override
 				public boolean intercept(Uri uri, Object from, Object to, String page, int intentFlags, Bundle extras) {
-					if (uri.getPath().equals("/tobeintercept")) {
+					if (uri.getPath().equals("/tobeintercepted")) {
 						Rabbit.from(WebFragment.this)
 								.to("demo://rabbits.kyleduo.com/test")
 								.mergeExtras(extras)
