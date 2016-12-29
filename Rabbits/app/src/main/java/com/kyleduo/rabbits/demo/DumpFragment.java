@@ -1,6 +1,7 @@
 package com.kyleduo.rabbits.demo;
 
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.annotations.Page;
@@ -12,12 +13,10 @@ import com.kyleduo.rabbits.demo.base.BaseFragment;
  */
 @Page(name = "DUMP", type = PageType.FRAGMENT)
 public class DumpFragment extends BaseFragment {
-	public static DumpFragment newInstance() {
-
-		Bundle args = new Bundle();
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		Bundle args = getArguments();
 		args.putString("dump", Rabbit.dumpMappings());
-		DumpFragment fragment = new DumpFragment();
-		fragment.setArguments(args);
-		return fragment;
+		super.onCreate(savedInstanceState);
 	}
 }

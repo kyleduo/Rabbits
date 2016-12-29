@@ -25,15 +25,6 @@ public class WebFragment extends BaseFragment {
 
 	private WebView mWebView;
 
-	public static WebFragment newInstance() {
-
-		Bundle args = new Bundle();
-
-		WebFragment fragment = new WebFragment();
-		fragment.setArguments(args);
-		return fragment;
-	}
-
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

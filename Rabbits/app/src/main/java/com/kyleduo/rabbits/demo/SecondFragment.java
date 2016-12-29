@@ -18,15 +18,6 @@ import com.kyleduo.rabbits.demo.base.BaseFragment;
  */
 @Page(name = "SECOND", type = PageType.FRAGMENT)
 public class SecondFragment extends BaseFragment {
-	public static SecondFragment newInstance() {
-
-		Bundle args = new Bundle();
-
-		SecondFragment fragment = new SecondFragment();
-		fragment.setArguments(args);
-		return fragment;
-	}
-
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

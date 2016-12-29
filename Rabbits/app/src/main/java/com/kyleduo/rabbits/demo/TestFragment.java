@@ -20,15 +20,6 @@ import java.util.Random;
  */
 @Page(name = "TEST_F", type = PageType.FRAGMENT, parent = "COMMON", intExtras = {"index", "1"})
 public class TestFragment extends BaseFragment {
-	public static TestFragment newInstance() {
-
-		Bundle args = new Bundle();
-
-		TestFragment fragment = new TestFragment();
-		fragment.setArguments(args);
-		return fragment;
-	}
-
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
