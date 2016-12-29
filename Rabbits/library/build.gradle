@@ -1,4 +1,76 @@
+plugins {
+    id "com.jfrog.bintray" version "1.7"
+}
+apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.android.library'
+
+def siteUrl = 'https://github.com/kyleduo/Rabbits'
+def gitUrl = 'https://github.com/kyleduo/Rabbits.git'
+def rabbitsName = 'Rabbits'
+def rabbitsVersion = '0.0.1'
+
+version = rabbitsVersion
+group = 'com.kyleduo.rabbits'
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            //noinspection GroovyAssignabilityCheck
+            project {
+                packaging 'aar'
+
+                // Add your description here
+                name rabbitsName
+                url siteUrl
+
+                // Set your license
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'kyleduo'
+                        name 'kyleduo'
+                        email 'kyleduo@gmail.com'
+                    }
+                }
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url siteUrl
+
+                }
+            }
+        }
+    }
+}
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+bintray {
+    user = properties.getProperty('bintray.user')
+    key = properties.getProperty('bintray.apikey')
+    pkg {
+        repo = 'maven'
+        name = rabbitsName
+        userOrg = 'kyleduo'
+        licenses = ['Apache-2.0']
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        publicDownloadNumbers = true
+        publish = true
+
+        version {
+            name = rabbitsVersion
+            desc = 'A router library for Android app.'
+            released  = new Date()
+            vcsTag = version
+        }
+    }
+}
 
 android {
     compileSdkVersion 25
@@ -8,7 +80,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
+        versionName version
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
