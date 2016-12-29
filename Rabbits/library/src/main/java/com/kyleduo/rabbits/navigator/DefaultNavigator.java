@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
+import com.kyleduo.rabbits.Target;
+
 import java.util.List;
 
 /**
@@ -17,8 +19,8 @@ import java.util.List;
 
 public class DefaultNavigator extends AbstractNavigator {
 
-	public DefaultNavigator(Uri uri, Object from, Object to, String tag, int flags, Bundle extras, List<INavigationInterceptor> interceptors) {
-		super(uri, from, to, tag, flags, extras, interceptors);
+	public DefaultNavigator(Object from, Target target, List<INavigationInterceptor> interceptors) {
+		super(from, target, interceptors);
 	}
 
 	private Intent buildIntent() {
@@ -36,27 +38,28 @@ public class DefaultNavigator extends AbstractNavigator {
 		if (context == null) {
 			return null;
 		}
-		Intent intent = new Intent(context, (Class<?>) mTo);
-		intent.setFlags(mIntentFlags);
-		if (mExtras != null) {
-			intent.putExtras(mExtras);
+		Intent intent = new Intent(context, (Class<?>) mTarget.getTo());
+		intent.setFlags(mTarget.getFlags());
+		if (mTarget.getExtras() != null) {
+			intent.putExtras(mTarget.getExtras());
 		}
 		return intent;
 	}
 
 	@Override
 	public boolean start() {
-		if (mTo == null) {
+		final Object to = mTarget.getTo();
+		if (to == null) {
 			return false;
 		}
 		if (mInterceptors != null) {
 			for (INavigationInterceptor i : mInterceptors) {
-				if (i.intercept(mUri, mFrom, mTo, mTag, mIntentFlags, mExtras)) {
+				if (i.intercept(mFrom, mTarget)) {
 					return true;
 				}
 			}
 		}
-		if (mTo instanceof Class<?> && Activity.class.isAssignableFrom(((Class<?>) mTo))) {
+		if (to instanceof Class<?> && Activity.class.isAssignableFrom(((Class<?>) to))) {
 			Intent intent = buildIntent();
 			if (mFrom instanceof Context) {
 				((Context) mFrom).startActivity(intent);
@@ -68,10 +71,10 @@ public class DefaultNavigator extends AbstractNavigator {
 				((android.app.Fragment) mFrom).startActivity(intent);
 				return true;
 			}
-		} else if (mTo instanceof AbstractNavigator) {
-			return ((AbstractNavigator) mTo).setFrom(mFrom)
-					.setIntentFlags(mIntentFlags)
-					.mergeExtras(mExtras)
+		} else if (to instanceof AbstractNavigator) {
+			return ((AbstractNavigator) to).setFrom(mFrom)
+					.setIntentFlags(mTarget.getFlags())
+					.mergeExtras(mTarget.getExtras())
 					.start();
 		}
 		return false;
@@ -79,28 +82,30 @@ public class DefaultNavigator extends AbstractNavigator {
 
 	@Override
 	public Object obtain() {
-		if (mTo == null) {
+		final Object to = mTarget.getTo();
+		if (to == null) {
 			return null;
 		}
-		if (mTo instanceof Class<?> && Activity.class.isAssignableFrom(((Class<?>) mTo))) {
+		if (to instanceof Class<?> && Activity.class.isAssignableFrom(((Class<?>) to))) {
 			return buildIntent();
 		}
-		return mTo;
+		return to;
 	}
 
 	@Override
 	public boolean startForResult(int requestCode) {
-		if (mTo == null) {
+		final Object to = mTarget.getTo();
+		if (to == null) {
 			return false;
 		}
 		if (mInterceptors != null) {
 			for (INavigationInterceptor i : mInterceptors) {
-				if (i.intercept(mUri, mFrom, mTo, mTag, mIntentFlags, mExtras)) {
+				if (i.intercept(mFrom, mTarget)) {
 					return true;
 				}
 			}
 		}
-		if (mTo instanceof Class<?> && Activity.class.isAssignableFrom(((Class<?>) mTo))) {
+		if (to instanceof Class<?> && Activity.class.isAssignableFrom(((Class<?>) to))) {
 			Intent intent = buildIntent();
 			if (mFrom instanceof Activity) {
 				((Activity) mFrom).startActivityForResult(intent, requestCode);
@@ -109,10 +114,10 @@ public class DefaultNavigator extends AbstractNavigator {
 				((Fragment) mFrom).startActivityForResult(intent, requestCode);
 				return true;
 			}
-		} else if (mTo instanceof AbstractNavigator) {
-			return ((AbstractNavigator) mTo).setFrom(mFrom)
-					.setIntentFlags(mIntentFlags)
-					.mergeExtras(mExtras)
+		} else if (to instanceof AbstractNavigator) {
+			return ((AbstractNavigator) to).setFrom(mFrom)
+					.setIntentFlags(mTarget.getFlags())
+					.mergeExtras(mTarget.getExtras())
 					.startForResult(requestCode);
 		}
 		return false;

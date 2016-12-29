@@ -14,7 +14,7 @@ public class Target {
 	private Bundle mExtras;
 	private Object mTo;
 
-	public Target(Uri uri) {
+	Target(Uri uri) {
 		mUri = uri;
 	}
 
@@ -22,7 +22,7 @@ public class Target {
 		return mUri;
 	}
 
-	void setUri(Uri uri) {
+	public void setUri(Uri uri) {
 		mUri = uri;
 	}
 
@@ -30,7 +30,7 @@ public class Target {
 		return mPage;
 	}
 
-	void setPage(String page) {
+	public void setPage(String page) {
 		mPage = page;
 	}
 
@@ -38,7 +38,7 @@ public class Target {
 		return mFlags;
 	}
 
-	void setFlags(int flags) {
+	public void setFlags(int flags) {
 		mFlags = flags;
 	}
 
@@ -46,7 +46,7 @@ public class Target {
 		return mExtras;
 	}
 
-	void setExtras(Bundle extras) {
+	public void setExtras(Bundle extras) {
 		mExtras = extras;
 	}
 
@@ -54,7 +54,7 @@ public class Target {
 		return mTo;
 	}
 
-	void setTo(Object to) {
+	public void setTo(Object to) {
 		mTo = to;
 	}
 

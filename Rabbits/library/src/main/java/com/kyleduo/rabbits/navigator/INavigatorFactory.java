@@ -3,6 +3,8 @@ package com.kyleduo.rabbits.navigator;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.kyleduo.rabbits.Target;
+
 import java.util.List;
 
 /**
@@ -12,7 +14,7 @@ import java.util.List;
  */
 
 public interface INavigatorFactory {
-	AbstractNavigator createNavigator(Uri uri, Object from, Object to, String tag, int flags, Bundle extras, List<INavigationInterceptor> interceptors);
+	AbstractNavigator createNavigator(Object from, Target target, List<INavigationInterceptor> interceptors);
 
-	AbstractPageNotFoundHandler createPageNotFoundHandler(Object from, Uri uri, String tag, int flags, Bundle extras, List<INavigationInterceptor> interceptors);
+	AbstractPageNotFoundHandler createPageNotFoundHandler(Object from, Target target, List<INavigationInterceptor> interceptors);
 }

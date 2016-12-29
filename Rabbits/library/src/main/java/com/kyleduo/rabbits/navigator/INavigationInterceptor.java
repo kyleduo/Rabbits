@@ -1,7 +1,6 @@
 package com.kyleduo.rabbits.navigator;
 
-import android.net.Uri;
-import android.os.Bundle;
+import com.kyleduo.rabbits.Target;
 
 /**
  * Interface of interceptor.
@@ -10,5 +9,5 @@ import android.os.Bundle;
  */
 
 public interface INavigationInterceptor {
-	boolean intercept(Uri uri, Object from, Object to, String page, int intentFlags, Bundle extras);
+	boolean intercept(Object from, Target target);
 }

@@ -1,10 +1,9 @@
 package com.kyleduo.rabbits.demo;
 
 import android.app.Application;
-import android.net.Uri;
-import android.os.Bundle;
 
 import com.kyleduo.rabbits.Rabbit;
+import com.kyleduo.rabbits.Target;
 import com.kyleduo.rabbits.demo.navigation.DemoNavigatorFactory;
 import com.kyleduo.rabbits.navigator.INavigationInterceptor;
 
@@ -33,11 +32,11 @@ public class DemoApplication extends Application {
 
 		Rabbit.addGlobalInterceptor(new INavigationInterceptor() {
 			@Override
-			public boolean intercept(Uri uri, Object from, Object to, String page, int intentFlags, Bundle extras) {
-				if (uri.getPath().equals("/intercept/dump")) {
+			public boolean intercept(Object from, Target target) {
+				if (target.getUri().getPath().equals("/intercept/dump")) {
 					Rabbit.from(from)
 							.to("/dump")
-							.mergeExtras(extras)
+							.mergeExtras(target.getExtras())
 							.start();
 					return true;
 				}

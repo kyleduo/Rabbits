@@ -1,10 +1,9 @@
 package com.kyleduo.rabbits.demo.navigation;
 
-import android.net.Uri;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import com.kyleduo.rabbits.Rabbit;
+import com.kyleduo.rabbits.Target;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
 import com.kyleduo.rabbits.navigator.DefaultNavigator;
 import com.kyleduo.rabbits.navigator.INavigationInterceptor;
@@ -18,20 +17,21 @@ import me.yokeyword.fragmentation.SupportActivity;
  */
 
 public class DemoNavigator extends DefaultNavigator {
-	public DemoNavigator(Uri uri, Object from, Object to, String tag, int flags, Bundle extras, List<INavigationInterceptor> interceptors) {
-		super(uri, from, to, tag, flags, extras, interceptors);
+	public DemoNavigator(Object from, Target target, List<INavigationInterceptor> interceptors) {
+		super(from, target, interceptors);
 	}
 
 	@Override
 	public boolean start() {
-		if (mTo instanceof BaseFragment) {
+		final Object to = mTarget.getTo();
+		if (to instanceof BaseFragment) {
 			BaseFragment f = (BaseFragment) obtain();
 			if (mFrom instanceof SupportActivity) {
 				if (((SupportActivity) mFrom).getTopFragment() == null) {
 					Rabbit.from(mFrom)
 							.to("/common")
-							.putString(Rabbit.KEY_ORIGIN_URI, mExtras.getString(Rabbit.KEY_ORIGIN_URI))
-							.mergeExtras(mExtras)
+							.putString(Rabbit.KEY_ORIGIN_URI, mTarget.getExtras().getString(Rabbit.KEY_ORIGIN_URI))
+							.mergeExtras(mTarget.getExtras())
 							.start();
 				} else {
 					((SupportActivity) mFrom).start(f);
@@ -47,13 +47,14 @@ public class DemoNavigator extends DefaultNavigator {
 
 	@Override
 	public Object obtain() {
-		if (mTo instanceof Fragment) {
-			final Fragment f = (Fragment) mTo;
-			if (mExtras != null) {
+		final Object to = mTarget.getTo();
+		if (to instanceof Fragment) {
+			final Fragment f = (Fragment) to;
+			if (mTarget.getExtras() != null) {
 				if (f.getArguments() != null) {
-					f.getArguments().putAll(mExtras);
+					f.getArguments().putAll(mTarget.getExtras());
 				} else {
-					f.setArguments(mExtras);
+					f.setArguments(mTarget.getExtras());
 				}
 			}
 			return f;
@@ -63,14 +64,15 @@ public class DemoNavigator extends DefaultNavigator {
 
 	@Override
 	public boolean startForResult(int requestCode) {
-		if (mTo instanceof BaseFragment) {
+		final Object to = mTarget.getTo();
+		if (to instanceof BaseFragment) {
 			BaseFragment f = (BaseFragment) obtain();
 			if (mFrom instanceof SupportActivity) {
 				if (((SupportActivity) mFrom).getTopFragment() == null) {
 					Rabbit.from(mFrom)
 							.to("/common")
-							.putString(Rabbit.KEY_ORIGIN_URI, mExtras.getString(Rabbit.KEY_ORIGIN_URI))
-							.mergeExtras(mExtras)
+							.putString(Rabbit.KEY_ORIGIN_URI, mTarget.getExtras().getString(Rabbit.KEY_ORIGIN_URI))
+							.mergeExtras(mTarget.getExtras())
 							.startForResult(requestCode);
 				} else {
 					((SupportActivity) mFrom).startForResult(f, requestCode);

@@ -1,7 +1,6 @@
 package com.kyleduo.rabbits.navigator;
 
-import android.net.Uri;
-import android.os.Bundle;
+import com.kyleduo.rabbits.Target;
 
 import java.util.List;
 
@@ -13,15 +12,15 @@ import java.util.List;
 
 public class MuteNavigator extends AbstractNavigator {
 
-	public MuteNavigator(Uri uri, Object from, Object to, String tag, int flags, Bundle extras, List<INavigationInterceptor> interceptors) {
-		super(uri, from, to, tag, flags, extras, interceptors);
+	public MuteNavigator(Object from, Target target, List<INavigationInterceptor> interceptors) {
+		super(from, target, interceptors);
 	}
 
 	@Override
 	public boolean start() {
 		if (mInterceptors != null) {
 			for (INavigationInterceptor i : mInterceptors) {
-				if (i.intercept(mUri, mFrom, mTo, mTag, mIntentFlags, mExtras)) {
+				if (i.intercept(mFrom, mTarget)) {
 					return true;
 				}
 			}
@@ -33,7 +32,7 @@ public class MuteNavigator extends AbstractNavigator {
 	public boolean startForResult(int requestCode) {
 		if (mInterceptors != null) {
 			for (INavigationInterceptor i : mInterceptors) {
-				if (i.intercept(mUri, mFrom, mTo, mTag, mIntentFlags, mExtras)) {
+				if (i.intercept(mFrom, mTarget)) {
 					return true;
 				}
 			}

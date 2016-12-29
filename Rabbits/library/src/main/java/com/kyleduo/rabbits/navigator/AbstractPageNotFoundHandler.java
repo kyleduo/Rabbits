@@ -3,6 +3,8 @@ package com.kyleduo.rabbits.navigator;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.kyleduo.rabbits.Target;
+
 import java.util.List;
 
 /**
@@ -14,7 +16,7 @@ import java.util.List;
 
 public abstract class AbstractPageNotFoundHandler extends AbstractNavigator {
 
-	public AbstractPageNotFoundHandler(Object from, Uri uri, String tag, int flags, Bundle extras, List<INavigationInterceptor> interceptors) {
-		super(uri, from, null, tag, flags, extras, interceptors);
+	public AbstractPageNotFoundHandler(Object from, Target target, List<INavigationInterceptor> interceptors) {
+		super(from, target, interceptors);
 	}
 }

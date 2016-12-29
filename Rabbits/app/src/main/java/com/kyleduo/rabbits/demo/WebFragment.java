@@ -1,6 +1,5 @@
 package com.kyleduo.rabbits.demo;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -12,6 +11,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.kyleduo.rabbits.Rabbit;
+import com.kyleduo.rabbits.Target;
 import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.annotations.PageType;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
@@ -64,11 +64,11 @@ public class WebFragment extends BaseFragment {
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
 			INavigationInterceptor webInterceptor = new INavigationInterceptor() {
 				@Override
-				public boolean intercept(Uri uri, Object from, Object to, String page, int intentFlags, Bundle extras) {
-					if (uri.getPath().equals("/tobeintercepted")) {
+				public boolean intercept(Object from, Target target) {
+					if (target.getUri().getPath().equals("/tobeintercepted")) {
 						Rabbit.from(WebFragment.this)
 								.to("demo://rabbits.kyleduo.com/test")
-								.mergeExtras(extras)
+								.mergeExtras(target.getExtras())
 								.clearTop()
 								.start();
 						return true;

@@ -21,7 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.HashMap;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -47,6 +48,8 @@ class Mappings {
 	private static final String MAPPING_QUERY_MODE = "rabbitsMode";
 	private static final String MODE_CLEAR_TOP = "clearTop";
 	private static final String MODE_NEW_TASK = "newTask";
+
+	private static final String MAPPING_QUERY_FREE = "rabbitsFree";
 
 	private static boolean sPersisting;
 
@@ -294,16 +297,18 @@ class Mappings {
 			bundle = new Bundle();
 			page = deepMatch(pureUri, bundle);
 		}
-		if (page != null) {
+		bundle = parseParams(uri, bundle);
+		final boolean free = bundle.getString(MAPPING_QUERY_FREE, "").equals("1");
+		if (page != null && !free) {
 			// Match.
 			Target target = new Target(uri);
 			target.setPage(page);
-			target.setExtras(parseParams(uri, bundle));
+			target.setExtras(bundle);
 			target.setFlags(parseFlags(uri));
 			return target;
 		} else {
 			Target target = new Target(uri);
-			target.setExtras(parseParams(uri, bundle));
+			target.setExtras(bundle);
 			return target;
 		}
 	}
@@ -347,41 +352,42 @@ class Mappings {
 				if (template[i].matches("\\{\\S+(:\\S+)?\\}")) {
 					String[] tt = template[i].substring(1, template[i].length() - 1).split(":");
 					String key = tt[0];
+					String value = decode(source[i]);
 					String type = tt.length == 2 ? tt[1].toLowerCase() : "";
 					switch (type) {
 						case "i":
 							try {
-								bundle.putInt(key, Integer.parseInt(source[i]));
+								bundle.putInt(key, Integer.parseInt(value));
 							} catch (NumberFormatException e) {
 								continue UriLoop;
 							}
 							break;
 						case "l":
 							try {
-								bundle.putLong(key, Long.parseLong(source[i]));
+								bundle.putLong(key, Long.parseLong(value));
 							} catch (NumberFormatException e) {
 								continue UriLoop;
 							}
 							break;
 						case "d":
 							try {
-								bundle.putDouble(key, Double.parseDouble(source[i]));
+								bundle.putDouble(key, Double.parseDouble(value));
 							} catch (NumberFormatException e) {
 								continue UriLoop;
 							}
 							break;
 						case "b":
 							try {
-								bundle.putBoolean(key, Boolean.parseBoolean(source[i].toLowerCase()));
+								bundle.putBoolean(key, Boolean.parseBoolean(value.toLowerCase()));
 							} catch (NumberFormatException e) {
 								continue UriLoop;
 							}
 							break;
 						case "s":
-							bundle.putString(key, source[i]);
+							bundle.putString(key, value);
 							break;
 						default:
-							bundle.putString(key, source[i]);
+							bundle.putString(key, value);
 							break;
 					}
 					continue;
@@ -443,10 +449,21 @@ class Mappings {
 		Set<Map.Entry<String, String>> entries = sMAPPING.entrySet();
 		sb.append("{").append("\n");
 		for (Map.Entry<String, String> e : entries) {
-			sb.append(e.getKey()).append(" -> ").append(e.getValue()).append("\n\n");
+			sb.append(e.getKey()).append(" -> ").append(decode(e.getValue())).append("\n\n");
 		}
 		sb.deleteCharAt(sb.length() - 1);
 		sb.append("}");
 		return sb.toString();
+	}
+
+	private static String decode(String origin) {
+		String out;
+		try {
+			out = URLDecoder.decode(origin, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			out = origin;
+		}
+		return out;
 	}
 }

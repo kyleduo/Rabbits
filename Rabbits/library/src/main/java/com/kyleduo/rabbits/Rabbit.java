@@ -12,7 +12,6 @@ import com.kyleduo.rabbits.navigator.AbstractPageNotFoundHandler;
 import com.kyleduo.rabbits.navigator.DefaultNavigatorFactory;
 import com.kyleduo.rabbits.navigator.INavigationInterceptor;
 import com.kyleduo.rabbits.navigator.INavigatorFactory;
-import com.kyleduo.rabbits.navigator.IProvider;
 import com.kyleduo.rabbits.navigator.MuteNavigator;
 
 import java.io.File;
@@ -284,15 +283,15 @@ public class Rabbit {
 		Log.d(TAG, target.toString());
 		if (!target.hasMatched()) {
 			if (!mute) {
-				AbstractPageNotFoundHandler pageNotFoundHandler = sNavigatorFactory.createPageNotFoundHandler(mFrom, target.getUri(), target.getPage(), target.getFlags(), target.getExtras(), assembleInterceptor());
+				AbstractPageNotFoundHandler pageNotFoundHandler = sNavigatorFactory.createPageNotFoundHandler(mFrom, target, assembleInterceptor());
 				if (pageNotFoundHandler != null) {
 					return pageNotFoundHandler;
 				}
 			} else if (target.getTo() == null) {
-				return new MuteNavigator(target.getUri(), mFrom, null, target.getPage(), target.getFlags(), target.getExtras(), assembleInterceptor());
+				return new MuteNavigator(mFrom, target, assembleInterceptor());
 			}
 		}
-		return sNavigatorFactory.createNavigator(target.getUri(), mFrom, target.getTo(), target.getPage(), target.getFlags(), target.getExtras(), assembleInterceptor());
+		return sNavigatorFactory.createNavigator(mFrom, target, assembleInterceptor());
 	}
 
 	/**

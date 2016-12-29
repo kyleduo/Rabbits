@@ -93,13 +93,16 @@ public class RabbitsCompiler extends AbstractProcessor {
 						String parentMethodName = NameParser.parseRoute(parent);
 						methodSpecBuilder.addStatement("android.os.Bundle bundle = new android.os.Bundle()");
 						parseExtras(methodSpecBuilder, page);
-						methodSpecBuilder.addStatement("return new $T(null, null, $L(), null, 0, bundle, null)", ClassName.get(NAVIGATOR_PACKAGE, "DefaultNavigator"), parentMethodName);
+						ClassName targetClass = ClassName.get(PACKAGE, "Target");
+						methodSpecBuilder.addStatement("$T target = new $T(null)", targetClass, targetClass);
+						methodSpecBuilder.addStatement("target.setTo($L())", parentMethodName);
+						methodSpecBuilder.addStatement("return new $T(null, target, null)", ClassName.get(NAVIGATOR_PACKAGE, "DefaultNavigator"));
 						methods.add(methodSpecBuilder.build());
 					} else {
 						methodSpecBuilder = MethodSpec.methodBuilder(methodName)
 								.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC);
 						methodSpecBuilder.returns(className)
-								.addStatement("return $T.newInstance()", className);
+								.addStatement("return new $T()", className);
 						methods.add(methodSpecBuilder.build());
 					}
 
@@ -108,7 +111,7 @@ public class RabbitsCompiler extends AbstractProcessor {
 					methodSpecBuilder = MethodSpec.methodBuilder(methodName)
 							.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC);
 					methodSpecBuilder.returns(className)
-							.addStatement("return $T.newInstance()", className);
+							.addStatement("return new $T()", className);
 					methods.add(methodSpecBuilder.build());
 				}
 			}
