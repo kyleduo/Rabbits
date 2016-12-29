@@ -195,6 +195,7 @@ public class Rabbit {
 	 * uri matches a specific page using {@link com.kyleduo.rabbits.Rabbit#tryTo(Uri)} method.
 	 *
 	 * @param interceptor Interceptor instance.
+	 * @return Rabbit instance.
 	 */
 	public Rabbit addInterceptor(INavigationInterceptor interceptor) {
 		if (mInterceptors == null) {
