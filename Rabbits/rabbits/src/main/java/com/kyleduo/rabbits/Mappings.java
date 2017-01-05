@@ -424,7 +424,7 @@ class Mappings {
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
 			keys = uri.getQueryParameterNames();
 		} else {
-			keys = fetchKeys(uri);
+			keys = getQueryParameterNames(uri);
 		}
 		if (keys == null || keys.size() == 0) {
 			return bundle;
@@ -442,7 +442,7 @@ class Mappings {
 	 * @param uri the Uri
 	 * @return A set of keys.
 	 */
-	private static Set<String> fetchKeys(Uri uri) {
+	private static Set<String> getQueryParameterNames(Uri uri) {
 		if (uri.isOpaque()) {
 			throw new UnsupportedOperationException("This isn't a hierarchical URI.");
 		}
