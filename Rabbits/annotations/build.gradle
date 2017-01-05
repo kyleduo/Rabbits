@@ -2,7 +2,16 @@ apply plugin: 'java'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+//    compileOnly 'com.google.android:android:4.1.1.4'
 }
 
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
+
+ext {
+    POM_ARTIFACT_ID='annotations'
+    POM_NAME='Rabbits-Annotations'
+    POM_PACKAGING='aar'
+}
+
+apply from: rootProject.file('gradle/gradle-bintray-upload.gradle')

@@ -9,3 +9,12 @@ dependencies {
 
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
+
+
+ext {
+    POM_ARTIFACT_ID='compiler'
+    POM_NAME='Rabbits-Compiler'
+    POM_PACKAGING='aar'
+}
+
+apply from: rootProject.file('gradle/gradle-bintray-upload.gradle')

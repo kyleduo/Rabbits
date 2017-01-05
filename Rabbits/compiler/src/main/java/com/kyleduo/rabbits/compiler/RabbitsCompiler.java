@@ -96,6 +96,7 @@ public class RabbitsCompiler extends AbstractProcessor {
 						ClassName targetClass = ClassName.get(PACKAGE, "Target");
 						methodSpecBuilder.addStatement("$T target = new $T(null)", targetClass, targetClass);
 						methodSpecBuilder.addStatement("target.setTo($L())", parentMethodName);
+						methodSpecBuilder.addStatement("target.setExtras(bundle)");
 						methodSpecBuilder.addStatement("return new $T(null, target, null)", ClassName.get(NAVIGATOR_PACKAGE, "DefaultNavigator"));
 						methods.add(methodSpecBuilder.build());
 					} else {

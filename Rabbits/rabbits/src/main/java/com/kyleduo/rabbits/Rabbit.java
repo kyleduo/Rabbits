@@ -64,6 +64,9 @@ public class Rabbit {
 						clz = Class.forName(ROUTER_CLASS);
 					}
 					String page = (String) objects[0];
+					if (page == null || page.length() == 0) {
+						return null;
+					}
 					String name = method.getName();
 
 					String key = name + "-" + page;

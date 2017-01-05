@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.kyleduo.rabbits.demo"
         minSdkVersion 14
@@ -22,8 +22,8 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     // App's dependencies, including test
-    compile 'com.android.support:support-annotations:25.0.1'
-    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:support-annotations:25.1.0'
+    compile 'com.android.support:appcompat-v7:25.1.0'
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -34,7 +34,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     // Rabbits
-    compile project(':library')
+    compile project(':rabbits')
     annotationProcessor project(':compiler')
 
     // Fragmentation
