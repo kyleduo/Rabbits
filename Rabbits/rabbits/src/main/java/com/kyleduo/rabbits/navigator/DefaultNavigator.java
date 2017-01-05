@@ -3,12 +3,9 @@ package com.kyleduo.rabbits.navigator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
+import android.os.Build;
 import android.support.v4.app.Fragment;
-
 import com.kyleduo.rabbits.Target;
-
 import java.util.List;
 
 /**
@@ -33,7 +30,9 @@ public class DefaultNavigator extends AbstractNavigator {
 		} else if (mFrom instanceof Fragment) {
 			context = ((Fragment) mFrom).getActivity();
 		} else if (mFrom instanceof android.app.Fragment) {
-			context = ((android.app.Fragment) mFrom).getActivity();
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				context = ((android.app.Fragment) mFrom).getActivity();
+			}
 		}
 		if (context == null) {
 			return null;
@@ -68,7 +67,9 @@ public class DefaultNavigator extends AbstractNavigator {
 				((Fragment) mFrom).startActivity(intent);
 				return true;
 			} else if (mFrom instanceof android.app.Fragment) {
-				((android.app.Fragment) mFrom).startActivity(intent);
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+					((android.app.Fragment) mFrom).startActivity(intent);
+				}
 				return true;
 			}
 		} else if (to instanceof AbstractNavigator) {

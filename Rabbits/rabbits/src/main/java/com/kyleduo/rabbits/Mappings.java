@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -23,8 +24,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -287,7 +290,12 @@ class Mappings {
 			builder.authority(Rabbit.sDefaultHost);
 		}
 		uri = builder.build();
-		String pureUri = builder.clearQuery().build().toString();
+		String pureUri;
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			pureUri = builder.query(null).build().toString();
+		} else {
+			pureUri = builder.clearQuery().build().toString();
+		}
 
 		// Try to completely match.
 		String page = sMAPPING.get(pureUri);
@@ -298,7 +306,8 @@ class Mappings {
 			page = deepMatch(pureUri, bundle);
 		}
 		bundle = parseParams(uri, bundle);
-		final boolean free = bundle.getString(MAPPING_QUERY_FREE, "").equals("1");
+		String queryFree = bundle.getString(MAPPING_QUERY_FREE);
+		final boolean free = queryFree != null && queryFree.equals("1");
 		if (page != null && !free) {
 			// Match.
 			Target target = new Target(uri);
@@ -411,7 +420,12 @@ class Mappings {
 			bundle = new Bundle();
 		}
 		bundle.putString(Rabbit.KEY_ORIGIN_URI, uri.toString());
-		Set<String> keys = uri.getQueryParameterNames();
+		Set<String> keys;
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+			keys = uri.getQueryParameterNames();
+		} else {
+			keys = fetchKeys(uri);
+		}
 		if (keys == null || keys.size() == 0) {
 			return bundle;
 		}
@@ -420,6 +434,43 @@ class Mappings {
 			bundle.putString(key, params);
 		}
 		return bundle;
+	}
+
+	/**
+	 * Fetch keys from an Uri object. The code is from SDK 25.
+	 *
+	 * @param uri the Uri
+	 * @return A set of keys.
+	 */
+	private static Set<String> fetchKeys(Uri uri) {
+		if (uri.isOpaque()) {
+			throw new UnsupportedOperationException("This isn't a hierarchical URI.");
+		}
+
+		String query = uri.getEncodedQuery();
+		if (query == null) {
+			return Collections.emptySet();
+		}
+
+		Set<String> names = new LinkedHashSet<String>();
+		int start = 0;
+		do {
+			int next = query.indexOf('&', start);
+			int end = (next == -1) ? query.length() : next;
+
+			int separator = query.indexOf('=', start);
+			if (separator > end || separator == -1) {
+				separator = end;
+			}
+
+			String name = query.substring(start, separator);
+			names.add(decode(name));
+
+			// Move start to end of name.
+			start = end + 1;
+		} while (start < query.length());
+
+		return Collections.unmodifiableSet(names);
 	}
 
 	/**

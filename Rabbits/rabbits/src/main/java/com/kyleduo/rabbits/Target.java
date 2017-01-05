@@ -4,6 +4,8 @@ import android.net.Uri;
 import android.os.Bundle;
 
 /**
+ * Represents a navigation target.
+ *
  * Created by kyle on 2016/12/9.
  */
 
@@ -20,10 +22,6 @@ public class Target {
 
 	public Uri getUri() {
 		return mUri;
-	}
-
-	public void setUri(Uri uri) {
-		mUri = uri;
 	}
 
 	public String getPage() {

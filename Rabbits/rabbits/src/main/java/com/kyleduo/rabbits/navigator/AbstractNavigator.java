@@ -1,7 +1,6 @@
 package com.kyleduo.rabbits.navigator;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -28,30 +27,10 @@ import java.util.List;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class AbstractNavigator implements IProvider {
 
-//	/**
-//	 * Original uri.
-//	 */
-//	protected Uri mUri;
 	/**
 	 * Where does this navigator from.
 	 */
 	protected Object mFrom;
-//	/**
-//	 * Where should this navigator go.
-//	 */
-//	protected Object mTo;
-//	/**
-//	 * Used for Fragment back stacks.
-//	 */
-//	protected String mTag;
-//	/**
-//	 * Extras params for this navigator.
-//	 */
-//	protected Bundle mTarget.getExtras();
-//	/**
-//	 * Flags for Intent.
-//	 */
-//	protected int mIntentFlags;
 
 	protected Target mTarget;
 

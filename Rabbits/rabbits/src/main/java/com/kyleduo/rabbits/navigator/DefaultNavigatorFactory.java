@@ -1,8 +1,5 @@
 package com.kyleduo.rabbits.navigator;
 
-import android.net.Uri;
-import android.os.Bundle;
-
 import com.kyleduo.rabbits.Target;
 
 import java.util.List;
