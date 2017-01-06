@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * Navigator without processing navigation.
- *
+ * <p>
  * Created by kyle on 2016/12/7.
  */
 
@@ -17,26 +17,7 @@ public class MuteNavigator extends AbstractNavigator {
 	}
 
 	@Override
-	public boolean start() {
-		if (mInterceptors != null) {
-			for (INavigationInterceptor i : mInterceptors) {
-				if (i.intercept(mFrom, mTarget)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public boolean startForResult(int requestCode) {
-		if (mInterceptors != null) {
-			for (INavigationInterceptor i : mInterceptors) {
-				if (i.intercept(mFrom, mTarget)) {
-					return true;
-				}
-			}
-		}
+	protected boolean handleStart(int requestCode) {
 		return false;
 	}
 

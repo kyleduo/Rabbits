@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.Target;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
+import com.kyleduo.rabbits.navigator.AbstractNavigator;
 import com.kyleduo.rabbits.navigator.DefaultNavigator;
 import com.kyleduo.rabbits.navigator.INavigationInterceptor;
 
@@ -16,33 +17,43 @@ import me.yokeyword.fragmentation.SupportActivity;
  * Created by kyle on 2016/12/12.
  */
 
-public class DemoNavigator extends DefaultNavigator {
-	public DemoNavigator(Object from, Target target, List<INavigationInterceptor> interceptors) {
+class DemoNavigator extends DefaultNavigator {
+	DemoNavigator(Object from, Target target, List<INavigationInterceptor> interceptors) {
 		super(from, target, interceptors);
 	}
 
 	@Override
-	public boolean start() {
+	public boolean handleStart(int requestCode) {
 		final Object to = mTarget.getTo();
 		if (to instanceof BaseFragment) {
 			BaseFragment f = (BaseFragment) obtain();
 			if (mFrom instanceof SupportActivity) {
-				if (((SupportActivity) mFrom).getTopFragment() == null) {
-					Rabbit.from(mFrom)
+				SupportActivity activity = (SupportActivity) mFrom;
+				if (activity.getTopFragment() == null) {
+					AbstractNavigator navigator = Rabbit.from(mFrom)
 							.to("/common")
 							.putString(Rabbit.KEY_ORIGIN_URI, mTarget.getExtras().getString(Rabbit.KEY_ORIGIN_URI))
-							.mergeExtras(mTarget.getExtras())
-							.start();
+							.mergeExtras(mTarget.getExtras());
+					if (requestCode >= 0) {
+						navigator.startForResult(requestCode);
+					} else {
+						navigator.start();
+					}
 				} else {
-					((SupportActivity) mFrom).start(f);
+					activity.start(f);
 				}
 				return true;
 			} else if (mFrom instanceof BaseFragment) {
-				((BaseFragment) mFrom).start(f);
+				BaseFragment fragment = (BaseFragment) mFrom;
+				if (requestCode >= 0) {
+					fragment.startForResult(f, requestCode);
+				} else {
+					fragment.start(f);
+				}
 				return true;
 			}
 		}
-		return super.start();
+		return super.handleStart(requestCode);
 	}
 
 	@Override
@@ -60,29 +71,5 @@ public class DemoNavigator extends DefaultNavigator {
 			return f;
 		}
 		return super.obtain();
-	}
-
-	@Override
-	public boolean startForResult(int requestCode) {
-		final Object to = mTarget.getTo();
-		if (to instanceof BaseFragment) {
-			BaseFragment f = (BaseFragment) obtain();
-			if (mFrom instanceof SupportActivity) {
-				if (((SupportActivity) mFrom).getTopFragment() == null) {
-					Rabbit.from(mFrom)
-							.to("/common")
-							.putString(Rabbit.KEY_ORIGIN_URI, mTarget.getExtras().getString(Rabbit.KEY_ORIGIN_URI))
-							.mergeExtras(mTarget.getExtras())
-							.startForResult(requestCode);
-				} else {
-					((SupportActivity) mFrom).startForResult(f, requestCode);
-				}
-				return true;
-			} else if (mFrom instanceof BaseFragment) {
-				((BaseFragment) mFrom).startForResult(f, requestCode);
-				return true;
-			}
-		}
-		return super.startForResult(requestCode);
 	}
 }

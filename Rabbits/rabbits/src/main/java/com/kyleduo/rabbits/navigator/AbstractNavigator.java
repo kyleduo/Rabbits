@@ -82,9 +82,31 @@ public abstract class AbstractNavigator implements IProvider {
 		return this;
 	}
 
-	public abstract boolean start();
+	@SuppressWarnings("SimplifiableIfStatement")
+	public boolean start() {
+		if (checkInterceptor()) {
+			return true;
+		}
+		final Object to = mTarget.getTo();
+		if (to == null) {
+			return false;
+		}
+		return handleStart(-1);
+	}
 
-	public abstract boolean startForResult(int requestCode);
+	@SuppressWarnings("SimplifiableIfStatement")
+	public boolean startForResult(int requestCode) {
+		if (checkInterceptor()) {
+			return true;
+		}
+		final Object to = mTarget.getTo();
+		if (to == null) {
+			return false;
+		}
+		return handleStart(requestCode);
+	}
+
+	protected abstract boolean handleStart(int requestCode);
 
 	public AbstractNavigator addIntentFlags(int flags) {
 		mTarget.setFlags(mTarget.getFlags() | flags);
@@ -311,5 +333,16 @@ public abstract class AbstractNavigator implements IProvider {
 		if (mTarget.getExtras() == null) {
 			mTarget.setExtras(new Bundle());
 		}
+	}
+
+	protected boolean checkInterceptor() {
+		if (mInterceptors != null) {
+			for (INavigationInterceptor i : mInterceptors) {
+				if (i.intercept(mFrom, mTarget)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

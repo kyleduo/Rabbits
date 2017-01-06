@@ -1,5 +1,7 @@
 package com.kyleduo.rabbits.demo;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import com.kyleduo.rabbits.Target;
 import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.annotations.PageType;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
+import com.kyleduo.rabbits.demo.utils.UriUtils;
 import com.kyleduo.rabbits.navigator.INavigationInterceptor;
 
 /**
@@ -54,7 +57,7 @@ public class WebFragment extends BaseFragment {
 		INavigationInterceptor webInterceptor = new INavigationInterceptor() {
 			@Override
 			public boolean intercept(Object from, Target target) {
-				if (target.getUri().getPath().equals("/tobeintercepted")) {
+				if (UriUtils.matchPath(target.getUri(),"/tobeintercepted")) {
 					Rabbit.from(WebFragment.this)
 							.to("demo://rabbits.kyleduo.com/test")
 							.mergeExtras(target.getExtras())
@@ -72,7 +75,16 @@ public class WebFragment extends BaseFragment {
 					.addInterceptor(webInterceptor)
 					.tryTo(url)
 					.start();
-			return ret || super.shouldOverrideUrlLoading(view, url);
+			if (ret) {
+				return true;
+			}
+			if (url.startsWith("tel:")) {
+				Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(url));
+				startActivity(intent);
+				view.reload();
+				return true;
+			}
+			return super.shouldOverrideUrlLoading(view, url);
 		}
 
 		@Override

@@ -5,6 +5,7 @@ import android.app.Application;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.Target;
 import com.kyleduo.rabbits.demo.navigation.DemoNavigatorFactory;
+import com.kyleduo.rabbits.demo.utils.UriUtils;
 import com.kyleduo.rabbits.navigator.INavigationInterceptor;
 
 /**
@@ -33,7 +34,7 @@ public class DemoApplication extends Application {
 		Rabbit.addGlobalInterceptor(new INavigationInterceptor() {
 			@Override
 			public boolean intercept(Object from, Target target) {
-				if (target.getUri().getPath().equals("/intercept/dump")) {
+				if (UriUtils.matchPath(target.getUri(), "/intercept/dump")) {
 					Rabbit.from(from)
 							.to("/dump")
 							.mergeExtras(target.getExtras())

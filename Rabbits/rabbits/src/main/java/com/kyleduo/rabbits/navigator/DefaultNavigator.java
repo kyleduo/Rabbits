@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.v4.app.Fragment;
+
 import com.kyleduo.rabbits.Target;
+
 import java.util.List;
 
 /**
@@ -46,37 +48,49 @@ public class DefaultNavigator extends AbstractNavigator {
 	}
 
 	@Override
-	public boolean start() {
+	public boolean handleStart(int requestCode) {
 		final Object to = mTarget.getTo();
-		if (to == null) {
-			return false;
-		}
-		if (mInterceptors != null) {
-			for (INavigationInterceptor i : mInterceptors) {
-				if (i.intercept(mFrom, mTarget)) {
-					return true;
-				}
-			}
-		}
 		if (to instanceof Class<?> && Activity.class.isAssignableFrom(((Class<?>) to))) {
 			Intent intent = buildIntent();
-			if (mFrom instanceof Context) {
+			if (mFrom instanceof Activity) {
+				Activity activity = (Activity) mFrom;
+				if (requestCode >= 0) {
+					activity.startActivityForResult(intent, requestCode);
+				} else {
+					activity.startActivity(intent);
+				}
+				return true;
+			} else if (mFrom instanceof Context) {
 				((Context) mFrom).startActivity(intent);
 				return true;
 			} else if (mFrom instanceof Fragment) {
-				((Fragment) mFrom).startActivity(intent);
+				Fragment fragment = (Fragment) mFrom;
+				if (requestCode >= 0) {
+					fragment.startActivityForResult(intent, requestCode);
+				} else {
+					fragment.startActivity(intent);
+				}
 				return true;
 			} else if (mFrom instanceof android.app.Fragment) {
 				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-					((android.app.Fragment) mFrom).startActivity(intent);
+					android.app.Fragment fragment = (android.app.Fragment) mFrom;
+					if (requestCode >= 0) {
+						fragment.startActivityForResult(intent, requestCode);
+					} else {
+						fragment.startActivity(intent);
+					}
 				}
 				return true;
 			}
 		} else if (to instanceof AbstractNavigator) {
-			return ((AbstractNavigator) to).setFrom(mFrom)
+			AbstractNavigator navigator = ((AbstractNavigator) to).setFrom(mFrom)
 					.setIntentFlags(mTarget.getFlags())
-					.mergeExtras(mTarget.getExtras())
-					.start();
+					.mergeExtras(mTarget.getExtras());
+			if (requestCode >= 0) {
+				navigator.startForResult(requestCode);
+			} else {
+				navigator.start();
+			}
 		}
 		return false;
 	}
@@ -91,36 +105,5 @@ public class DefaultNavigator extends AbstractNavigator {
 			return buildIntent();
 		}
 		return to;
-	}
-
-	@Override
-	public boolean startForResult(int requestCode) {
-		final Object to = mTarget.getTo();
-		if (to == null) {
-			return false;
-		}
-		if (mInterceptors != null) {
-			for (INavigationInterceptor i : mInterceptors) {
-				if (i.intercept(mFrom, mTarget)) {
-					return true;
-				}
-			}
-		}
-		if (to instanceof Class<?> && Activity.class.isAssignableFrom(((Class<?>) to))) {
-			Intent intent = buildIntent();
-			if (mFrom instanceof Activity) {
-				((Activity) mFrom).startActivityForResult(intent, requestCode);
-				return true;
-			} else if (mFrom instanceof Fragment) {
-				((Fragment) mFrom).startActivityForResult(intent, requestCode);
-				return true;
-			}
-		} else if (to instanceof AbstractNavigator) {
-			return ((AbstractNavigator) to).setFrom(mFrom)
-					.setIntentFlags(mTarget.getFlags())
-					.mergeExtras(mTarget.getExtras())
-					.startForResult(requestCode);
-		}
-		return false;
 	}
 }
