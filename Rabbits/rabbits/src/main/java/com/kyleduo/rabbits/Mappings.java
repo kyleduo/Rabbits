@@ -25,6 +25,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -69,26 +70,26 @@ class Mappings {
 	static void setup(final Context context, boolean async, final Runnable callback) {
 		final Context app = context.getApplicationContext();
 		if (async) {
-			new AsyncTask<Void, Void, String>() {
+			new AsyncTask<Void, Void, Boolean>() {
 				@Override
-				protected String doInBackground(Void... voids) {
+				protected Boolean doInBackground(Void... voids) {
 					return load(app);
 				}
 
 				@Override
-				protected void onPostExecute(String json) {
-					if (json != null) {
-						persist(context, json);
-					}
+				protected void onPostExecute(Boolean json) {
 					if (callback != null) {
 						callback.run();
+					}
+					if (json != null) {
+						persist(context);
 					}
 				}
 			}.execute();
 		} else {
-			String json = load(app);
-			if (json != null) {
-				persist(context, json);
+			boolean success = load(app);
+			if (success) {
+				persist(context);
 			}
 		}
 	}
@@ -96,17 +97,19 @@ class Mappings {
 	/**
 	 * Update mappings using a file.
 	 *
-	 * @param context context
-	 * @param file    file
+	 * @param context  context
+	 * @param file     file
+	 * @param override override current if true
 	 */
-	static void update(Context context, File file) {
+	static void update(Context context, File file, boolean override) {
 		final Context app = context.getApplicationContext();
 		try {
 			InputStream is = new FileInputStream(file);
 			String json = doLoad(is);
 			if (json != null) {
+				parse(json, override);
 				Log.d(TAG, "Update success from file, start persisting.");
-				persist(app, json);
+				persist(app);
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -116,40 +119,55 @@ class Mappings {
 	/**
 	 * Update mappings using json string.
 	 *
-	 * @param context context
-	 * @param json    json
+	 * @param context  context
+	 * @param json     json
+	 * @param override override current if true
 	 */
-	static void update(Context context, String json) {
+	static void update(Context context, String json, boolean override) {
 		final Context app = context.getApplicationContext();
-		String ret = parse(json);
-		if (ret != null) {
+		boolean ret = parse(json, override);
+		if (ret) {
 			Log.d(TAG, "Update success, start persisting.");
-			persist(app, ret);
+			persist(app);
 		}
 	}
 
-	private static String load(Context context) {
+	/**
+	 * Load mapping from persist file or assert to memory.
+	 *
+	 * @param context Application context.
+	 * @return Success or not.
+	 */
+	private static boolean load(Context context) {
 		try {
 			File filesDir = context.getFilesDir();
 			File file = new File(filesDir, PERSIST_MAPPING_FILE);
-			String json = null;
+			String json;
 			if (file.exists()) {
 				InputStream is = new FileInputStream(file);
 				json = doLoad(is);
+				if (json != null) {
+					parse(json, false);
+				}
 			}
 			InputStream is = context.getAssets().open(MAPPING_FILE);
-			String json2 = doLoad(is);
-			if (json2 != null) {
-				return json2;
-			} else if (json != null) {
-				return json;
+			json = doLoad(is);
+			if (json != null) {
+				parse(json, false);
 			}
+			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return false;
 	}
 
+	/**
+	 * Load json string from {@param is}.
+	 *
+	 * @param is Input stream from assert or file.
+	 * @return Json string.
+	 */
 	private static String doLoad(InputStream is) {
 		//noinspection TryWithIdenticalCatches
 		try {
@@ -161,68 +179,92 @@ class Mappings {
 				line = reader.readLine();
 			}
 			reader.close();
-			String json = jsonBuilder.toString();
-			return parse(json);
+			return jsonBuilder.toString();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	private static String parse(String json) {
+	private synchronized static boolean parse(String json) {
+		return parse(json, false);
+	}
+
+	/**
+	 * Parse json string to mapping.
+	 *
+	 * @param json          Origin json.
+	 * @param clearPrevious whether override current mapping
+	 * @return true for latest mapping has been loaded or there is already a latest version.
+	 * false for load failure.
+	 */
+	private synchronized static boolean parse(String json, boolean clearPrevious) {
 		try {
 			JSONObject jo = new JSONObject(json);
 			int version = jo.optInt(MAPPING_KEY_VERSION);
 			int forceOverride = jo.optInt(MAPPING_KEY_FORCE_OVERRIDE);
 			if (version <= sVERSION && forceOverride == 0) {
-				Log.d("Rabbits.Mappings", "No need to update, already has the latest version: " + sVERSION);
-				return null;
+				Log.d(TAG, "No need to update, already has the latest version: " + sVERSION);
+				return true;
 			}
-			sVERSION = version;
+			Map<String, String> temp = new HashMap<>();
 			JSONObject mappings = jo.optJSONObject(MAPPING_KEY_MAPPINGS);
 			Iterator<String> uris = mappings.keys();
 			while (uris.hasNext()) {
 				String uri = uris.next();
 				String page = mappings.optString(uri);
-				sMAPPING.put(uri, page);
+				temp.put(uri, page);
 			}
+			if (clearPrevious) {
+				sMAPPING.clear();
+			}
+			sMAPPING.putAll(temp);
+			sVERSION = version;
 		} catch (JSONException e) {
 			e.printStackTrace();
+			return false;
 		}
 
-		return json;
+		return true;
 	}
 
-	private synchronized static void persist(final Context context, String json) {
+	/**
+	 * Persist mapping to local file.
+	 *
+	 * @param context Application context.
+	 */
+	private synchronized static void persist(final Context context) {
 		if (sPersisting) {
 			return;
 		}
 		sPersisting = true;
 
-		if (json == null) {
-			if (sMAPPING.size() > 0) {
-				try {
-					JSONObject mappings = new JSONObject();
-					Set<Map.Entry<String, String>> entries = sMAPPING.entrySet();
-					for (Map.Entry<String, String> entry : entries) {
-						mappings.put(entry.getKey(), entry.getValue());
-					}
-					JSONObject wrapper = new JSONObject();
-					wrapper.put(MAPPING_KEY_MAPPINGS, mappings);
-					wrapper.put(MAPPING_KEY_VERSION, sVERSION);
-					json = wrapper.toString();
-				} catch (JSONException e) {
-					e.printStackTrace();
-					throw new IllegalArgumentException("mapping can not parse to json", e);
-				}
-			}
-		}
-
-		new AsyncTask<String, Void, Void>() {
-
+		new AsyncTask<Void, Void, Void>() {
 			@SuppressWarnings("ResultOfMethodCallIgnored")
 			@Override
-			protected Void doInBackground(String... strings) {
+			protected Void doInBackground(Void... params) {
+				String json = null;
+				if (sMAPPING.size() > 0) {
+					try {
+						JSONObject mappings = new JSONObject();
+						Set<Map.Entry<String, String>> entries = sMAPPING.entrySet();
+						for (Map.Entry<String, String> entry : entries) {
+							mappings.put(entry.getKey(), entry.getValue());
+						}
+						JSONObject wrapper = new JSONObject();
+						wrapper.put(MAPPING_KEY_MAPPINGS, mappings);
+						wrapper.put(MAPPING_KEY_VERSION, sVERSION);
+						json = wrapper.toString();
+					} catch (JSONException e) {
+						e.printStackTrace();
+						throw new IllegalStateException("mapping can not be parsed to json", e);
+					}
+				}
+				if (json == null) {
+					cancel(true);
+					return null;
+				}
+
 				File filesDir = context.getFilesDir();
 				if (filesDir == null || !filesDir.exists()) {
 					cancel(true);
@@ -246,7 +288,7 @@ class Mappings {
 				//noinspection TryWithIdenticalCatches
 				try {
 					BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
-					writer.write(strings[0]);
+					writer.write(json);
 					writer.flush();
 					writer.close();
 				} catch (Exception e) {
@@ -278,7 +320,7 @@ class Mappings {
 			protected void onCancelled() {
 				sPersisting = false;
 			}
-		}.execute(json);
+		}.execute();
 	}
 
 	static Target match(Uri uri) {
@@ -452,7 +494,7 @@ class Mappings {
 			return Collections.emptySet();
 		}
 
-		Set<String> names = new LinkedHashSet<String>();
+		Set<String> names = new LinkedHashSet<>();
 		int start = 0;
 		do {
 			int next = query.indexOf('&', start);

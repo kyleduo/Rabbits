@@ -1,6 +1,8 @@
 package com.kyleduo.rabbits.demo;
 
 import android.app.Application;
+import android.os.SystemClock;
+import android.util.Log;
 
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.Target;
@@ -13,6 +15,7 @@ import com.kyleduo.rabbits.navigator.INavigationInterceptor;
  */
 
 public class DemoApplication extends Application {
+	private static final String TAG = "DemoApplication";
 
 	@Override
 	public void onCreate() {
@@ -23,11 +26,14 @@ public class DemoApplication extends Application {
 		// syc setup
 //		Rabbit.setup(this);
 
+		final long time = SystemClock.elapsedRealtime();
+		Log.d(TAG, "start : " + time);
 		// async setup
 		Rabbit.asyncSetup(this, new Runnable() {
 			@Override
 			public void run() {
-
+				long endTime = SystemClock.elapsedRealtime();
+				Log.d(TAG, "stop  : " + endTime + "  cost: " + (endTime - time) + "ms");
 			}
 		});
 

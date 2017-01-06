@@ -156,7 +156,7 @@ public class Rabbit {
 	 * @param file    Json file.
 	 */
 	public static void updateMappings(Context context, File file) {
-		Mappings.update(context, file);
+		Mappings.update(context, file, false);
 	}
 
 	/**
@@ -166,7 +166,30 @@ public class Rabbit {
 	 * @param json    Json string.
 	 */
 	public static void updateMappings(Context context, String json) {
-		Mappings.update(context, json);
+		Mappings.update(context, json, false);
+	}
+
+
+	/**
+	 * Update mappings from a file.
+	 *
+	 * @param context  Used for io operation.
+	 * @param file     Json file.
+	 * @param override override current if true.
+	 */
+	public static void updateMappings(Context context, File file, boolean override) {
+		Mappings.update(context, file, override);
+	}
+
+	/**
+	 * Update mappings using a json string.
+	 *
+	 * @param context  Used for io operation.
+	 * @param json     Json string.
+	 * @param override override current if true.
+	 */
+	public static void updateMappings(Context context, String json, boolean override) {
+		Mappings.update(context, json, override);
 	}
 
 	/**
