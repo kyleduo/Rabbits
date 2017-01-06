@@ -38,5 +38,5 @@ dependencies {
     annotationProcessor project(':compiler')
 
     // Fragmentation
-    compile 'me.yokeyword:fragmentation:0.8.4'
+    compile 'me.yokeyword:fragmentation:0.9.3'
 }

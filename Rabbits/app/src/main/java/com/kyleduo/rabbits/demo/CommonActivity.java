@@ -2,7 +2,6 @@ package com.kyleduo.rabbits.demo;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.annotations.Page;
@@ -26,10 +25,5 @@ public class CommonActivity extends BaseActivity {
 					.obtain();
 			loadRootFragment(R.id.common_fragment_container, fragment);
 		}
-
-		Object obtain = Rabbit.from(this)
-				.obtain("demo://rabbits.kyleduo.com/test")
-				.obtain();
-		Log.d("sss", "ob " + obtain.toString());
 	}
 }

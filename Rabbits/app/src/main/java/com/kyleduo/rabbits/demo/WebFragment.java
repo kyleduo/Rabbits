@@ -51,23 +51,23 @@ public class WebFragment extends BaseFragment {
 	}
 
 	private class DefaultWebViewClient extends WebViewClient {
+		INavigationInterceptor webInterceptor = new INavigationInterceptor() {
+			@Override
+			public boolean intercept(Object from, Target target) {
+				if (target.getUri().getPath().equals("/tobeintercepted")) {
+					Rabbit.from(WebFragment.this)
+							.to("demo://rabbits.kyleduo.com/test")
+							.mergeExtras(target.getExtras())
+							.clearTop()
+							.start();
+					return true;
+				}
+				return false;
+			}
+		};
+
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
-			INavigationInterceptor webInterceptor = new INavigationInterceptor() {
-				@Override
-				public boolean intercept(Object from, Target target) {
-					if (target.getUri().getPath().equals("/tobeintercepted")) {
-						Rabbit.from(WebFragment.this)
-								.to("demo://rabbits.kyleduo.com/test")
-								.mergeExtras(target.getExtras())
-								.clearTop()
-								.start();
-						return true;
-					}
-					return false;
-				}
-			};
-
 			boolean ret = Rabbit.from(WebFragment.this)
 					.addInterceptor(webInterceptor)
 					.tryTo(url)

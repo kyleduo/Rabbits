@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.kyleduo.rabbits.annotations.utils.NameParser;
@@ -264,14 +265,20 @@ public class Rabbit {
 	}
 
 	/**
-	 * Only if there was a mapping from uri with app scheme and given path exists a valid navigator
-	 * will returned.
+	 * Only if it is a http/https uri, and a page mapping from uri with app scheme and given path
+	 * exists, a valid navigator will returned.
 	 *
 	 * @param uri uri
 	 * @return AbstractNavigator
 	 */
 	public AbstractNavigator tryTo(Uri uri) {
-		uri = uri.buildUpon().scheme(sAppScheme).build();
+		final String scheme = uri.getScheme();
+		if (TextUtils.isEmpty(scheme) || (!scheme.startsWith("http") && !scheme.startsWith(sAppScheme))) {
+			return new MuteNavigator(mFrom, new Target(uri), assembleInterceptor());
+		}
+		if (!TextUtils.equals(scheme, sAppScheme)) {
+			uri = uri.buildUpon().scheme(sAppScheme).build();
+		}
 		Target target = Mappings.match(uri).route(sRouter);
 		return dispatch(target, true);
 	}
