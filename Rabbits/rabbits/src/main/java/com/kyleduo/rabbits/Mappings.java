@@ -186,10 +186,6 @@ class Mappings {
 		return null;
 	}
 
-	private synchronized static boolean parse(String json) {
-		return parse(json, false);
-	}
-
 	/**
 	 * Parse json string to mapping.
 	 *
