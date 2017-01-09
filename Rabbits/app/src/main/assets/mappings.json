@@ -1,6 +1,9 @@
 {
   "version": 1,
   "force_override": 1,
+  "allowed_hosts": [
+    "allowed.kyleduo.com"
+  ],
   "mappings": {
     "demo://rabbits.kyleduo.com": "MAIN",
     "demo://rabbits.kyleduo.com/test": "TEST",

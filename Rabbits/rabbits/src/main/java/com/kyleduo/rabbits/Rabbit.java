@@ -192,6 +192,10 @@ public class Rabbit {
 		Mappings.update(context, json, override);
 	}
 
+	public static void setAllowedHosts(String... hosts) {
+		Mappings.setALLOWED_HOSTS(hosts);
+	}
+
 	/**
 	 * Create a rabbit who has ability to navigate through your pages.
 	 *

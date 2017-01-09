@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,11 +25,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -45,6 +49,7 @@ class Mappings {
 	private static final String MAPPING_KEY_VERSION = "version";
 	private static final String MAPPING_KEY_FORCE_OVERRIDE = "force_override";
 	private static final String MAPPING_KEY_MAPPINGS = "mappings";
+	private static final String MAPPING_KEY_ALLOWED_HOSTS = "allowed_hosts";
 
 	private static final String PERSIST_MAPPING_FILE = "rabbits_mappings.json";
 	private static final String PERSIST_MAPPING_TEMP_FILE = "rabbits_mappings_temp.json";
@@ -58,6 +63,7 @@ class Mappings {
 	private static boolean sPersisting;
 
 	private static Map<String, String> sMAPPING = new LinkedHashMap<>();
+	private static List<String> sALLOWED_HOSTS;
 	private static int sVERSION = 0;
 
 	/**
@@ -92,6 +98,19 @@ class Mappings {
 				persist(context);
 			}
 		}
+	}
+
+	/**
+	 * Set other hosts which can be replacement of the origin.
+	 *
+	 * @param hosts hosts
+	 */
+	static void setALLOWED_HOSTS(String... hosts) {
+		if (hosts == null || hosts.length == 0) {
+			sALLOWED_HOSTS = null;
+			return;
+		}
+		sALLOWED_HOSTS = Arrays.asList(hosts);
 	}
 
 	/**
@@ -203,6 +222,13 @@ class Mappings {
 				Log.d(TAG, "No need to update, already has the latest version: " + sVERSION);
 				return true;
 			}
+			JSONArray allowed_hosts = jo.optJSONArray(MAPPING_KEY_ALLOWED_HOSTS);
+			if (allowed_hosts != null && allowed_hosts.length() > 0) {
+				sALLOWED_HOSTS = new ArrayList<>();
+				for (int i = 0; i < allowed_hosts.length(); i++) {
+					sALLOWED_HOSTS.add(allowed_hosts.optString(i));
+				}
+			}
 			Map<String, String> temp = new HashMap<>();
 			JSONObject mappings = jo.optJSONObject(MAPPING_KEY_MAPPINGS);
 			Iterator<String> uris = mappings.keys();
@@ -242,12 +268,19 @@ class Mappings {
 				String json = null;
 				if (sMAPPING.size() > 0) {
 					try {
+						JSONObject wrapper = new JSONObject();
+						if (sALLOWED_HOSTS != null && sALLOWED_HOSTS.size() == 0) {
+							JSONArray allowed = new JSONArray();
+							for (String h : sALLOWED_HOSTS) {
+								allowed.put(h);
+							}
+							wrapper.put(MAPPING_KEY_ALLOWED_HOSTS, allowed);
+						}
 						JSONObject mappings = new JSONObject();
 						Set<Map.Entry<String, String>> entries = sMAPPING.entrySet();
 						for (Map.Entry<String, String> entry : entries) {
 							mappings.put(entry.getKey(), entry.getValue());
 						}
-						JSONObject wrapper = new JSONObject();
 						wrapper.put(MAPPING_KEY_MAPPINGS, mappings);
 						wrapper.put(MAPPING_KEY_VERSION, sVERSION);
 						json = wrapper.toString();
@@ -328,15 +361,15 @@ class Mappings {
 			builder.authority(Rabbit.sDefaultHost);
 		}
 		uri = builder.build();
-		String pureUri;
+		Uri pureUri;
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-			pureUri = builder.query(null).build().toString();
+			pureUri = builder.query(null).build();
 		} else {
-			pureUri = builder.clearQuery().build().toString();
+			pureUri = builder.clearQuery().build();
 		}
 
 		// Try to completely match.
-		String page = sMAPPING.get(pureUri);
+		String page = sMAPPING.get(pureUri.toString());
 		Bundle bundle = null;
 		if (page == null) {
 			// Deep match.
@@ -380,62 +413,32 @@ class Mappings {
 	 * @param bundle  bundle object used to store params of REST uri.
 	 * @return page name when found a match.
 	 */
-	private static String deepMatch(String pureUri, Bundle bundle) {
+	private static String deepMatch(Uri pureUri, Bundle bundle) {
 		Set<String> uris = sMAPPING.keySet();
+		String[] source = pureUri.toString().split("(://|/)");
 		UriLoop:
 		for (String uri : uris) {
 			// Check match for each uri.
 			String[] template = uri.split("(://|/)");
-			String[] source = pureUri.split("(://|/)");
-			if (template.length != source.length) {
+			if (!template[0].equals(source[0]) || template.length != source.length) {
+				continue;
+			}
+			if (!template[1].equals(source[1]) && (sALLOWED_HOSTS == null || !sALLOWED_HOSTS.contains(source[1]))) {
 				continue;
 			}
 			// Compare each part, parse params.
-			for (int i = 0; i < source.length; i++) {
-				if (template[i].equals(source[i])) {
+			for (int i = 2; i < source.length; i++) {
+				String s = source[i];
+				String t = template[i];
+				if (t.equals(s)) {
 					continue;
 				}
 				// Check whether a param field.
-				if (template[i].matches("\\{\\S+(:\\S+)?\\}")) {
-					String[] tt = template[i].substring(1, template[i].length() - 1).split(":");
-					String key = tt[0];
-					String value = decode(source[i]);
-					String type = tt.length == 2 ? tt[1].toLowerCase() : "";
-					switch (type) {
-						case "i":
-							try {
-								bundle.putInt(key, Integer.parseInt(value));
-							} catch (NumberFormatException e) {
-								continue UriLoop;
-							}
-							break;
-						case "l":
-							try {
-								bundle.putLong(key, Long.parseLong(value));
-							} catch (NumberFormatException e) {
-								continue UriLoop;
-							}
-							break;
-						case "d":
-							try {
-								bundle.putDouble(key, Double.parseDouble(value));
-							} catch (NumberFormatException e) {
-								continue UriLoop;
-							}
-							break;
-						case "b":
-							try {
-								bundle.putBoolean(key, Boolean.parseBoolean(value.toLowerCase()));
-							} catch (NumberFormatException e) {
-								continue UriLoop;
-							}
-							break;
-						case "s":
-							bundle.putString(key, value);
-							break;
-						default:
-							bundle.putString(key, value);
-							break;
+				if (t.matches("\\{\\S+(:\\S+)?\\}")) {
+					try {
+						formatParam(t, s, bundle);
+					} catch (NumberFormatException e) {
+						continue UriLoop;
 					}
 					continue;
 				}
@@ -444,6 +447,41 @@ class Mappings {
 			return sMAPPING.get(uri);
 		}
 		return null;
+	}
+
+	/**
+	 * format param and put it in bundle.
+	 *
+	 * @param t      template segment
+	 * @param param  param value
+	 * @param bundle bundle
+	 * @throws NumberFormatException
+	 */
+	private static void formatParam(String t, String param, Bundle bundle) throws NumberFormatException {
+		String[] tt = t.substring(1, t.length() - 1).split(":");
+		String key = tt[0];
+		String value = decode(param);
+		String type = tt.length == 2 ? tt[1].toLowerCase() : "";
+		switch (type) {
+			case "i":
+				bundle.putInt(key, Integer.parseInt(value));
+				break;
+			case "l":
+				bundle.putLong(key, Long.parseLong(value));
+				break;
+			case "d":
+				bundle.putDouble(key, Double.parseDouble(value));
+				break;
+			case "b":
+				bundle.putBoolean(key, Boolean.parseBoolean(value.toLowerCase()));
+				break;
+			case "s":
+				bundle.putString(key, value);
+				break;
+			default:
+				bundle.putString(key, value);
+				break;
+		}
 	}
 
 	/**
@@ -536,12 +574,22 @@ class Mappings {
 	static String dump() {
 		StringBuilder sb = new StringBuilder();
 		Set<Map.Entry<String, String>> entries = sMAPPING.entrySet();
+		sb.append("mappings : ");
 		sb.append("{").append("\n");
 		for (Map.Entry<String, String> e : entries) {
-			sb.append(e.getKey()).append(" -> ").append(decode(e.getValue())).append("\n\n");
+			sb.append(e.getKey()).append(" -> ").append(decode(e.getValue())).append("\n");
 		}
 		sb.deleteCharAt(sb.length() - 1);
 		sb.append("}");
+		if (sALLOWED_HOSTS != null && sALLOWED_HOSTS.size() > 0) {
+			sb.append("\n\n").append("allowed hosts : ");
+			sb.append("{").append("\n");
+			for (String h : sALLOWED_HOSTS) {
+				sb.append("\t").append(h).append("\n\n");
+			}
+			sb.deleteCharAt(sb.length() - 1);
+			sb.append("}");
+		}
 		return sb.toString();
 	}
 
