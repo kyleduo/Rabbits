@@ -118,189 +118,171 @@ public abstract class AbstractNavigator implements IProvider {
 		return this;
 	}
 
-	public AbstractNavigator putString(String key, String value) {
+	public AbstractNavigator putExtra(String key, String value) {
 		ensureExtras();
 		mTarget.getExtras().putString(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putBoolean(String key, boolean value) {
+	public AbstractNavigator putExtra(String key, boolean value) {
 		ensureExtras();
 		mTarget.getExtras().putBoolean(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putInt(String key, int value) {
+	public AbstractNavigator putExtra(String key, int value) {
 		ensureExtras();
 		mTarget.getExtras().putInt(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putLong(String key, long value) {
+	public AbstractNavigator putExtra(String key, long value) {
 		ensureExtras();
 		mTarget.getExtras().putLong(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putDouble(String key, double value) {
+	public AbstractNavigator putExtra(String key, double value) {
 		ensureExtras();
 		mTarget.getExtras().putDouble(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putBooleanArray(String key, boolean[] value) {
+	public AbstractNavigator putExtra(String key, boolean[] value) {
 		ensureExtras();
 		mTarget.getExtras().putBooleanArray(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putIntArray(String key, int[] value) {
+	public AbstractNavigator putExtra(String key, int[] value) {
 		ensureExtras();
 		mTarget.getExtras().putIntArray(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putLongArray(String key, long[] value) {
+	public AbstractNavigator putExtra(String key, long[] value) {
 		ensureExtras();
 		mTarget.getExtras().putLongArray(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putDoubleArray(String key, double[] value) {
+	public AbstractNavigator putExtra(String key, double[] value) {
 		ensureExtras();
 		mTarget.getExtras().putDoubleArray(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putStringArray(String key, String[] value) {
+	public AbstractNavigator putExtra(String key, String[] value) {
 		ensureExtras();
 		mTarget.getExtras().putStringArray(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putByte(String key, byte value) {
+	public AbstractNavigator putExtra(String key, byte value) {
 		ensureExtras();
 		mTarget.getExtras().putByte(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putChar(String key, char value) {
+	public AbstractNavigator putExtra(String key, char value) {
 		ensureExtras();
 		mTarget.getExtras().putChar(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putShort(String key, short value) {
+	public AbstractNavigator putExtra(String key, short value) {
 		ensureExtras();
 		mTarget.getExtras().putShort(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putFloat(String key, float value) {
+	public AbstractNavigator putExtra(String key, float value) {
 		ensureExtras();
 		mTarget.getExtras().putFloat(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putCharSequence(String key, CharSequence value) {
+	public AbstractNavigator putExtra(String key, CharSequence value) {
 		ensureExtras();
 		mTarget.getExtras().putCharSequence(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putParcelable(String key, Parcelable value) {
+	public AbstractNavigator putExtra(String key, Parcelable value) {
 		ensureExtras();
 		mTarget.getExtras().putParcelable(key, value);
 		return this;
 	}
 
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-	public AbstractNavigator putSize(String key, Size value) {
+	public AbstractNavigator putExtra(String key, Size value) {
 		ensureExtras();
 		mTarget.getExtras().putSize(key, value);
 		return this;
 	}
 
 	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-	public AbstractNavigator putSizeF(String key, SizeF value) {
+	public AbstractNavigator putExtra(String key, SizeF value) {
 		ensureExtras();
 		mTarget.getExtras().putSizeF(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putParcelableArray(String key, Parcelable[] value) {
+	public AbstractNavigator putExtra(String key, Parcelable[] value) {
 		ensureExtras();
 		mTarget.getExtras().putParcelableArray(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putParcelableArrayList(String key, ArrayList<? extends Parcelable> value) {
+	public AbstractNavigator putExtra(String key, ArrayList<? extends Parcelable> value) {
 		ensureExtras();
 		mTarget.getExtras().putParcelableArrayList(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putSparseParcelableArray(String key, SparseArray<? extends Parcelable> value) {
+	public AbstractNavigator putExtra(String key, SparseArray<? extends Parcelable> value) {
 		ensureExtras();
 		mTarget.getExtras().putSparseParcelableArray(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putIntegerArrayList(String key, ArrayList<Integer> value) {
-		ensureExtras();
-		mTarget.getExtras().putIntegerArrayList(key, value);
-		return this;
-	}
-
-	public AbstractNavigator putStringArrayList(String key, ArrayList<String> value) {
-		ensureExtras();
-		mTarget.getExtras().putStringArrayList(key, value);
-		return this;
-	}
-
-	public AbstractNavigator putCharSequenceArrayList(String key, ArrayList<CharSequence> value) {
-		ensureExtras();
-		mTarget.getExtras().putCharSequenceArrayList(key, value);
-		return this;
-	}
-
-	public AbstractNavigator putSerializable(String key, Serializable value) {
+	public AbstractNavigator putExtra(String key, Serializable value) {
 		ensureExtras();
 		mTarget.getExtras().putSerializable(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putByteArray(String key, byte[] value) {
+	public AbstractNavigator putExtra(String key, byte[] value) {
 		ensureExtras();
 		mTarget.getExtras().putByteArray(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putShortArray(String key, short[] value) {
+	public AbstractNavigator putExtra(String key, short[] value) {
 		ensureExtras();
 		mTarget.getExtras().putShortArray(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putCharArray(String key, char[] value) {
+	public AbstractNavigator putExtra(String key, char[] value) {
 		ensureExtras();
 		mTarget.getExtras().putCharArray(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putFloatArray(String key, float[] value) {
+	public AbstractNavigator putExtra(String key, float[] value) {
 		ensureExtras();
 		mTarget.getExtras().putFloatArray(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putCharSequenceArray(String key, CharSequence[] value) {
+	public AbstractNavigator putExtra(String key, CharSequence[] value) {
 		ensureExtras();
 		mTarget.getExtras().putCharSequenceArray(key, value);
 		return this;
 	}
 
-	public AbstractNavigator putBundle(String key, Bundle value) {
+	public AbstractNavigator putExtra(String key, Bundle value) {
 		ensureExtras();
 		mTarget.getExtras().putBundle(key, value);
 		return this;

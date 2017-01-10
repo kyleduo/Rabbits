@@ -24,7 +24,7 @@ class DemoNotFoundHandler extends AbstractPageNotFoundHandler {
 		String httpUrl = mTarget.getUri().buildUpon().scheme(HTTP_SCHEME).build().toString();
 		AbstractNavigator navigator = Rabbit.from(mFrom)
 				.to("/web")
-				.putString("url", httpUrl);
+				.putExtra("url", httpUrl);
 		if (requestCode >= 0) {
 			navigator.startForResult(requestCode);
 		} else {
@@ -38,7 +38,7 @@ class DemoNotFoundHandler extends AbstractPageNotFoundHandler {
 		String httpUrl = mTarget.getUri().buildUpon().scheme(HTTP_SCHEME).build().toString();
 		return Rabbit.from(mFrom)
 				.obtain("/web")
-				.putString("url", httpUrl)
+				.putExtra("url", httpUrl)
 				.obtain();
 	}
 }
