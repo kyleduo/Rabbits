@@ -1,23 +1,17 @@
 package com.kyleduo.rabbits.demo;
 
-import android.content.Intent;
-import android.os.Environment;
-import android.support.v4.os.EnvironmentCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.demo.base.BaseActivity;
-
-import java.util.zip.Inflater;
 
 @Page(name = "MAIN")
 public class MainActivity extends BaseActivity {
@@ -36,8 +30,10 @@ public class MainActivity extends BaseActivity {
 			v.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View view) {
+					String url = ((TextView) view).getText().toString();
+					Toast.makeText(MainActivity.this, url, Toast.LENGTH_SHORT).show();
 					Rabbit.from(MainActivity.this)
-							.to(((TextView) view).getText().toString())
+							.to(url)
 							.start();
 				}
 			});

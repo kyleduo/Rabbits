@@ -24,7 +24,7 @@
 
 	<TextView
 		style="@style/Contents"
-		android:text="demo://rabbits.kyleduo.com/test?Testing=Params"
+		android:text="demo://rabbits.kyleduo.com/test?testing=Params"
 		/>
 
 	<TextView

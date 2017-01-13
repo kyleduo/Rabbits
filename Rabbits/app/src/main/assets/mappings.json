@@ -8,7 +8,7 @@
     "demo://rabbits.kyleduo.com": "MAIN",
     "demo://rabbits.kyleduo.com/test": "TEST",
     "demo://rabbits.kyleduo.com/test/listing": "LISTING",
-    "demo://rabbits.kyleduo.com/test/{Testing}": "TEST",
+    "demo://rabbits.kyleduo.com/test/{testing}": "TEST",
     "demo://rabbits.kyleduo.com/test_fragment": "TEST_F",
     "demo://rabbits.kyleduo.com/second/{id:l}": "SECOND",
     "demo://rabbits.kyleduo.com/common": "COMMON",

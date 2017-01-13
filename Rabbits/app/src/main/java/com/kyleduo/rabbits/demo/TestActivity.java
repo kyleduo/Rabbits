@@ -19,7 +19,7 @@ public class TestActivity extends BaseActivity {
 		setContentView(R.layout.activity_test);
 
 		TextView tv = (TextView) findViewById(R.id.params_tv);
-		tv.setText("Testing: " + getIntent().getStringExtra("Testing"));
+		tv.setText("testing: " + getIntent().getStringExtra("testing"));
 
 		findViewById(R.id.back_home_bt).setOnClickListener(new View.OnClickListener() {
 			@Override
