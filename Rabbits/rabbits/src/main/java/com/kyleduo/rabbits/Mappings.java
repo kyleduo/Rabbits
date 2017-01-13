@@ -217,7 +217,7 @@ class Mappings {
 			JSONObject jo = new JSONObject(json);
 			int version = jo.optInt(MAPPING_KEY_VERSION);
 			boolean forceOverride = jo.optInt(MAPPING_KEY_FORCE_OVERRIDE) == 1;
-			if (version <= sVERSION && !forceOverride) {
+			if (version < sVERSION || (version == sVERSION && !forceOverride)) {
 				Log.d(TAG, "No need to update, already has the latest version: " + sVERSION);
 				return true;
 			}
