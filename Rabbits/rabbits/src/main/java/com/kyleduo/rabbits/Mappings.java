@@ -28,7 +28,6 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -217,8 +216,8 @@ class Mappings {
 		try {
 			JSONObject jo = new JSONObject(json);
 			int version = jo.optInt(MAPPING_KEY_VERSION);
-			int forceOverride = jo.optInt(MAPPING_KEY_FORCE_OVERRIDE);
-			if (version <= sVERSION && forceOverride == 0) {
+			boolean forceOverride = jo.optInt(MAPPING_KEY_FORCE_OVERRIDE) == 1;
+			if (version <= sVERSION && !forceOverride) {
 				Log.d(TAG, "No need to update, already has the latest version: " + sVERSION);
 				return true;
 			}
@@ -229,7 +228,7 @@ class Mappings {
 					sALLOWED_HOSTS.add(allowed_hosts.optString(i));
 				}
 			}
-			Map<String, String> temp = new HashMap<>();
+			Map<String, String> temp = new LinkedHashMap<>();
 			JSONObject mappings = jo.optJSONObject(MAPPING_KEY_MAPPINGS);
 			Iterator<String> uris = mappings.keys();
 			while (uris.hasNext()) {
@@ -237,7 +236,7 @@ class Mappings {
 				String page = mappings.optString(uri);
 				temp.put(uri, page);
 			}
-			if (clearPrevious) {
+			if (clearPrevious || forceOverride) {
 				sMAPPING.clear();
 			}
 			sMAPPING.putAll(temp);
