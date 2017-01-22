@@ -5,6 +5,7 @@ import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.annotations.PageType;
 import com.kyleduo.rabbits.annotations.utils.NameParser;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -55,11 +56,13 @@ public class RabbitsCompiler extends AbstractProcessor {
 	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 		List<MethodSpec> methods = new ArrayList<>();
 
+		Set<String> pages = new HashSet<>();
 		for (TypeElement te : annotations) {
 			for (Element e : roundEnv.getElementsAnnotatedWith(te)) {
 				Page page = e.getAnnotation(Page.class);
 				PageType type = page.type();
 				String name = page.name();
+				pages.add(name);
 				if (type == PageType.ACTIVTY) {
 					String methodName = NameParser.parseRoute(name);
 					ClassName className = ClassName.get((TypeElement) e);
@@ -129,6 +132,24 @@ public class RabbitsCompiler extends AbstractProcessor {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
+
+		List<FieldSpec> pageFields = new ArrayList<>();
+		for (String page : pages) {
+			pageFields.add(FieldSpec.builder(String.class, page, Modifier.FINAL, Modifier.PUBLIC, Modifier.STATIC).initializer("\"$L\"", page).build());
+		}
+
+		TypeSpec pagesTypeSpec = TypeSpec.classBuilder("Pages")
+				.addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+				.addFields(pageFields)
+				.build();
+		try {
+			JavaFile.builder(PACKAGE, pagesTypeSpec)
+					.build()
+					.writeTo(mFiler);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+
 		return true;
 	}
 

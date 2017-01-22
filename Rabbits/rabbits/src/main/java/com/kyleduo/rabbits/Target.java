@@ -15,6 +15,7 @@ public class Target {
 	private int mFlags;
 	private Bundle mExtras;
 	private Object mTo;
+	private boolean mIsLocal;
 
 	Target(Uri uri) {
 		mUri = uri;
@@ -54,6 +55,14 @@ public class Target {
 
 	public void setTo(Object to) {
 		mTo = to;
+	}
+
+	public boolean isLocal() {
+		return mIsLocal;
+	}
+
+	public void setLocal(boolean local) {
+		mIsLocal = local;
 	}
 
 	Target route(IRouter router) {

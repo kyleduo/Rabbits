@@ -40,6 +40,8 @@ import java.util.Map;
 public class Rabbit {
 	private static final String TAG = "Rabbit";
 	private static final String ROUTER_CLASS = "com.kyleduo.rabbits.Router";
+	private static final String DIRECT_NAVIGATION_PREFIX = "rabbits://direct/";
+
 	public static final String KEY_ORIGIN_URI = "rabbits_origin_uri";
 
 	private static IRouter sRouter;
@@ -259,6 +261,21 @@ public class Rabbit {
 	}
 
 	/**
+	 * Used for obtain page object specified by page name directly not uri.
+	 * Intent or Fragment instance.
+	 *
+	 * @param page page name.
+	 * @return AbstractNavigator
+	 */
+	public AbstractNavigator obtainPage(String page) {
+		Target target = new Target(Uri.parse(DIRECT_NAVIGATION_PREFIX + page));
+		target.setLocal(true);
+		target.setPage(page);
+		target.obtain(sRouter);
+		return dispatch(target, true);
+	}
+
+	/**
 	 * Navigate to page, or perform a not found strategy.
 	 *
 	 * @param uriStr uri string
@@ -278,6 +295,22 @@ public class Rabbit {
 	public AbstractNavigator to(Uri uri) {
 		Target target = Mappings.match(uri).route(sRouter);
 		return dispatch(target, false);
+	}
+
+	/**
+	 * Directly specific a PAGE_NAME to navigate.
+	 * Rabbit will not dispatch the navigation to NotFoundHandler if it was not matched.
+	 * The uri will be "rabbits://direct/" + PAGE
+	 *
+	 * @param page page name
+	 * @return AbstractNavigator
+	 */
+	public AbstractNavigator toPage(String page) {
+		Target target = new Target(Uri.parse(DIRECT_NAVIGATION_PREFIX + page));
+		target.setLocal(true);
+		target.setPage(page);
+		target.route(sRouter);
+		return dispatch(target, true);
 	}
 
 	/**
