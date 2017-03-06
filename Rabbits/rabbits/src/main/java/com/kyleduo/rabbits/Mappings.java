@@ -57,6 +57,13 @@ class Mappings {
 	private static final String MODE_CLEAR_TOP = "clearTop";
 	private static final String MODE_NEW_TASK = "newTask";
 
+	private static final String PARAM_KEY_INT = "i";
+	private static final String PARAM_KEY_LONG = "l";
+	private static final String PARAM_KEY_FLOAT = "f";
+	private static final String PARAM_KEY_DOUBLE = "d";
+	private static final String PARAM_KEY_BOOLEAN = "b";
+	private static final String PARAM_KEY_STRING = "s";
+
 	private static final String MAPPING_QUERY_FREE = "rabbitsFree";
 
 	private static boolean sPersisting;
@@ -462,21 +469,22 @@ class Mappings {
 		String value = decode(param);
 		String type = tt.length == 2 ? tt[1].toLowerCase() : "";
 		switch (type) {
-			case "i":
+			case PARAM_KEY_INT:
 				bundle.putInt(key, Integer.parseInt(value));
 				break;
-			case "l":
+			case PARAM_KEY_LONG:
 				bundle.putLong(key, Long.parseLong(value));
 				break;
-			case "d":
+			case PARAM_KEY_FLOAT:
+				bundle.putFloat(key, Float.parseFloat(value));
+				break;
+			case PARAM_KEY_DOUBLE:
 				bundle.putDouble(key, Double.parseDouble(value));
 				break;
-			case "b":
-				bundle.putBoolean(key, Boolean.parseBoolean(value.toLowerCase()));
+			case PARAM_KEY_BOOLEAN:
+				bundle.putBoolean(key, Boolean.parseBoolean(value));
 				break;
-			case "s":
-				bundle.putString(key, value);
-				break;
+			case PARAM_KEY_STRING:
 			default:
 				bundle.putString(key, value);
 				break;

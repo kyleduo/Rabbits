@@ -4,6 +4,7 @@ import android.app.Application;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.kyleduo.rabbits.P;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.Target;
 import com.kyleduo.rabbits.demo.navigation.DemoNavigatorFactory;
@@ -42,7 +43,7 @@ public class DemoApplication extends Application {
 			public boolean intercept(Object from, Target target) {
 				if (UriUtils.matchPath(target.getUri(), "/intercept/dump")) {
 					Rabbit.from(from)
-							.to("/dump")
+							.to(P.DUMP)
 							.mergeExtras(target.getExtras())
 							.start();
 					return true;

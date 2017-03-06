@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.kyleduo.rabbits.P;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.annotations.PageType;
@@ -33,7 +34,7 @@ public class TestFragment extends BaseFragment {
 			@Override
 			public void onClick(View view) {
 				Rabbit.from(TestFragment.this)
-						.to("/second/" + new Random().nextInt(10))
+						.to(P.SECOND(new Random().nextInt(10)))
 						.start();
 			}
 		});
