@@ -82,6 +82,16 @@ public abstract class AbstractNavigator implements IProvider {
 		return this;
 	}
 
+	public AbstractNavigator finishPrevious(boolean finishPrevious) {
+		mTarget.setFinishPrevious(finishPrevious);
+		return this;
+	}
+
+	public AbstractNavigator ignoreParent(boolean ignoreParent) {
+		mTarget.setIgnoreParent(ignoreParent);
+		return this;
+	}
+
 	@SuppressWarnings("SimplifiableIfStatement")
 	public boolean start() {
 		if (checkInterceptor()) {

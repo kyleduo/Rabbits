@@ -136,12 +136,12 @@ public class RabbitsCompiler extends AbstractProcessor {
 					methods.add(methodSpecBuilder.build());
 
 					// obtain
-					methodName = NameParser.parseObtain(name);
-					methodSpecBuilder = MethodSpec.methodBuilder(methodName)
-							.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
-							.returns(Class.class)
-							.addStatement("return $T.class", className);
-					methods.add(methodSpecBuilder.build());
+//					methodName = NameParser.parseObtain(name);
+//					methodSpecBuilder = MethodSpec.methodBuilder(methodName)
+//							.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+//							.returns(Class.class)
+//							.addStatement("return $T.class", className);
+//					methods.add(methodSpecBuilder.build());
 				} else if (type == PageType.FRAGMENT) {
 					String parent = page.parent();
 					boolean hasParent = !parent.equals("");
@@ -163,6 +163,14 @@ public class RabbitsCompiler extends AbstractProcessor {
 						methodSpecBuilder.addStatement("target.setExtras(bundle)");
 						methodSpecBuilder.addStatement("return new $T(null, target, null)", ClassName.get(NAVIGATOR_PACKAGE, "DefaultNavigator"));
 						methods.add(methodSpecBuilder.build());
+
+						// obtain
+						methodName = NameParser.parseObtain(name);
+						methodSpecBuilder = MethodSpec.methodBuilder(methodName)
+								.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC);
+						methodSpecBuilder.returns(className)
+								.addStatement("return new $T()", className);
+						methods.add(methodSpecBuilder.build());
 					} else {
 						methodSpecBuilder = MethodSpec.methodBuilder(methodName)
 								.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC);
@@ -170,14 +178,6 @@ public class RabbitsCompiler extends AbstractProcessor {
 								.addStatement("return new $T()", className);
 						methods.add(methodSpecBuilder.build());
 					}
-
-					// obtain
-					methodName = NameParser.parseObtain(name);
-					methodSpecBuilder = MethodSpec.methodBuilder(methodName)
-							.addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC);
-					methodSpecBuilder.returns(className)
-							.addStatement("return new $T()", className);
-					methods.add(methodSpecBuilder.build());
 				}
 			}
 		}

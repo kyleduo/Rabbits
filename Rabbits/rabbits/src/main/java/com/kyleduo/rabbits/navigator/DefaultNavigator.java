@@ -59,6 +59,9 @@ public class DefaultNavigator extends AbstractNavigator {
 				} else {
 					activity.startActivity(intent);
 				}
+				if (mTarget.shouldFinishPrevious()) {
+					activity.finish();
+				}
 				return true;
 			} else if (mFrom instanceof Context) {
 				((Context) mFrom).startActivity(intent);
@@ -69,6 +72,9 @@ public class DefaultNavigator extends AbstractNavigator {
 					fragment.startActivityForResult(intent, requestCode);
 				} else {
 					fragment.startActivity(intent);
+					if (mTarget.shouldFinishPrevious() && fragment.getActivity() != null) {
+						fragment.getActivity().finish();
+					}
 				}
 				return true;
 			} else if (mFrom instanceof android.app.Fragment) {
@@ -78,6 +84,9 @@ public class DefaultNavigator extends AbstractNavigator {
 						fragment.startActivityForResult(intent, requestCode);
 					} else {
 						fragment.startActivity(intent);
+						if (mTarget.shouldFinishPrevious() && fragment.getActivity() != null) {
+							fragment.getActivity().finish();
+						}
 					}
 				}
 				return true;
@@ -90,6 +99,17 @@ public class DefaultNavigator extends AbstractNavigator {
 				navigator.startForResult(requestCode);
 			} else {
 				navigator.start();
+				if (mTarget.shouldFinishPrevious()) {
+					if (mFrom instanceof Activity) {
+						((Activity) mFrom).finish();
+					} else if (mFrom instanceof Fragment) {
+						((Fragment) mFrom).getActivity().finish();
+					} else if (mFrom instanceof android.app.Fragment) {
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+							((android.app.Fragment) mFrom).getActivity().finish();
+						}
+					}
+				}
 			}
 		}
 		return false;

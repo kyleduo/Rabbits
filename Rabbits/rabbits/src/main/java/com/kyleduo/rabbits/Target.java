@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 /**
  * Represents a navigation target.
- *
+ * <p>
  * Created by kyle on 2016/12/9.
  */
 
@@ -13,6 +13,8 @@ public class Target {
 	private Uri mUri;
 	private String mPage;
 	private int mFlags;
+	private boolean mFinishPrevious;
+	private boolean mIgnoreParent;
 	private Bundle mExtras;
 	private Object mTo;
 
@@ -60,7 +62,11 @@ public class Target {
 		if (mPage == null) {
 			return this;
 		}
-		mTo = router.route(mPage);
+		if (mIgnoreParent) {
+			mTo = router.obtain(mPage);
+		} else {
+			mTo = router.route(mPage);
+		}
 		return this;
 	}
 
@@ -85,5 +91,21 @@ public class Target {
 				", mExtras=" + mExtras +
 				", mTo=" + mTo +
 				'}';
+	}
+
+	public boolean shouldFinishPrevious() {
+		return mFinishPrevious;
+	}
+
+	public void setFinishPrevious(boolean finishPrevious) {
+		mFinishPrevious = finishPrevious;
+	}
+
+	public void setIgnoreParent(boolean ignoreParent) {
+		mIgnoreParent = ignoreParent;
+	}
+
+	public boolean shouldIgnoreParent() {
+		return mIgnoreParent;
 	}
 }

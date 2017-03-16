@@ -77,15 +77,22 @@ public class Rabbit {
 					if (m != null) {
 						return m.invoke(null);
 					} else {
-						if (name.equals(IRouter.METHOD_ROUTE)) {
-							String methodName = NameParser.parseRoute(page);
-							m = clz.getMethod(methodName);
+						boolean findObtain = true;
+						if (name.equals(IRouter.METHOD_OBTAIN)) {
+							String methodName = NameParser.parseObtain(page);
+							try {
+								m = clz.getMethod(methodName);
+							} catch (NoSuchMethodException e) {
+								// do nothing
+							}
 							if (m != null) {
 								methods.put(key, m);
 								return m.invoke(null);
 							}
-						} else if (name.equals(IRouter.METHOD_OBTAIN)) {
-							String methodName = NameParser.parseObtain(page);
+							findObtain = false;
+						}
+						if (name.equals(IRouter.METHOD_ROUTE) || !findObtain) {
+							String methodName = NameParser.parseRoute(page);
 							m = clz.getMethod(methodName);
 							if (m != null) {
 								methods.put(key, m);
@@ -319,7 +326,9 @@ public class Rabbit {
 	 * @return navigator
 	 */
 	private AbstractNavigator dispatch(Target target, boolean mute) {
-		Log.d(TAG, target.toString());
+		if (BuildConfig.DEBUG) {
+			Log.d(TAG, target.toString());
+		}
 		if (!target.hasMatched()) {
 			if (!mute) {
 				AbstractPageNotFoundHandler pageNotFoundHandler = sNavigatorFactory.createPageNotFoundHandler(mFrom, target, assembleInterceptor());
