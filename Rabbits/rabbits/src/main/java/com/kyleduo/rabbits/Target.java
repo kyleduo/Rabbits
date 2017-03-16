@@ -14,7 +14,6 @@ public class Target {
 	private String mPage;
 	private int mFlags;
 	private boolean mFinishPrevious;
-	private boolean mIgnoreParent;
 	private Bundle mExtras;
 	private Object mTo;
 
@@ -62,11 +61,7 @@ public class Target {
 		if (mPage == null) {
 			return this;
 		}
-		if (mIgnoreParent) {
-			mTo = router.obtain(mPage);
-		} else {
-			mTo = router.route(mPage);
-		}
+		mTo = router.route(mPage);
 		return this;
 	}
 
@@ -99,13 +94,5 @@ public class Target {
 
 	public void setFinishPrevious(boolean finishPrevious) {
 		mFinishPrevious = finishPrevious;
-	}
-
-	public void setIgnoreParent(boolean ignoreParent) {
-		mIgnoreParent = ignoreParent;
-	}
-
-	public boolean shouldIgnoreParent() {
-		return mIgnoreParent;
 	}
 }

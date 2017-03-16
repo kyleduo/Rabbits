@@ -87,11 +87,6 @@ public abstract class AbstractNavigator implements IProvider {
 		return this;
 	}
 
-	public AbstractNavigator ignoreParent(boolean ignoreParent) {
-		mTarget.setIgnoreParent(ignoreParent);
-		return this;
-	}
-
 	@SuppressWarnings("SimplifiableIfStatement")
 	public boolean start() {
 		if (checkInterceptor()) {
@@ -318,6 +313,11 @@ public abstract class AbstractNavigator implements IProvider {
 
 	public AbstractNavigator clearTop() {
 		addIntentFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		return this;
+	}
+
+	public AbstractNavigator broughtToFront() {
+		addIntentFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 		return this;
 	}
 

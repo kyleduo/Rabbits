@@ -52,6 +52,8 @@ public class Rabbit {
 	private Object mFrom;
 	private List<INavigationInterceptor> mInterceptors;
 
+	private boolean mIgnoreParent = false;
+
 	private Rabbit(Object from) {
 		mFrom = from;
 		if (sRouter == null) {
@@ -245,6 +247,17 @@ public class Rabbit {
 	}
 
 	/**
+	 * Whether should ignore parent declaration of this target.
+	 *
+	 * @param ignoreParent true for ignore
+	 * @return Rabbit instance.
+	 */
+	public Rabbit ignoreParent(boolean ignoreParent) {
+		mIgnoreParent = ignoreParent;
+		return this;
+	}
+
+	/**
 	 * Used for obtain page object. Intent or Fragment instance.
 	 *
 	 * @param uriStr uriStr
@@ -284,7 +297,12 @@ public class Rabbit {
 	 * @return AbstractNavigator
 	 */
 	public AbstractNavigator to(Uri uri) {
-		Target target = Mappings.match(uri).route(sRouter);
+		Target target = Mappings.match(uri);
+		if (mIgnoreParent) {
+			target.obtain(sRouter);
+		} else {
+			target.route(sRouter);
+		}
 		return dispatch(target, false);
 	}
 
@@ -314,7 +332,12 @@ public class Rabbit {
 		if (!TextUtils.equals(scheme, sAppScheme)) {
 			uri = uri.buildUpon().scheme(sAppScheme).build();
 		}
-		Target target = Mappings.match(uri).route(sRouter);
+		Target target = Mappings.match(uri);
+		if (mIgnoreParent) {
+			target.obtain(sRouter);
+		} else {
+			target.route(sRouter);
+		}
 		return dispatch(target, true);
 	}
 
