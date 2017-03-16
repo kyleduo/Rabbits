@@ -16,6 +16,7 @@ public class Target {
 	private boolean mFinishPrevious;
 	private Bundle mExtras;
 	private Object mTo;
+	private int[] mTransitionAnimations;
 
 	Target(Uri uri) {
 		mUri = uri;
@@ -94,5 +95,13 @@ public class Target {
 
 	public void setFinishPrevious(boolean finishPrevious) {
 		mFinishPrevious = finishPrevious;
+	}
+
+	public int[] getTransitionAnimations() {
+		return mTransitionAnimations;
+	}
+
+	public void setTransitionAnimations(int[] transitionAnimations) {
+		mTransitionAnimations = transitionAnimations;
 	}
 }

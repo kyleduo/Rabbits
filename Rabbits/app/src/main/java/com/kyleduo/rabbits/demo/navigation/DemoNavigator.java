@@ -13,6 +13,8 @@ import java.util.List;
 
 import me.yokeyword.fragmentation.SupportActivity;
 
+import static android.R.attr.fragment;
+
 /**
  * Created by kyle on 2016/12/12.
  */
@@ -39,8 +41,19 @@ class DemoNavigator extends DefaultNavigator {
 					} else {
 						navigator.start();
 					}
+					if (mTarget.shouldFinishPrevious()) {
+						activity.finish();
+					}
 				} else {
-					activity.start(f);
+					if (requestCode >= 0) {
+						activity.startForResult(f, requestCode);
+					} else {
+						if (mTarget.shouldFinishPrevious()) {
+							activity.startWithPop(f);
+						} else {
+							activity.start(f);
+						}
+					}
 				}
 				return true;
 			} else if (mFrom instanceof BaseFragment) {
@@ -48,7 +61,11 @@ class DemoNavigator extends DefaultNavigator {
 				if (requestCode >= 0) {
 					fragment.startForResult(f, requestCode);
 				} else {
-					fragment.start(f);
+					if (mTarget.shouldFinishPrevious()) {
+						fragment.startWithPop(f);
+					} else {
+						fragment.start(f);
+					}
 				}
 				return true;
 			}

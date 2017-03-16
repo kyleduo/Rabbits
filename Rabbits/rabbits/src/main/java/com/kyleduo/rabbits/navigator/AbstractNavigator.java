@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.util.Size;
 import android.util.SizeF;
 import android.util.SparseArray;
@@ -26,6 +27,7 @@ import java.util.List;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class AbstractNavigator implements IProvider {
+	private static final String TAG = "AbstractNavigator";
 
 	/**
 	 * Where does this navigator from.
@@ -120,6 +122,15 @@ public abstract class AbstractNavigator implements IProvider {
 
 	public AbstractNavigator setIntentFlags(int flags) {
 		mTarget.setFlags(flags);
+		return this;
+	}
+
+	public AbstractNavigator setTransitionAnimations(int[] animations) {
+		if (animations == null || animations.length != 2) {
+			Log.e(TAG, "Animations' length should be 2.");
+			return this;
+		}
+		mTarget.setTransitionAnimations(animations);
 		return this;
 	}
 

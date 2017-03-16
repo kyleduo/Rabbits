@@ -62,6 +62,10 @@ public class DefaultNavigator extends AbstractNavigator {
 				if (mTarget.shouldFinishPrevious()) {
 					activity.finish();
 				}
+				int[] anim = mTarget.getTransitionAnimations();
+				if (anim != null && anim.length == 2) {
+					activity.overridePendingTransition(anim[0], anim[1]);
+				}
 				return true;
 			} else if (mFrom instanceof Context) {
 				((Context) mFrom).startActivity(intent);
@@ -75,6 +79,10 @@ public class DefaultNavigator extends AbstractNavigator {
 					if (mTarget.shouldFinishPrevious() && fragment.getActivity() != null) {
 						fragment.getActivity().finish();
 					}
+					int[] anim = mTarget.getTransitionAnimations();
+					if (anim != null && anim.length == 2) {
+						fragment.getActivity().overridePendingTransition(anim[0], anim[1]);
+					}
 				}
 				return true;
 			} else if (mFrom instanceof android.app.Fragment) {
@@ -86,6 +94,10 @@ public class DefaultNavigator extends AbstractNavigator {
 						fragment.startActivity(intent);
 						if (mTarget.shouldFinishPrevious() && fragment.getActivity() != null) {
 							fragment.getActivity().finish();
+						}
+						int[] anim = mTarget.getTransitionAnimations();
+						if (anim != null && anim.length == 2) {
+							fragment.getActivity().overridePendingTransition(anim[0], anim[1]);
 						}
 					}
 				}
@@ -99,14 +111,24 @@ public class DefaultNavigator extends AbstractNavigator {
 				navigator.startForResult(requestCode);
 			} else {
 				navigator.start();
+				int[] anim = mTarget.getTransitionAnimations();
 				if (mTarget.shouldFinishPrevious()) {
 					if (mFrom instanceof Activity) {
 						((Activity) mFrom).finish();
+						if (anim != null && anim.length == 2) {
+							((Activity) mFrom).overridePendingTransition(anim[0], anim[1]);
+						}
 					} else if (mFrom instanceof Fragment) {
 						((Fragment) mFrom).getActivity().finish();
+						if (anim != null && anim.length == 2) {
+							((Fragment) mFrom).getActivity().overridePendingTransition(anim[0], anim[1]);
+						}
 					} else if (mFrom instanceof android.app.Fragment) {
 						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 							((android.app.Fragment) mFrom).getActivity().finish();
+							if (anim != null && anim.length == 2) {
+								((android.app.Fragment) mFrom).getActivity().overridePendingTransition(anim[0], anim[1]);
+							}
 						}
 					}
 				}

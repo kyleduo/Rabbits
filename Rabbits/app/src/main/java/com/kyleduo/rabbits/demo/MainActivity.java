@@ -34,6 +34,7 @@ public class MainActivity extends BaseActivity {
 					Toast.makeText(MainActivity.this, url, Toast.LENGTH_SHORT).show();
 					Rabbit.from(MainActivity.this)
 							.to(url)
+							.setTransitionAnimations(new int[]{R.anim.fadein, R.anim.fadeout})
 							.start();
 				}
 			});

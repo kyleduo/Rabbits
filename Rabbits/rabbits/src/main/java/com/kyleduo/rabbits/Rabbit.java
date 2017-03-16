@@ -20,7 +20,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,62 +50,62 @@ public class Rabbit {
 	private static List<INavigationInterceptor> sInterceptors;
 
 	private Object mFrom;
+	private boolean mIgnoreParent = false;
 	private List<INavigationInterceptor> mInterceptors;
 
-	private boolean mIgnoreParent = false;
+	private static class RabbitInvocationHandler implements InvocationHandler {
+
+		private Class<?> clz;
+		private Map<String, Method> methods = new HashMap<>();
+
+		@Override
+		public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
+			if (clz == null) {
+				clz = Class.forName(ROUTER_CLASS);
+			}
+			String page = (String) objects[0];
+			if (page == null || page.length() == 0) {
+				return null;
+			}
+			String name = method.getName();
+
+			String key = name + "-" + page;
+
+			Method m = methods.get(key);
+			if (m != null) {
+				return m.invoke(null);
+			} else {
+				boolean findObtain = true;
+				if (name.equals(IRouter.METHOD_OBTAIN)) {
+					String methodName = NameParser.parseObtain(page);
+					try {
+						m = clz.getMethod(methodName);
+					} catch (NoSuchMethodException e) {
+						// do nothing
+					}
+					if (m != null) {
+						methods.put(key, m);
+						return m.invoke(null);
+					}
+					findObtain = false;
+				}
+				if (name.equals(IRouter.METHOD_ROUTE) || !findObtain) {
+					String methodName = NameParser.parseRoute(page);
+					m = clz.getMethod(methodName);
+					if (m != null) {
+						methods.put(key, m);
+						return m.invoke(null);
+					}
+				}
+			}
+			return null;
+		}
+	}
 
 	private Rabbit(Object from) {
 		mFrom = from;
 		if (sRouter == null) {
-			sRouter = (IRouter) Proxy.newProxyInstance(IRouter.class.getClassLoader(), new Class[]{IRouter.class}, new InvocationHandler() {
-
-				Class<?> clz;
-				Map<String, Method> methods = new LinkedHashMap<>();
-
-				@Override
-				public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
-					if (clz == null) {
-						clz = Class.forName(ROUTER_CLASS);
-					}
-					String page = (String) objects[0];
-					if (page == null || page.length() == 0) {
-						return null;
-					}
-					String name = method.getName();
-
-					String key = name + "-" + page;
-
-					Method m = methods.get(key);
-					if (m != null) {
-						return m.invoke(null);
-					} else {
-						boolean findObtain = true;
-						if (name.equals(IRouter.METHOD_OBTAIN)) {
-							String methodName = NameParser.parseObtain(page);
-							try {
-								m = clz.getMethod(methodName);
-							} catch (NoSuchMethodException e) {
-								// do nothing
-							}
-							if (m != null) {
-								methods.put(key, m);
-								return m.invoke(null);
-							}
-							findObtain = false;
-						}
-						if (name.equals(IRouter.METHOD_ROUTE) || !findObtain) {
-							String methodName = NameParser.parseRoute(page);
-							m = clz.getMethod(methodName);
-							if (m != null) {
-								methods.put(key, m);
-								return m.invoke(null);
-							}
-						}
-					}
-
-					return null;
-				}
-			});
+			sRouter = (IRouter) Proxy.newProxyInstance(IRouter.class.getClassLoader(), new Class[]{IRouter.class}, new RabbitInvocationHandler());
 		}
 	}
 
