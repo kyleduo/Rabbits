@@ -104,13 +104,14 @@ public class DefaultNavigator extends AbstractNavigator {
 				return true;
 			}
 		} else if (to instanceof AbstractNavigator) {
+			boolean ret;
 			AbstractNavigator navigator = ((AbstractNavigator) to).setFrom(mFrom)
 					.setIntentFlags(mTarget.getFlags())
 					.mergeExtras(mTarget.getExtras());
 			if (requestCode >= 0) {
-				navigator.startForResult(requestCode);
+				ret = navigator.startForResult(requestCode);
 			} else {
-				navigator.start();
+				ret = navigator.start();
 				int[] anim = mTarget.getTransitionAnimations();
 				if (mTarget.shouldFinishPrevious()) {
 					if (mFrom instanceof Activity) {
@@ -133,6 +134,7 @@ public class DefaultNavigator extends AbstractNavigator {
 					}
 				}
 			}
+			return ret;
 		}
 		return false;
 	}
