@@ -353,6 +353,15 @@ This is a major flexible part of Rabbits design, not just finish the navigation 
 
 
 
+### Proguard rules
+
+```
+-keep class com.kyleduo.rabbits.Router { *; }
+-keep class com.kyleduo.rabbits.IRouter { *; }
+```
+
+
+
 
 License
 ---
