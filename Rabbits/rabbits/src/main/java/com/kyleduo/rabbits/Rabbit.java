@@ -38,347 +38,347 @@ import java.util.Map;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Rabbit {
-	private static final String TAG = "Rabbit";
-	private static final String ROUTER_CLASS = "com.kyleduo.rabbits.Router";
+    private static final String TAG = "Rabbit";
+    private static final String ROUTER_CLASS = "com.kyleduo.rabbits.Router";
 
-	public static final String KEY_ORIGIN_URI = "rabbits_origin_uri";
+    public static final String KEY_ORIGIN_URI = "rabbits_origin_uri";
 
-	private static IRouter sRouter;
-	static String sAppScheme;
-	static String sDefaultHost;
-	private static INavigatorFactory sNavigatorFactory;
-	private static List<INavigationInterceptor> sInterceptors;
+    private static IRouter sRouter;
+    static String sAppScheme;
+    static String sDefaultHost;
+    private static INavigatorFactory sNavigatorFactory;
+    private static List<INavigationInterceptor> sInterceptors;
 
-	private Object mFrom;
-	private boolean mIgnoreParent = false;
-	private List<INavigationInterceptor> mInterceptors;
+    private Object mFrom;
+    private boolean mIgnoreParent = false;
+    private List<INavigationInterceptor> mInterceptors;
 
-	private static class RabbitInvocationHandler implements InvocationHandler {
+    private static class RabbitInvocationHandler implements InvocationHandler {
 
-		private Class<?> clz;
-		private Map<String, Method> methods = new HashMap<>();
+        private Class<?> clz;
+        private Map<String, Method> methods = new HashMap<>();
 
-		@Override
-		public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
-			if (clz == null) {
-				clz = Class.forName(ROUTER_CLASS);
-			}
-			String page = (String) objects[0];
-			if (page == null || page.length() == 0) {
-				return null;
-			}
-			String name = method.getName();
+        @Override
+        public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
+            if (clz == null) {
+                clz = Class.forName(ROUTER_CLASS);
+            }
+            String page = (String) objects[0];
+            if (page == null || page.length() == 0) {
+                return null;
+            }
+            String name = method.getName();
 
-			String key = name + "-" + page;
+            String key = name + "-" + page;
 
-			Method m = methods.get(key);
-			if (m != null) {
-				return m.invoke(null);
-			} else {
-				boolean findObtain = true;
-				if (name.equals(IRouter.METHOD_OBTAIN)) {
-					String methodName = NameParser.parseObtain(page);
-					try {
-						m = clz.getMethod(methodName);
-					} catch (NoSuchMethodException e) {
-						// do nothing
-					}
-					if (m != null) {
-						methods.put(key, m);
-						return m.invoke(null);
-					}
-					findObtain = false;
-				}
-				if (name.equals(IRouter.METHOD_ROUTE) || !findObtain) {
-					String methodName = NameParser.parseRoute(page);
-					m = clz.getMethod(methodName);
-					if (m != null) {
-						methods.put(key, m);
-						return m.invoke(null);
-					}
-				}
-			}
-			return null;
-		}
-	}
+            Method m = methods.get(key);
+            if (m != null) {
+                return m.invoke(null);
+            } else {
+                boolean findObtain = true;
+                if (name.equals(IRouter.METHOD_OBTAIN)) {
+                    String methodName = NameParser.parseObtain(page);
+                    try {
+                        m = clz.getMethod(methodName);
+                    } catch (NoSuchMethodException e) {
+                        // do nothing
+                    }
+                    if (m != null) {
+                        methods.put(key, m);
+                        return m.invoke(null);
+                    }
+                    findObtain = false;
+                }
+                if (name.equals(IRouter.METHOD_ROUTE) || !findObtain) {
+                    String methodName = NameParser.parseRoute(page);
+                    m = clz.getMethod(methodName);
+                    if (m != null) {
+                        methods.put(key, m);
+                        return m.invoke(null);
+                    }
+                }
+            }
+            return null;
+        }
+    }
 
-	private Rabbit(Object from) {
-		mFrom = from;
-		if (sRouter == null) {
-			sRouter = (IRouter) Proxy.newProxyInstance(IRouter.class.getClassLoader(), new Class[]{IRouter.class}, new RabbitInvocationHandler());
-		}
-	}
+    private Rabbit(Object from) {
+        mFrom = from;
+        if (sRouter == null) {
+            sRouter = (IRouter) Proxy.newProxyInstance(IRouter.class.getClassLoader(), new Class[]{IRouter.class}, new RabbitInvocationHandler());
+        }
+    }
 
-	public static String dumpMappings() {
-		return Mappings.dump();
-	}
+    public static String dumpMappings() {
+        return Mappings.dump();
+    }
 
-	/**
-	 * Initial rabbits with basic elements, using default Navigators.
-	 *
-	 * @param scheme      Scheme for this application.
-	 * @param defaultHost Default host when try to match uri without a host.
-	 */
-	public static void init(String scheme, String defaultHost) {
-		init(scheme, defaultHost, new DefaultNavigatorFactory());
-	}
+    /**
+     * Initial rabbits with basic elements, using default Navigators.
+     *
+     * @param scheme      Scheme for this application.
+     * @param defaultHost Default host when try to match uri without a host.
+     */
+    public static void init(String scheme, String defaultHost) {
+        init(scheme, defaultHost, new DefaultNavigatorFactory());
+    }
 
-	/**
-	 * Initial rabbits with basic elements.
-	 *
-	 * @param scheme           Scheme for this application.
-	 * @param defaultHost      Default host when try to match uri without a host.
-	 * @param navigatorFactory Custom navigator factory.
-	 */
-	public static void init(String scheme, String defaultHost, INavigatorFactory navigatorFactory) {
-		sAppScheme = scheme;
-		sDefaultHost = defaultHost;
-		sNavigatorFactory = navigatorFactory;
-	}
+    /**
+     * Initial rabbits with basic elements.
+     *
+     * @param scheme           Scheme for this application.
+     * @param defaultHost      Default host when try to match uri without a host.
+     * @param navigatorFactory Custom navigator factory.
+     */
+    public static void init(String scheme, String defaultHost, INavigatorFactory navigatorFactory) {
+        sAppScheme = scheme;
+        sDefaultHost = defaultHost;
+        sNavigatorFactory = navigatorFactory;
+    }
 
-	/**
-	 * Setup in sub-thread.
-	 *
-	 * @param context  Used for io operation.
-	 * @param callback callback run after setup finished.
-	 */
-	public static void asyncSetup(Context context, Runnable callback) {
-		setup(context, true, callback);
-	}
+    /**
+     * Setup in sub-thread.
+     *
+     * @param context  Used for io operation.
+     * @param callback callback run after setup finished.
+     */
+    public static void asyncSetup(Context context, Runnable callback) {
+        setup(context, true, callback);
+    }
 
-	/**
-	 * Synchronously setup.
-	 *
-	 * @param context Used for io operation.
-	 */
-	public static void setup(Context context) {
-		setup(context, false, null);
-	}
+    /**
+     * Synchronously setup.
+     *
+     * @param context Used for io operation.
+     */
+    public static void setup(Context context) {
+        setup(context, false, null);
+    }
 
-	private static void setup(Context context, boolean async, Runnable callback) {
-		Mappings.setup(context, async, callback);
-	}
+    private static void setup(Context context, boolean async, Runnable callback) {
+        Mappings.setup(context, async, callback);
+    }
 
-	/**
-	 * Update mappings from a file.
-	 *
-	 * @param context Used for io operation.
-	 * @param file    Json file.
-	 */
-	public static void updateMappings(Context context, File file) {
-		Mappings.update(context, file, false);
-	}
+    /**
+     * Update mappings from a file.
+     *
+     * @param context Used for io operation.
+     * @param file    Json file.
+     */
+    public static void updateMappings(Context context, File file) {
+        Mappings.update(context, file, false);
+    }
 
-	/**
-	 * Update mappings using a json string.
-	 *
-	 * @param context Used for io operation.
-	 * @param json    Json string.
-	 */
-	public static void updateMappings(Context context, String json) {
-		Mappings.update(context, json, false);
-	}
+    /**
+     * Update mappings using a json string.
+     *
+     * @param context Used for io operation.
+     * @param json    Json string.
+     */
+    public static void updateMappings(Context context, String json) {
+        Mappings.update(context, json, false);
+    }
 
 
-	/**
-	 * Update mappings from a file.
-	 *
-	 * @param context  Used for io operation.
-	 * @param file     Json file.
-	 * @param override override current if true.
-	 */
-	public static void updateMappings(Context context, File file, boolean override) {
-		Mappings.update(context, file, override);
-	}
+    /**
+     * Update mappings from a file.
+     *
+     * @param context  Used for io operation.
+     * @param file     Json file.
+     * @param override override current if true.
+     */
+    public static void updateMappings(Context context, File file, boolean override) {
+        Mappings.update(context, file, override);
+    }
 
-	/**
-	 * Update mappings using a json string.
-	 *
-	 * @param context  Used for io operation.
-	 * @param json     Json string.
-	 * @param override override current if true.
-	 */
-	public static void updateMappings(Context context, String json, boolean override) {
-		Mappings.update(context, json, override);
-	}
+    /**
+     * Update mappings using a json string.
+     *
+     * @param context  Used for io operation.
+     * @param json     Json string.
+     * @param override override current if true.
+     */
+    public static void updateMappings(Context context, String json, boolean override) {
+        Mappings.update(context, json, override);
+    }
 
-	public static void setAllowedHosts(String... hosts) {
-		Mappings.setALLOWED_HOSTS(hosts);
-	}
+    public static void setAllowedHosts(String... hosts) {
+        Mappings.setALLOWED_HOSTS(hosts);
+    }
 
-	/**
-	 * Create a rabbit who has ability to navigate through your pages.
-	 *
-	 * @param from Whether an Activity or a Fragment instance.
-	 * @return Rabbit instance.
-	 */
-	public static Rabbit from(Object from) {
-		if (!(from instanceof Activity) && !(from instanceof Fragment || from instanceof android.app.Fragment)) {
-			throw new IllegalArgumentException("From object must be whether an Activity or a Fragment instance.");
-		}
-		return new Rabbit(from);
-	}
+    /**
+     * Create a rabbit who has ability to navigate through your pages.
+     *
+     * @param from Whether an Activity or a Fragment instance.
+     * @return Rabbit instance.
+     */
+    public static Rabbit from(Object from) {
+        if (!(from instanceof Activity) && !(from instanceof Fragment || from instanceof android.app.Fragment)) {
+            throw new IllegalArgumentException("From object must be whether an Activity or a Fragment instance.");
+        }
+        return new Rabbit(from);
+    }
 
-	/**
-	 * Add global interceptor. These Interceptors' methods will be invoked in every navigation.
-	 *
-	 * @param interceptor Interceptor instance.
-	 */
-	public static void addGlobalInterceptor(INavigationInterceptor interceptor) {
-		if (sInterceptors == null) {
-			sInterceptors = new ArrayList<>();
-		}
-		sInterceptors.add(interceptor);
-	}
+    /**
+     * Add global interceptor. These Interceptors' methods will be invoked in every navigation.
+     *
+     * @param interceptor Interceptor instance.
+     */
+    public static void addGlobalInterceptor(INavigationInterceptor interceptor) {
+        if (sInterceptors == null) {
+            sInterceptors = new ArrayList<>();
+        }
+        sInterceptors.add(interceptor);
+    }
 
-	/**
-	 * Add an interceptor used for this navigation. This is useful when you want to check whether a
-	 * uri matches a specific page using {@link com.kyleduo.rabbits.Rabbit#tryTo(Uri)} method.
-	 *
-	 * @param interceptor Interceptor instance.
-	 * @return Rabbit instance.
-	 */
-	public Rabbit addInterceptor(INavigationInterceptor interceptor) {
-		if (mInterceptors == null) {
-			mInterceptors = new ArrayList<>();
-		}
-		mInterceptors.add(interceptor);
-		return this;
-	}
+    /**
+     * Add an interceptor used for this navigation. This is useful when you want to check whether a
+     * uri matches a specific page using {@link com.kyleduo.rabbits.Rabbit#tryTo(Uri)} method.
+     *
+     * @param interceptor Interceptor instance.
+     * @return Rabbit instance.
+     */
+    public Rabbit addInterceptor(INavigationInterceptor interceptor) {
+        if (mInterceptors == null) {
+            mInterceptors = new ArrayList<>();
+        }
+        mInterceptors.add(interceptor);
+        return this;
+    }
 
-	/**
-	 * Whether should ignore parent declaration of this target.
-	 *
-	 * @param ignoreParent true for ignore
-	 * @return Rabbit instance.
-	 */
-	public Rabbit ignoreParent(boolean ignoreParent) {
-		mIgnoreParent = ignoreParent;
-		return this;
-	}
+    /**
+     * Whether should ignore parent declaration of this target.
+     *
+     * @param ignoreParent true for ignore
+     * @return Rabbit instance.
+     */
+    public Rabbit ignoreParent(boolean ignoreParent) {
+        mIgnoreParent = ignoreParent;
+        return this;
+    }
 
-	/**
-	 * Used for obtain page object. Intent or Fragment instance.
-	 *
-	 * @param uriStr uriStr
-	 * @return AbstractNavigator
-	 */
-	public AbstractNavigator obtain(String uriStr) {
-		Uri uri = Uri.parse(uriStr);
-		return obtain(uri);
-	}
+    /**
+     * Used for obtain page object. Intent or Fragment instance.
+     *
+     * @param uriStr uriStr
+     * @return AbstractNavigator
+     */
+    public AbstractNavigator obtain(String uriStr) {
+        Uri uri = Uri.parse(uriStr);
+        return obtain(uri);
+    }
 
-	/**
-	 * Used for obtain page object. Intent or Fragment instance.
-	 *
-	 * @param uri uri
-	 * @return AbstractNavigator
-	 */
-	public AbstractNavigator obtain(Uri uri) {
-		Target target = Mappings.match(uri).obtain(sRouter);
-		return dispatch(target, false);
-	}
+    /**
+     * Used for obtain page object. Intent or Fragment instance.
+     *
+     * @param uri uri
+     * @return AbstractNavigator
+     */
+    public AbstractNavigator obtain(Uri uri) {
+        Target target = Mappings.match(uri).obtain(sRouter);
+        return dispatch(target, false);
+    }
 
-	/**
-	 * Navigate to page, or perform a not found strategy.
-	 *
-	 * @param uriStr uri string
-	 * @return AbstractNavigator
-	 */
-	public AbstractNavigator to(String uriStr) {
-		Uri uri = Uri.parse(uriStr);
-		return to(uri);
-	}
+    /**
+     * Navigate to page, or perform a not found strategy.
+     *
+     * @param uriStr uri string
+     * @return AbstractNavigator
+     */
+    public AbstractNavigator to(String uriStr) {
+        Uri uri = Uri.parse(uriStr);
+        return to(uri);
+    }
 
-	/**
-	 * Navigate to page, or perform a not found strategy.
-	 *
-	 * @param uri uri
-	 * @return AbstractNavigator
-	 */
-	public AbstractNavigator to(Uri uri) {
-		Target target = Mappings.match(uri);
-		if (mIgnoreParent) {
-			target.obtain(sRouter);
-		} else {
-			target.route(sRouter);
-		}
-		return dispatch(target, false);
-	}
+    /**
+     * Navigate to page, or perform a not found strategy.
+     *
+     * @param uri uri
+     * @return AbstractNavigator
+     */
+    public AbstractNavigator to(Uri uri) {
+        Target target = Mappings.match(uri);
+        if (mIgnoreParent) {
+            target.obtain(sRouter);
+        } else {
+            target.route(sRouter);
+        }
+        return dispatch(target, false);
+    }
 
-	/**
-	 * Navigate to page, or just return null if not found.
-	 *
-	 * @param uriStr uri
-	 * @return AbstractNavigator
-	 */
-	public AbstractNavigator tryTo(String uriStr) {
-		Uri uri = Uri.parse(uriStr);
-		return tryTo(uri);
-	}
+    /**
+     * Navigate to page, or just return null if not found.
+     *
+     * @param uriStr uri
+     * @return AbstractNavigator
+     */
+    public AbstractNavigator tryTo(String uriStr) {
+        Uri uri = Uri.parse(uriStr);
+        return tryTo(uri);
+    }
 
-	/**
-	 * Only if it is a http/https uri, and a page mapping from uri with app scheme and given path
-	 * exists, a valid navigator will returned.
-	 *
-	 * @param uri uri
-	 * @return AbstractNavigator
-	 */
-	public AbstractNavigator tryTo(Uri uri) {
-		final String scheme = uri.getScheme();
-		if (TextUtils.isEmpty(scheme) || (!scheme.startsWith("http") && !scheme.startsWith(sAppScheme))) {
-			return new MuteNavigator(mFrom, new Target(uri), assembleInterceptor());
-		}
-		if (!TextUtils.equals(scheme, sAppScheme)) {
-			uri = uri.buildUpon().scheme(sAppScheme).build();
-		}
-		Target target = Mappings.match(uri);
-		if (mIgnoreParent) {
-			target.obtain(sRouter);
-		} else {
-			target.route(sRouter);
-		}
-		return dispatch(target, true);
-	}
+    /**
+     * Only if it is a http/https uri, and a page mapping from uri with app scheme and given path
+     * exists, a valid navigator will returned.
+     *
+     * @param uri uri
+     * @return AbstractNavigator
+     */
+    public AbstractNavigator tryTo(Uri uri) {
+        final String scheme = uri.getScheme();
+        if (TextUtils.isEmpty(scheme) || (!scheme.startsWith("http") && !scheme.startsWith(sAppScheme))) {
+            return new MuteNavigator(mFrom, new Target(uri), assembleInterceptor());
+        }
+        if (!TextUtils.equals(scheme, sAppScheme)) {
+            uri = uri.buildUpon().scheme(sAppScheme).build();
+        }
+        Target target = Mappings.match(uri);
+        if (mIgnoreParent) {
+            target.obtain(sRouter);
+        } else {
+            target.route(sRouter);
+        }
+        return dispatch(target, true);
+    }
 
-	/**
-	 * Handle the dispatch operation.
-	 *
-	 * @param target target
-	 * @param mute   whether mute
-	 * @return navigator
-	 */
-	private AbstractNavigator dispatch(Target target, boolean mute) {
-		if (BuildConfig.DEBUG) {
-			Log.d(TAG, target.toString());
-		}
-		if (!target.hasMatched()) {
-			if (!mute) {
-				AbstractPageNotFoundHandler pageNotFoundHandler = sNavigatorFactory.createPageNotFoundHandler(mFrom, target, assembleInterceptor());
-				if (pageNotFoundHandler != null) {
-					return pageNotFoundHandler;
-				}
-			} else if (target.getTo() == null) {
-				return new MuteNavigator(mFrom, target, assembleInterceptor());
-			}
-		}
-		return sNavigatorFactory.createNavigator(mFrom, target, assembleInterceptor());
-	}
+    /**
+     * Handle the dispatch operation.
+     *
+     * @param target target
+     * @param mute   whether mute
+     * @return navigator
+     */
+    private AbstractNavigator dispatch(Target target, boolean mute) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, target.toString());
+        }
+        if (!target.hasMatched()) {
+            if (!mute) {
+                AbstractPageNotFoundHandler pageNotFoundHandler = sNavigatorFactory.createPageNotFoundHandler(mFrom, target, assembleInterceptor());
+                if (pageNotFoundHandler != null) {
+                    return pageNotFoundHandler;
+                }
+            } else if (target.getTo() == null) {
+                return new MuteNavigator(mFrom, target, assembleInterceptor());
+            }
+        }
+        return sNavigatorFactory.createNavigator(mFrom, target, assembleInterceptor());
+    }
 
-	/**
-	 * Assemble interceptors and static interceptors.
-	 * order static interceptors after instance's interceptors.
-	 *
-	 * @return a list of valid navigation interceptor
-	 */
-	private List<INavigationInterceptor> assembleInterceptor() {
-		if (sInterceptors == null) {
-			return mInterceptors;
-		}
-		if (mInterceptors == null) {
-			mInterceptors = new ArrayList<>();
-		}
-		mInterceptors.addAll(sInterceptors);
-		return mInterceptors;
-	}
+    /**
+     * Assemble interceptors and static interceptors.
+     * order static interceptors after instance's interceptors.
+     *
+     * @return a list of valid navigation interceptor
+     */
+    private List<INavigationInterceptor> assembleInterceptor() {
+        if (sInterceptors == null) {
+            return mInterceptors;
+        }
+        if (mInterceptors == null) {
+            mInterceptors = new ArrayList<>();
+        }
+        mInterceptors.addAll(sInterceptors);
+        return mInterceptors;
+    }
 }

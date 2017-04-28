@@ -12,17 +12,17 @@ import java.util.List;
 
 public class MuteNavigator extends AbstractNavigator {
 
-	public MuteNavigator(Object from, Target target, List<INavigationInterceptor> interceptors) {
-		super(from, target, interceptors);
-	}
+    public MuteNavigator(Object from, Target target, List<INavigationInterceptor> interceptors) {
+        super(from, target, interceptors);
+    }
 
-	@Override
-	protected boolean handleStart(int requestCode) {
-		return false;
-	}
+    @Override
+    protected boolean handleStart(int requestCode) {
+        return false;
+    }
 
-	@Override
-	public Object obtain() {
-		return null;
-	}
+    @Override
+    public Object obtain() {
+        return null;
+    }
 }

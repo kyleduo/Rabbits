@@ -13,17 +13,17 @@ import java.util.List;
 
 public abstract class AbstractPageNotFoundHandler extends AbstractNavigator {
 
-	public AbstractPageNotFoundHandler(Object from, Target target, List<INavigationInterceptor> interceptors) {
-		super(from, target, interceptors);
-	}
+    public AbstractPageNotFoundHandler(Object from, Target target, List<INavigationInterceptor> interceptors) {
+        super(from, target, interceptors);
+    }
 
-	@Override
-	public boolean start() {
-		return checkInterceptor() || handleStart(-1);
-	}
+    @Override
+    public boolean start() {
+        return checkInterceptor() || handleStart(-1);
+    }
 
-	@Override
-	public boolean startForResult(int requestCode) {
-		return checkInterceptor() || handleStart(requestCode);
-	}
+    @Override
+    public boolean startForResult(int requestCode) {
+        return checkInterceptor() || handleStart(requestCode);
+    }
 }

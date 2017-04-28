@@ -13,34 +13,34 @@ import java.util.List;
  */
 
 class DemoNotFoundHandler extends AbstractPageNotFoundHandler {
-	private static final String HTTP_SCHEME = "https";
+    private static final String HTTP_SCHEME = "https";
 
-	DemoNotFoundHandler(Object from, Target target, List<INavigationInterceptor> interceptors) {
-		super(from, target, interceptors);
-	}
+    DemoNotFoundHandler(Object from, Target target, List<INavigationInterceptor> interceptors) {
+        super(from, target, interceptors);
+    }
 
-	@Override
-	protected boolean handleStart(int requestCode) {
-		String httpUrl = mTarget.getUri().buildUpon().scheme(HTTP_SCHEME).build().toString();
-		AbstractNavigator navigator = Rabbit.from(mFrom)
-				.to("/web")
-				.putExtra("url", httpUrl)
-				.mergeExtras(mTarget.getExtras());
-		if (requestCode >= 0) {
-			navigator.startForResult(requestCode);
-		} else {
-			navigator.start();
-		}
-		return false;
-	}
+    @Override
+    protected boolean handleStart(int requestCode) {
+        String httpUrl = mTarget.getUri().buildUpon().scheme(HTTP_SCHEME).build().toString();
+        AbstractNavigator navigator = Rabbit.from(mFrom)
+                .to("/web")
+                .putExtra("url", httpUrl)
+                .target(mTarget);
+        if (requestCode >= 0) {
+            navigator.startForResult(requestCode);
+        } else {
+            navigator.start();
+        }
+        return false;
+    }
 
-	@Override
-	public Object obtain() {
-		String httpUrl = mTarget.getUri().buildUpon().scheme(HTTP_SCHEME).build().toString();
-		return Rabbit.from(mFrom)
-				.obtain("/web")
-				.putExtra("url", httpUrl)
-				.mergeExtras(mTarget.getExtras())
-				.obtain();
-	}
+    @Override
+    public Object obtain() {
+        String httpUrl = mTarget.getUri().buildUpon().scheme(HTTP_SCHEME).build().toString();
+        return Rabbit.from(mFrom)
+                .obtain("/web")
+                .putExtra("url", httpUrl)
+                .mergeExtras(mTarget.getExtras())
+                .obtain();
+    }
 }
