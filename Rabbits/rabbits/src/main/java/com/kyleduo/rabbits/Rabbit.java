@@ -16,6 +16,7 @@ import com.kyleduo.rabbits.navigator.INavigatorFactory;
 import com.kyleduo.rabbits.navigator.MuteNavigator;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -38,8 +39,11 @@ import java.util.Map;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class Rabbit {
-    private static final String TAG = "Rabbit";
-    private static final String ROUTER_CLASS = "com.kyleduo.rabbits.Router";
+    private static final String TAG = Rabbit.class.getSimpleName();
+    private static final String PACKAGE = "com.kyleduo.rabbits";
+    private static final String ROUTER_CLASS = PACKAGE + ".Router";
+    private static final String ROUTERS_CLASS = PACKAGE + ".Routers";
+    private static final String ROUTERS_FIELD_CLASS = "routers";
 
     public static final String KEY_ORIGIN_URI = "rabbits_origin_uri";
 
@@ -55,13 +59,27 @@ public class Rabbit {
 
     private static class RabbitInvocationHandler implements InvocationHandler {
 
-        private Class<?> clz;
+        private List<Class<?>> mClasses;
         private Map<String, Method> methods = new HashMap<>();
 
         @Override
         public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
-            if (clz == null) {
-                clz = Class.forName(ROUTER_CLASS);
+            if (mClasses == null) {
+                mClasses = new ArrayList<>();
+                Class cls;
+                try {
+                    cls = Class.forName(ROUTERS_CLASS);
+                } catch (ClassNotFoundException e) {
+                    cls = Class.forName(ROUTER_CLASS);
+                    mClasses.add(cls);
+                }
+                if (mClasses.size() == 0) {
+                    Field field = cls.getField(ROUTERS_FIELD_CLASS);
+                    String[] names = (String[]) field.get(null);
+                    for (String name : names) {
+                        mClasses.add(Class.forName(PACKAGE + "." + name));
+                    }
+                }
             }
             String page = (String) objects[0];
             if (page == null || page.length() == 0) {
@@ -78,10 +96,13 @@ public class Rabbit {
                 boolean findObtain = true;
                 if (name.equals(IRouter.METHOD_OBTAIN)) {
                     String methodName = NameParser.parseObtain(page);
-                    try {
-                        m = clz.getMethod(methodName);
-                    } catch (NoSuchMethodException e) {
-                        // do nothing
+                    for (Class<?> clz : mClasses) {
+                        try {
+                            m = clz.getMethod(methodName);
+                            break;
+                        } catch (NoSuchMethodException e) {
+                            // do nothing
+                        }
                     }
                     if (m != null) {
                         methods.put(key, m);
@@ -91,7 +112,14 @@ public class Rabbit {
                 }
                 if (name.equals(IRouter.METHOD_ROUTE) || !findObtain) {
                     String methodName = NameParser.parseRoute(page);
-                    m = clz.getMethod(methodName);
+                    for (Class<?> clz : mClasses) {
+                        try {
+                            m = clz.getMethod(methodName);
+                            break;
+                        } catch (NoSuchMethodException e) {
+                            // do nothing
+                        }
+                    }
                     if (m != null) {
                         methods.put(key, m);
                         return m.invoke(null);

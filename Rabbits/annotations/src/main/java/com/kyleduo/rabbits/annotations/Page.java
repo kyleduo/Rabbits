@@ -12,7 +12,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Page {
 	String name();
 
-	PageType type() default PageType.ACTIVTY;
+	PageType type() default PageType.ACTIVITY;
 
 	String parent() default "";
 

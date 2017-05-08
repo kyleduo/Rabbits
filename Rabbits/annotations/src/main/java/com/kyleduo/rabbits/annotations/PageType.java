@@ -6,6 +6,6 @@ package com.kyleduo.rabbits.annotations;
  */
 
 public enum PageType {
-	ACTIVTY,
+    ACTIVITY,
 	FRAGMENT
 }
