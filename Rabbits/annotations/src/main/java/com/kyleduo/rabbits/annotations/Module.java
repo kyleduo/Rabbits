@@ -4,15 +4,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * for Rabbits
+ * for Module
  * Created by kyleduo on 2017/5/8.
  */
 
 @Retention(RetentionPolicy.CLASS)
-public @interface Rabbits {
-    String module() default "";
+public @interface Module {
+    String name() default "";
 
     String[] subModules() default {};
+
+    boolean standalone() default true;
 
     String srcPath() default "main";
 }

@@ -18,26 +18,26 @@ import com.kyleduo.rabbits.demo.base.BaseFragment;
  */
 @Page(name = "SECOND", type = PageType.FRAGMENT)
 public class SecondFragment extends BaseFragment {
-	@Nullable
-	@Override
-	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		LinearLayout ll = (LinearLayout) super.onCreateView(inflater, container, savedInstanceState);
-		assert ll != null;
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        LinearLayout ll = (LinearLayout) super.onCreateView(inflater, container, savedInstanceState);
+        assert ll != null;
 
-		Button button = new Button(getActivity());
-		button.setText("Back to Home and clearTop");
-		button.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-		button.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Rabbit.from(SecondFragment.this)
-						.to("")
-						.clearTop()
-						.start();
-			}
-		});
-		ll.addView(button);
+        Button button = new Button(getActivity());
+        button.setText("Back to Home and clearTop");
+        button.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Rabbit.from(SecondFragment.this)
+                        .to("")
+                        .clearTop()
+                        .start();
+            }
+        });
+        ll.addView(button);
 
-		return ll;
-	}
+        return ll;
+    }
 }

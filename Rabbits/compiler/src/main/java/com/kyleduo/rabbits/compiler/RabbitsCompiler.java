@@ -3,9 +3,9 @@ package com.kyleduo.rabbits.compiler;
 import com.google.auto.service.AutoService;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.kyleduo.rabbits.annotations.Module;
 import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.annotations.PageType;
-import com.kyleduo.rabbits.annotations.Rabbits;
 import com.kyleduo.rabbits.annotations.utils.NameParser;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
@@ -16,6 +16,7 @@ import com.squareup.javapoet.TypeSpec;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
@@ -61,6 +62,7 @@ public class RabbitsCompiler extends AbstractProcessor {
         try {
             File mappingsFile = findMappings();
             if (mappingsFile != null && mappingsFile.exists()) {
+                debug(mappingsFile.getAbsolutePath());
                 Gson gson = new Gson();
                 MappingTable table = gson.fromJson(new InputStreamReader(new FileInputStream(mappingsFile)), MappingTable.class);
                 for (Map.Entry<String, JsonElement> e : table.mappings.entrySet()) {
@@ -102,14 +104,29 @@ public class RabbitsCompiler extends AbstractProcessor {
                 projectRoot = projectRoot.getParentFile();
             }
         }
-        return new File(projectRoot.getAbsolutePath() + "/src/main/assets/mappings.json");
+        debug(projectRoot.getAbsolutePath());
+        File assets = new File(projectRoot.getAbsolutePath() + "/src/main/assets");
+        debug(assets.getAbsolutePath());
+        if (assets.exists()) {
+            String[] filenames = assets.list(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.startsWith("mappings") && name.endsWith(".json");
+                }
+            });
+            if (filenames == null || filenames.length == 0) {
+                return null;
+            }
+            return new File(assets, filenames[0]);
+        }
+        return null;
     }
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> types = new HashSet<>();
         types.add(Page.class.getName());
-        types.add(Rabbits.class.getName());
+        types.add(Module.class.getName());
         return types;
     }
 
@@ -124,16 +141,28 @@ public class RabbitsCompiler extends AbstractProcessor {
             return false;
         }
 
-        Rabbits rabbits = parseRabbits(roundEnv);
-        if (rabbits == null) {
-            throw new IllegalStateException("A Rabbits annotation is required.");
+        Module module = parseRabbits(roundEnv);
+        if (module == null) {
+            throw new IllegalStateException("A Module annotation is required.");
         }
-        String moduleName = rabbits.module();
+        String moduleName = module.name();
+        String[] subModules = module.subModules();
+        boolean standalone = module.standalone();
         debug(this.toString() + "   " + moduleName);
 
-        if (moduleName.length() == 0) {
-            String[] subModules = rabbits.subModules();
-            generateRouters(subModules);
+        if (standalone) {
+            if (subModules.length == 0) {
+                if (moduleName.length() != 0) {
+                    // In standalone mode.
+                    String[] m = {moduleName};
+                    generateRouters(m);
+                }
+            } else {
+                String[] m = new String[subModules.length + 1];
+                m[0] = "";
+                System.arraycopy(subModules, 0, m, 1, subModules.length);
+                generateRouters(m);
+            }
         }
 
         List<MethodSpec> methods = parsePages(roundEnv);
@@ -165,15 +194,15 @@ public class RabbitsCompiler extends AbstractProcessor {
         return routerClassName;
     }
 
-    private Rabbits parseRabbits(RoundEnvironment roundEnv) {
-        Rabbits rabbits = null;
-        for (Element e : roundEnv.getElementsAnnotatedWith(Rabbits.class)) {
-            rabbits = e.getAnnotation(Rabbits.class);
-            if (rabbits != null) {
+    private Module parseRabbits(RoundEnvironment roundEnv) {
+        Module module = null;
+        for (Element e : roundEnv.getElementsAnnotatedWith(Module.class)) {
+            module = e.getAnnotation(Module.class);
+            if (module != null) {
                 break;
             }
         }
-        return rabbits;
+        return module;
     }
 
     private List<MethodSpec> parsePages(RoundEnvironment roundEnv) {
@@ -339,7 +368,6 @@ public class RabbitsCompiler extends AbstractProcessor {
 
     private void generateRouters(String[] subModules) {
         ArrayList<String> routerNames = new ArrayList<>();
-        routerNames.add(ROUTER_CLASS);
         for (String module : subModules) {
             routerNames.add(getRouterClassName(module));
         }

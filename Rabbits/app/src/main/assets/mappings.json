@@ -1,6 +1,4 @@
 {
-  "version": 1,
-  "force_override": 1,
   "allowed_hosts": [
     "allowed.kyleduo.com"
   ],

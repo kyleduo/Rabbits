@@ -1,11 +1,7 @@
 {
-  "version": 1,
   "module": "sub1",
-  "force_override": 1,
-  "allowed_hosts": [
-    "allowed.kyleduo.com"
-  ],
   "mappings": {
-    "demo://rabbits.kyleduo.com/submodule1": "SUB_MODULE_1"
+    "demo://rabbits.kyleduo.com/submodule1": "SUB_MODULE_1",
+    "demo://rabbits.kyleduo.com/submodule2": "SUB_MODULE_2"
   }
 }

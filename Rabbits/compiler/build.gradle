@@ -14,7 +14,7 @@ targetCompatibility = "1.7"
 
 ext {
     POM_ARTIFACT_ID='compiler'
-    POM_NAME='Rabbits-Compiler'
+    POM_NAME='Module-Compiler'
     POM_PACKAGING='aar'
 }
 

@@ -27,4 +27,6 @@ ext {
     minSdkVersion = 9
     targetSdkVersion = 25
     buildToolsVersion = '25.0.2'
+
+    demoIndependentModule = false
 }

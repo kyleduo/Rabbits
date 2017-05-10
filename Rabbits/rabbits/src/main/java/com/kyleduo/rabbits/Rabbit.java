@@ -77,7 +77,11 @@ public class Rabbit {
                     Field field = cls.getField(ROUTERS_FIELD_CLASS);
                     String[] names = (String[]) field.get(null);
                     for (String name : names) {
-                        mClasses.add(Class.forName(PACKAGE + "." + name));
+                        try {
+                            mClasses.add(Class.forName(PACKAGE + "." + name));
+                        } catch (ClassNotFoundException e) {
+                            Log.e(TAG, "Can not found class of name: " + PACKAGE + "." + name);
+                        }
                     }
                 }
             }
@@ -102,6 +106,8 @@ public class Rabbit {
                             break;
                         } catch (NoSuchMethodException e) {
                             // do nothing
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                     if (m != null) {
@@ -118,6 +124,8 @@ public class Rabbit {
                             break;
                         } catch (NoSuchMethodException e) {
                             // do nothing
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                     if (m != null) {
