@@ -1,4 +1,4 @@
-if (demoIndependentModule) {
+if (demoStandAlone) {
     apply plugin: 'com.android.application'
 } else {
     apply plugin: 'com.android.library'
@@ -21,6 +21,17 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+            if (demoStandAlone) {
+                manifest.srcFile 'src/main/standalone/AndroidManifest.xml'
+                java.srcDirs = ['src/main/java', 'src/main/confStandalone']
+            } else {
+                manifest.srcFile 'src/main/library/AndroidManifest.xml'
+                java.srcDirs = ['src/main/java', 'src/main/confLibrary']
+            }
         }
     }
 }

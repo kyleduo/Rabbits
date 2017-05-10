@@ -21,9 +21,7 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    if (demoIndependentModule) {
-
-    } else {
+    if (!demoStandAlone) {
         compile project(':submodule1')
     }
     // App's dependencies, including test
