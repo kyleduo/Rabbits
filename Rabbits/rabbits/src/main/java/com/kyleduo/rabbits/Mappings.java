@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Collections;
@@ -41,6 +40,8 @@ class Mappings {
     private static MappingsLoader sMappingsLoader = new MappingsLoader();
     private static MappingsGroup sMappingsGroup;
 
+    static boolean FORCE_UPDATE_PERSIST = false;
+
     /**
      * Load mappings to memory.
      *
@@ -50,32 +51,26 @@ class Mappings {
      */
     static void setup(final Context context, boolean async, final MappingsLoaderCallback callback) {
         if (async) {
-            sMappingsLoader.loadAsync(context, MappingsSource.getDefault(), callback);
+            sMappingsLoader.loadAsync(context, MappingsSource.getDefault(), FORCE_UPDATE_PERSIST, callback);
         } else {
-            sMappingsGroup = sMappingsLoader.load(context, MappingsSource.getDefault());
+            sMappingsGroup = sMappingsLoader.load(context, MappingsSource.getDefault(), FORCE_UPDATE_PERSIST);
         }
     }
 
     /**
      * Update mappings using a file.
      *
-     * @param context  context
-     * @param file     file
-     * @param override override current if true
+     * @param context context
+     * @param source  mappings source
      */
-    static void update(Context context, File file, boolean override) {
-        sMappingsLoader.load(context, MappingsSource.fromFile(file.getAbsolutePath()).override(override));
-    }
-
-    /**
-     * Update mappings using json string.
-     *
-     * @param context  context
-     * @param json     json
-     * @param override override current if true
-     */
-    static void update(Context context, String json, boolean override) {
-        sMappingsLoader.load(context, MappingsSource.fromJson(json).override(override));
+    static void update(Context context, MappingsSource source) {
+        if (context == null || source == null) {
+            throw new NullPointerException();
+        }
+        if (source.shouldFullyUpdate()) {
+            source.setOriginMappings(sMappingsGroup);
+        }
+        sMappingsLoader.load(context, source, true);
     }
 
     static Target match(Uri uri) {

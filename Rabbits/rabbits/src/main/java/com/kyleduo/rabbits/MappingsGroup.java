@@ -15,7 +15,7 @@ import java.util.Set;
  * Created by kyleduo on 2017/5/9.
  */
 
-class MappingsGroup {
+public class MappingsGroup {
     private static final String MAPPING_KEY_MAPPINGS = "mappings";
     private static final String MAPPING_KEY_ALLOWED_HOSTS = "allowed_hosts";
 
@@ -27,11 +27,14 @@ class MappingsGroup {
      */
     private String mOriginJson;
 
+    private MappingsGroup() {
+    }
+
     public LinkedHashMap<String, String> getMappings() {
         return mMappings;
     }
 
-    public ArrayList<String> getAllowedHosts() {
+    ArrayList<String> getAllowedHosts() {
         return mAllowedHosts;
     }
 
@@ -98,9 +101,9 @@ class MappingsGroup {
      * merge another mapping to the current one.
      *
      * @param another  mapping
-     * @param override whether override the current one. If true, current mappings' content will
+     * @param override whether fullyUpdate the current one. If true, current mappings' content will
      *                 be replaced by the another.
-     *                 {@param override} should always be false while loading from multiple assets.
+     *                 {@param fullyUpdate} should always be false while loading from multiple assets.
      *                 And may be true when update.
      */
     void merge(MappingsGroup another, boolean override) {

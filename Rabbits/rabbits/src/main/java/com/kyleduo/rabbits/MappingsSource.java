@@ -5,6 +5,7 @@ package com.kyleduo.rabbits;
  * Created by kyleduo on 2017/5/9.
  */
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class MappingsSource {
     static final int TYPE_DEFAULT = 0;
     static final int TYPE_ASSETS = 1;
@@ -17,13 +18,13 @@ public class MappingsSource {
     /**
      * True for fully update. False will lead to a merge operation.
      */
-    private boolean mOverride;
+    private boolean mFullyUpdate;
     private MappingsGroup mOriginMappings;
 
-    private MappingsSource(int type, String value, boolean override) {
+    private MappingsSource(int type, String value, boolean fullyUpdate) {
         mType = type;
         mValue = value;
-        mOverride = override;
+        mFullyUpdate = fullyUpdate;
     }
 
     public int getType() {
@@ -34,20 +35,20 @@ public class MappingsSource {
         return mValue;
     }
 
-    public boolean shouldOverride() {
-        return mOverride;
+    public boolean shouldFullyUpdate() {
+        return mFullyUpdate;
     }
 
-    public MappingsSource override(boolean override) {
-        mOverride = override;
+    public MappingsSource fullyUpdate(boolean fullyUpdate) {
+        mFullyUpdate = fullyUpdate;
         return this;
     }
 
-    public MappingsGroup getOriginMappings() {
+    MappingsGroup getOriginMappings() {
         return mOriginMappings;
     }
 
-    public MappingsSource setOriginMappings(MappingsGroup origin) {
+    MappingsSource setOriginMappings(MappingsGroup origin) {
         mOriginMappings = origin;
         return this;
     }

@@ -15,7 +15,6 @@ import com.kyleduo.rabbits.navigator.INavigationInterceptor;
 import com.kyleduo.rabbits.navigator.INavigatorFactory;
 import com.kyleduo.rabbits.navigator.MuteNavigator;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -149,14 +148,14 @@ public class Rabbit {
         return Mappings.dump();
     }
 
-    /**
-     * Initial rabbits with basic elements, using default Navigators.
-     *
-     * @param scheme      Scheme for this application.
-     * @param defaultHost Default host when try to match uri without a host.
-     */
-    public static void init(String scheme, String defaultHost) {
-        init(scheme, defaultHost, new DefaultNavigatorFactory());
+    public static void init(RConfig config) {
+        if (!config.valid()) {
+            throw new IllegalArgumentException("Config object not valid");
+        }
+        sAppScheme = config.getScheme();
+        sDefaultHost = config.getHost();
+        sNavigatorFactory = config.getNavigatorFactory() == null ? new DefaultNavigatorFactory() : config.getNavigatorFactory();
+        Mappings.FORCE_UPDATE_PERSIST = config.shouldForceUpdatePersist();
     }
 
     /**
@@ -166,7 +165,7 @@ public class Rabbit {
      * @param defaultHost      Default host when try to match uri without a host.
      * @param navigatorFactory Custom navigator factory.
      */
-    public static void init(String scheme, String defaultHost, INavigatorFactory navigatorFactory) {
+    private static void init(String scheme, String defaultHost, INavigatorFactory navigatorFactory) {
         sAppScheme = scheme;
         sDefaultHost = defaultHost;
         sNavigatorFactory = navigatorFactory;
@@ -195,47 +194,8 @@ public class Rabbit {
         Mappings.setup(context, async, callback);
     }
 
-    /**
-     * Update mappings from a file NOT overriding current.
-     *
-     * @param context Used for io operation.
-     * @param file    Json file.
-     */
-    public static void updateMappings(Context context, File file) {
-        Mappings.update(context, file, false);
-    }
-
-    /**
-     * Update mappings using a json string NOT overriding current.
-     *
-     * @param context Used for io operation.
-     * @param json    Json string.
-     */
-    public static void updateMappings(Context context, String json) {
-        Mappings.update(context, json, false);
-    }
-
-
-    /**
-     * Update mappings from a file.
-     *
-     * @param context  Used for io operation.
-     * @param file     Json file.
-     * @param override override current if true.
-     */
-    public static void updateMappings(Context context, File file, boolean override) {
-        Mappings.update(context, file, override);
-    }
-
-    /**
-     * Update mappings using a json string.
-     *
-     * @param context  Used for io operation.
-     * @param json     Json string.
-     * @param override override current if true.
-     */
-    public static void updateMappings(Context context, String json, boolean override) {
-        Mappings.update(context, json, override);
+    public static void updateMappings(Context context, MappingsSource source) {
+        Mappings.update(context, source);
     }
 
     /**

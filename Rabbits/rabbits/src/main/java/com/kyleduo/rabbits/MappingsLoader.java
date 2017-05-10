@@ -45,41 +45,35 @@ class MappingsLoader {
     /**
      * Load from source in current thread.
      *
-     * @param app    application
-     * @param source source
+     * @param context            context
+     * @param source             source
+     * @param forceUpdatePersist whether should update persist ignoring version code.
      * @return MappingsGroup
      */
-    MappingsGroup load(Context app, MappingsSource source) {
-        return load(app, source, true);
-    }
-
-    /**
-     * Load from source in current thread.
-     *
-     * @param context context
-     * @param source  source
-     * @param persist whether should start persist operation
-     * @return MappingsGroup
-     */
-    private MappingsGroup load(Context context, MappingsSource source, boolean persist) {
+    MappingsGroup load(Context context, MappingsSource source, boolean forceUpdatePersist) {
         final Context app = context.getApplicationContext();
         int sourceType = source.getType();
         MappingsGroup origin = source.getOriginMappings();
         MappingsGroup loaded = null;
+        // Always persist to disk besides just load from it.
+        boolean persist = true;
 
         switch (sourceType) {
             case MappingsSource.TYPE_DEFAULT:
                 // load from assets directly
-                if (!shouldUseAssets(app)) {
+                if (!forceUpdatePersist && !shouldUseAssets(app)) {
                     File file = findPersistFile(app);
                     loaded = loadFromFile(file);
+                    persist = false;
                 }
                 if (loaded == null) {
                     loaded = loadFromAssets(app);
+                    persist = true;
                 }
                 break;
             case MappingsSource.TYPE_ASSETS:
                 loaded = loadFromAssets(app);
+                persist = true;
                 break;
             case MappingsSource.TYPE_FILE:
                 File file = new File(source.getValue());
@@ -93,7 +87,7 @@ class MappingsLoader {
         }
 
         if (origin != null) {
-            origin.merge(loaded, false);
+            origin.merge(loaded, source.shouldFullyUpdate());
         } else {
             origin = loaded;
         }
@@ -105,7 +99,15 @@ class MappingsLoader {
         return origin;
     }
 
-    synchronized void loadAsync(final Context context, final MappingsSource source, final MappingsLoaderCallback callback) {
+    /**
+     * Load from source in child thread.
+     *
+     * @param context            context
+     * @param source             source
+     * @param forceUpdatePersist whether should update persist ignoring version code.
+     * @param callback           callback
+     */
+    synchronized void loadAsync(final Context context, final MappingsSource source, final boolean forceUpdatePersist, final MappingsLoaderCallback callback) {
         final Context app = context.getApplicationContext();
         if (mIsLoading) {
             return;
@@ -114,7 +116,7 @@ class MappingsLoader {
         new AsyncTask<Void, Void, MappingsGroup>() {
             @Override
             protected MappingsGroup doInBackground(Void... voids) {
-                return load(app, source, false);
+                return load(app, source, forceUpdatePersist);
             }
 
             @Override
@@ -126,9 +128,6 @@ class MappingsLoader {
                     } else {
                         callback.onMappingsLoadFail();
                     }
-                }
-                if (mappings != null) {
-                    persist(app, mappings, callback);
                 }
             }
 

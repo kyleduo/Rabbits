@@ -6,10 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.kyleduo.rabbits.P_SUB1;
+import com.kyleduo.rabbits.RConfig;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.annotations.Module;
 import com.kyleduo.rabbits.annotations.Page;
-import com.kyleduo.rabbits.navigator.DefaultNavigatorFactory;
 
 /**
  * for Module
@@ -24,7 +24,11 @@ public class SubModuleActivity extends AppCompatActivity {
         setContentView(R.layout.act_sub_module_1);
 
         if (SubConf.STANDALONE) {
-            Rabbit.init("demo", "rabbits.kyleduo.com", new DefaultNavigatorFactory());
+            RConfig config = RConfig.get()
+                    .scheme("demo")
+                    .defaultHost("rabbits.kyleduo.com")
+                    .forceUpdatePersist(BuildConfig.DEBUG);
+            Rabbit.init(config);
 
             // syc setup
             Rabbit.setup(this);

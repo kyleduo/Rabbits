@@ -1,8 +1,13 @@
 package com.kyleduo.rabbits.demo;
 
 import android.app.Application;
+import android.os.SystemClock;
+import android.util.Log;
 
+import com.kyleduo.rabbits.MappingsGroup;
+import com.kyleduo.rabbits.MappingsLoaderCallback;
 import com.kyleduo.rabbits.P;
+import com.kyleduo.rabbits.RConfig;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.Target;
 import com.kyleduo.rabbits.annotations.Module;
@@ -22,21 +27,37 @@ public class DemoApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Rabbit.init("demo", "rabbits.kyleduo.com", new DemoNavigatorFactory());
+        RConfig config = RConfig.get()
+                .scheme("demo")
+                .defaultHost("rabbits.kyleduo.com")
+                .forceUpdatePersist(BuildConfig.DEBUG)
+                .navigatorFactory(new DemoNavigatorFactory());
+        Rabbit.init(config);
 
         // syc setup
-		Rabbit.setup(this);
+//        Rabbit.setup(this);
 
-//        final long time = SystemClock.elapsedRealtime();
-//        Log.d(TAG, "start : " + time);
-//        // async setup
-//        Rabbit.asyncSetup(this, new Runnable() {
-//            @Override
-//            public void run() {
-//                long endTime = SystemClock.elapsedRealtime();
-//                Log.d(TAG, "stop  : " + endTime + "  cost: " + (endTime - time) + "ms");
-//            }
-//        });
+        final long time = SystemClock.elapsedRealtime();
+        Log.d(TAG, "start : " + time);
+        // async setup
+        Rabbit.asyncSetup(this, new MappingsLoaderCallback() {
+            @Override
+            public void onMappingsLoaded(MappingsGroup mappings) {
+                long endTime = SystemClock.elapsedRealtime();
+                Log.d(TAG, "stop  : " + endTime + "  cost: " + (endTime - time) + "ms");
+            }
+
+            @Override
+            public void onMappingsLoadFail() {
+                Log.d(TAG, "fail");
+            }
+
+            @Override
+            public void onMappingsPersisted(boolean success) {
+                long endTime = SystemClock.elapsedRealtime();
+                Log.d(TAG, "p stop  : " + endTime + "  cost: " + (endTime - time) + "ms");
+            }
+        });
 
         Rabbit.addGlobalInterceptor(new INavigationInterceptor() {
             @Override
