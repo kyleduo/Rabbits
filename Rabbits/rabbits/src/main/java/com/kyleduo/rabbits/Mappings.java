@@ -51,7 +51,29 @@ class Mappings {
      */
     static void setup(final Context context, boolean async, final MappingsLoaderCallback callback) {
         if (async) {
-            sMappingsLoader.loadAsync(context, MappingsSource.getDefault(), FORCE_UPDATE_PERSIST, callback);
+            sMappingsLoader.loadAsync(context, MappingsSource.getDefault(), FORCE_UPDATE_PERSIST, new MappingsLoaderCallback() {
+                @Override
+                public void onMappingsLoaded(MappingsGroup mappings) {
+                    sMappingsGroup = mappings;
+                    if (callback != null) {
+                        callback.onMappingsLoaded(mappings);
+                    }
+                }
+
+                @Override
+                public void onMappingsLoadFail() {
+                    if (callback != null) {
+                        callback.onMappingsLoadFail();
+                    }
+                }
+
+                @Override
+                public void onMappingsPersisted(boolean success) {
+                    if (callback != null) {
+                        callback.onMappingsPersisted(success);
+                    }
+                }
+            });
         } else {
             sMappingsGroup = sMappingsLoader.load(context, MappingsSource.getDefault(), FORCE_UPDATE_PERSIST);
         }
