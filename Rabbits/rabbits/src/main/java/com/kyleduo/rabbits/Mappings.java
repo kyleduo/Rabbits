@@ -10,10 +10,8 @@ import android.text.TextUtils;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,16 +22,8 @@ import java.util.Set;
  */
 
 class Mappings {
+    @SuppressWarnings("unused")
     private static final String TAG = "Module.Mappings";
-
-    private static final String MAPPING_FILE = "mappings.json";
-    private static final String MAPPING_KEY_VERSION = "version";
-    private static final String MAPPING_KEY_FORCE_OVERRIDE = "force_override";
-    private static final String MAPPING_KEY_MAPPINGS = "mappings";
-    private static final String MAPPING_KEY_ALLOWED_HOSTS = "allowed_hosts";
-
-    private static final String PERSIST_MAPPING_FILE = "rabbits_mappings.json";
-    private static final String PERSIST_MAPPING_TEMP_FILE = "rabbits_mappings_temp.json";
 
     private static final String MAPPING_QUERY_MODE = "rabbitsMode";
     private static final String MODE_CLEAR_TOP = "clearTop";
@@ -48,12 +38,6 @@ class Mappings {
 
     private static final String MAPPING_QUERY_FREE = "rabbitsFree";
 
-    private static boolean sPersisting;
-
-//    private static Map<String, String> sMAPPING = new LinkedHashMap<>();
-    private static List<String> sALLOWED_HOSTS;
-    private static int sVERSION = 0;
-
     private static MappingsLoader sMappingsLoader = new MappingsLoader();
     private static MappingsGroup sMappingsGroup;
 
@@ -64,45 +48,12 @@ class Mappings {
      * @param async    whether the operation run in work thread
      * @param callback callback used for async task.
      */
-    static void setup(final Context context, boolean async, final Runnable callback) {
-        final Context app = context.getApplicationContext();
+    static void setup(final Context context, boolean async, final MappingsLoaderCallback callback) {
         if (async) {
-//            new AsyncTask<Void, Void, Boolean>() {
-//                @Override
-//                protected Boolean doInBackground(Void... voids) {
-//                    return load(app);
-//                }
-//
-//                @Override
-//                protected void onPostExecute(Boolean json) {
-//                    if (callback != null) {
-//                        callback.run();
-//                    }
-//                    if (json != null) {
-//                        persist(context);
-//                    }
-//                }
-//            }.execute();
+            sMappingsLoader.loadAsync(context, MappingsSource.getDefault(), callback);
         } else {
-//            boolean success = load(app);
-//            if (success) {
-//                persist(context);
-//            }
-            sMappingsGroup = sMappingsLoader.load(app, MappingsSource.getDefault());
+            sMappingsGroup = sMappingsLoader.load(context, MappingsSource.getDefault());
         }
-    }
-
-    /**
-     * Set other hosts which can be replacement of the origin.
-     *
-     * @param hosts hosts
-     */
-    static void setALLOWED_HOSTS(String... hosts) {
-        if (hosts == null || hosts.length == 0) {
-            sALLOWED_HOSTS = null;
-            return;
-        }
-        sALLOWED_HOSTS = Arrays.asList(hosts);
     }
 
     /**
@@ -113,18 +64,7 @@ class Mappings {
      * @param override override current if true
      */
     static void update(Context context, File file, boolean override) {
-//        final Context app = context.getApplicationContext();
-//        try {
-//            InputStream is = new FileInputStream(file);
-//            String json = doLoad(is);
-//            if (json != null) {
-//                parse(json, override);
-//                Log.d(TAG, "Update success from file, start persisting.");
-//                persist(app);
-//            }
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
+        sMappingsLoader.load(context, MappingsSource.fromFile(file.getAbsolutePath()).override(override));
     }
 
     /**
@@ -135,216 +75,13 @@ class Mappings {
      * @param override override current if true
      */
     static void update(Context context, String json, boolean override) {
-//        final Context app = context.getApplicationContext();
-//        boolean ret = parse(json, override);
-//        if (ret) {
-//            Log.d(TAG, "Update success, start persisting.");
-//            persist(app);
-//        }
-    }
-
-    /**
-     * Load mapping from persist file or assert to memory.
-     *
-     * @param context Application context.
-     * @return Success or not.
-     */
-//    private static boolean load(Context context) {
-//        try {
-//            File filesDir = context.getFilesDir();
-//            File file = new File(filesDir, PERSIST_MAPPING_FILE);
-//            String json;
-//            if (file.exists()) {
-//                InputStream is = new FileInputStream(file);
-//                json = doLoad(is);
-//                if (json != null) {
-//                    parse(json, false);
-//                }
-//            }
-//            InputStream is = context.getAssets().open(MAPPING_FILE);
-//            json = doLoad(is);
-//            if (json != null) {
-//                parse(json, false);
-//            }
-//            return true;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return false;
-//    }
-
-    /**
-     * Load json string from {@param is}.
-     *
-     * @param is Input stream from assert or file.
-     * @return Json string.
-     */
-//    private static String doLoad(InputStream is) {
-//        //noinspection TryWithIdenticalCatches
-//        try {
-//            StringBuilder jsonBuilder = new StringBuilder();
-//            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-//            String line = reader.readLine();
-//            while (line != null) {
-//                jsonBuilder.append(line);
-//                line = reader.readLine();
-//            }
-//            reader.close();
-//            return jsonBuilder.toString();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-
-    /**
-     * Parse json string to mapping.
-     *
-     * @param json          Origin json.
-     * @param clearPrevious whether override current mapping
-     * @return true for latest mapping has been loaded or there is already a latest version.
-     * false for load failure.
-     */
-//    private synchronized static boolean parse(String json, boolean clearPrevious) {
-//        try {
-//            JSONObject jo = new JSONObject(json);
-//            int version = jo.optInt(MAPPING_KEY_VERSION);
-//            boolean forceOverride = jo.optInt(MAPPING_KEY_FORCE_OVERRIDE) == 1;
-//            if (version < sVERSION || (version == sVERSION && !forceOverride)) {
-//                Log.d(TAG, "No need to update, already has the latest version: " + sVERSION);
-//                return true;
-//            }
-//            JSONArray allowed_hosts = jo.optJSONArray(MAPPING_KEY_ALLOWED_HOSTS);
-//            if (allowed_hosts != null && allowed_hosts.length() > 0) {
-//                sALLOWED_HOSTS = new ArrayList<>();
-//                for (int i = 0; i < allowed_hosts.length(); i++) {
-//                    sALLOWED_HOSTS.add(allowed_hosts.optString(i));
-//                }
-//            }
-//            Map<String, String> temp = new LinkedHashMap<>();
-//            JSONObject mappings = jo.optJSONObject(MAPPING_KEY_MAPPINGS);
-//            Iterator<String> uris = mappings.keys();
-//            while (uris.hasNext()) {
-//                String uri = uris.next();
-//                String page = mappings.optString(uri);
-//                temp.put(uri, page);
-//            }
-//            if (clearPrevious || forceOverride) {
-//                sMAPPING.clear();
-//            }
-//            sMAPPING.putAll(temp);
-//            sVERSION = version;
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//            return false;
-//        }
-//
-//        return true;
-//    }
-
-    /**
-     * Persist mapping to local file.
-     *
-     * @param context Application context.
-     */
-    private synchronized static void persist(final Context context) {
-//        if (sPersisting) {
-//            return;
-//        }
-//        sPersisting = true;
-//
-//        new AsyncTask<Void, Void, Void>() {
-//            @SuppressWarnings("ResultOfMethodCallIgnored")
-//            @Override
-//            protected Void doInBackground(Void... params) {
-//                String json = null;
-//                if (sMAPPING.size() > 0) {
-//                    try {
-//                        JSONObject wrapper = new JSONObject();
-//                        if (sALLOWED_HOSTS != null && sALLOWED_HOSTS.size() == 0) {
-//                            JSONArray allowed = new JSONArray();
-//                            for (String h : sALLOWED_HOSTS) {
-//                                allowed.put(h);
-//                            }
-//                            wrapper.put(MAPPING_KEY_ALLOWED_HOSTS, allowed);
-//                        }
-//                        JSONObject mappings = new JSONObject();
-//                        Set<Map.Entry<String, String>> entries = sMAPPING.entrySet();
-//                        for (Map.Entry<String, String> entry : entries) {
-//                            mappings.put(entry.getKey(), entry.getValue());
-//                        }
-//                        wrapper.put(MAPPING_KEY_MAPPINGS, mappings);
-//                        wrapper.put(MAPPING_KEY_VERSION, sVERSION);
-//                        json = wrapper.toString();
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                        throw new IllegalStateException("mapping can not be parsed to json", e);
-//                    }
-//                }
-//                if (json == null) {
-//                    cancel(true);
-//                    return null;
-//                }
-//
-//                File filesDir = context.getFilesDir();
-//                if (filesDir == null || !filesDir.exists()) {
-//                    cancel(true);
-//                    return null;
-//                }
-//                File file = new File(filesDir, PERSIST_MAPPING_TEMP_FILE);
-//                if (file.exists()) {
-//                    file.delete();
-//                }
-//                try {
-//                    boolean ret = file.createNewFile();
-//                    if (!ret) {
-//                        throw new IllegalStateException("Can not create mapping file.");
-//                    }
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    cancel(true);
-//                    return null;
-//                }
-//
-//                //noinspection TryWithIdenticalCatches
-//                try {
-//                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
-//                    writer.write(json);
-//                    writer.flush();
-//                    writer.close();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                    cancel(true);
-//                    return null;
-//                }
-//
-//                File originFile = new File(filesDir, PERSIST_MAPPING_FILE);
-//                if (originFile.exists()) {
-//                    originFile.delete();
-//                }
-//                boolean ret = file.renameTo(originFile);
-//                if (!ret) {
-//                    file.delete();
-//                    cancel(true);
-//                    throw new IllegalStateException("Can not rename mapping file.");
-//                }
-//
-//                return null;
-//            }
-//
-//            @Override
-//            protected void onPostExecute(Void aVoid) {
-//                sPersisting = false;
-//            }
-//
-//            @Override
-//            protected void onCancelled() {
-//                sPersisting = false;
-//            }
-//        }.execute();
+        sMappingsLoader.load(context, MappingsSource.fromJson(json).override(override));
     }
 
     static Target match(Uri uri) {
+        if (sMappingsGroup == null) {
+            throw new IllegalStateException("Rabbits does not fully setup.");
+        }
         Uri.Builder builder = uri.buildUpon();
         if (uri.getScheme() == null) {
             builder.scheme(Rabbit.sAppScheme);
@@ -415,7 +152,7 @@ class Mappings {
             if (!template[0].equals(source[0]) || template.length != source.length) {
                 continue;
             }
-            if (!template[1].equals(source[1]) && (sALLOWED_HOSTS == null || !sALLOWED_HOSTS.contains(source[1]))) {
+            if (!template[1].equals(source[1]) && (sMappingsGroup.getAllowedHosts() == null || !sMappingsGroup.getAllowedHosts().contains(source[1]))) {
                 continue;
             }
             // Compare each part, parse params.
@@ -447,7 +184,7 @@ class Mappings {
      * @param t      template segment
      * @param param  param value
      * @param bundle bundle
-     * @throws NumberFormatException
+     * @throws NumberFormatException parse string to number error.
      */
     private static void formatParam(String t, String param, Bundle bundle) throws NumberFormatException {
         String[] tt = t.substring(1, t.length() - 1).split(":");
@@ -574,10 +311,10 @@ class Mappings {
         }
         sb.deleteCharAt(sb.length() - 1);
         sb.append("}");
-        if (sALLOWED_HOSTS != null && sALLOWED_HOSTS.size() > 0) {
+        if (sMappingsGroup.getAllowedHosts() != null && sMappingsGroup.getAllowedHosts().size() > 0) {
             sb.append("\n\n").append("allowed hosts : ");
             sb.append("{").append("\n");
-            for (String h : sALLOWED_HOSTS) {
+            for (String h : sMappingsGroup.getAllowedHosts()) {
                 sb.append("\t").append(h).append("\n\n");
             }
             sb.deleteCharAt(sb.length() - 1);

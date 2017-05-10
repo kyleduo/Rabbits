@@ -14,7 +14,11 @@ public class MappingsSource {
 
     private int mType;
     private String mValue;
+    /**
+     * True for fully update. False will lead to a merge operation.
+     */
     private boolean mOverride;
+    private MappingsGroup mOriginMappings;
 
     private MappingsSource(int type, String value, boolean override) {
         mType = type;
@@ -30,17 +34,30 @@ public class MappingsSource {
         return mValue;
     }
 
+    public boolean shouldOverride() {
+        return mOverride;
+    }
+
     public MappingsSource override(boolean override) {
         mOverride = override;
         return this;
     }
 
+    public MappingsGroup getOriginMappings() {
+        return mOriginMappings;
+    }
+
+    public MappingsSource setOriginMappings(MappingsGroup origin) {
+        mOriginMappings = origin;
+        return this;
+    }
+
     public static MappingsSource getDefault() {
-        return new MappingsSource(TYPE_DEFAULT, null, false);
+        return new MappingsSource(TYPE_DEFAULT, null, true);
     }
 
     public static MappingsSource fromAssets() {
-        return new MappingsSource(TYPE_ASSETS, null, false);
+        return new MappingsSource(TYPE_ASSETS, null, true);
     }
 
     /**

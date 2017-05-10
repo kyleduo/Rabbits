@@ -178,7 +178,7 @@ public class Rabbit {
      * @param context  Used for io operation.
      * @param callback callback run after setup finished.
      */
-    public static void asyncSetup(Context context, Runnable callback) {
+    public static void asyncSetup(Context context, MappingsLoaderCallback callback) {
         setup(context, true, callback);
     }
 
@@ -191,7 +191,7 @@ public class Rabbit {
         setup(context, false, null);
     }
 
-    private static void setup(Context context, boolean async, Runnable callback) {
+    private static void setup(Context context, boolean async, MappingsLoaderCallback callback) {
         Mappings.setup(context, async, callback);
     }
 
@@ -236,10 +236,6 @@ public class Rabbit {
      */
     public static void updateMappings(Context context, String json, boolean override) {
         Mappings.update(context, json, override);
-    }
-
-    public static void setAllowedHosts(String... hosts) {
-        Mappings.setALLOWED_HOSTS(hosts);
     }
 
     /**

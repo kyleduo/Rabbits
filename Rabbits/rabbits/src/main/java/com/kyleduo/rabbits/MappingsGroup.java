@@ -31,6 +31,10 @@ class MappingsGroup {
         return mMappings;
     }
 
+    public ArrayList<String> getAllowedHosts() {
+        return mAllowedHosts;
+    }
+
     static MappingsGroup fromJson(String json) {
         MappingsGroup mappingsGroup = new MappingsGroup();
         mappingsGroup.mOriginJson = json;
