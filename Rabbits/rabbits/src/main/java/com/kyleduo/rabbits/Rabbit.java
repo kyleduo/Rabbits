@@ -73,7 +73,7 @@ public class Rabbit {
                     cls = Class.forName(ROUTER_CLASS);
                     mClasses.add(cls);
                 }
-                if (mClasses.size() == 0) {
+                if (mClasses.size() == 0) { // means using Routers class, so we fill the Array
                     Field field = cls.getField(ROUTERS_FIELD_CLASS);
                     String[] names = (String[]) field.get(null);
                     for (String name : names) {
