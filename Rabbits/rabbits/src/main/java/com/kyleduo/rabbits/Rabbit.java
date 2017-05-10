@@ -196,7 +196,7 @@ public class Rabbit {
     }
 
     /**
-     * Update mappings from a file.
+     * Update mappings from a file NOT overriding current.
      *
      * @param context Used for io operation.
      * @param file    Json file.
@@ -206,7 +206,7 @@ public class Rabbit {
     }
 
     /**
-     * Update mappings using a json string.
+     * Update mappings using a json string NOT overriding current.
      *
      * @param context Used for io operation.
      * @param json    Json string.
