@@ -28,5 +28,5 @@ ext {
     targetSdkVersion = 25
     buildToolsVersion = '25.0.2'
 
-    demoStandAlone = false
+    demoStandAlone = true
 }

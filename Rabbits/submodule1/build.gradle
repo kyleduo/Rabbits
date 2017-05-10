@@ -27,10 +27,10 @@ android {
         main {
             if (demoStandAlone) {
                 manifest.srcFile 'src/main/standalone/AndroidManifest.xml'
-                java.srcDirs = ['src/main/java', 'src/main/confStandalone']
+                java.srcDirs = ['src/main/java', 'src/main/standalone']
             } else {
                 manifest.srcFile 'src/main/library/AndroidManifest.xml'
-                java.srcDirs = ['src/main/java', 'src/main/confLibrary']
+                java.srcDirs = ['src/main/java', 'src/main/library']
             }
         }
     }
@@ -43,7 +43,6 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
-
 
     // Rabbits
     compile project(':rabbits')
