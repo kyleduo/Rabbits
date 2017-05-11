@@ -89,6 +89,7 @@ class Mappings {
         if (context == null || source == null) {
             throw new NullPointerException();
         }
+        // If not fully update, we provide origin mappings to merge.
         if (!source.shouldFullyUpdate()) {
             source.setOriginMappings(sMappingsGroup);
         }
