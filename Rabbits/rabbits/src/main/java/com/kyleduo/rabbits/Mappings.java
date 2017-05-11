@@ -35,7 +35,7 @@ class Mappings {
     private static final String PARAM_KEY_BOOLEAN = "b";
     private static final String PARAM_KEY_STRING = "s";
 
-    private static final String MAPPING_QUERY_FREE = "rabbitsFree";
+    private static final String MAPPING_QUERY_FREE = "LetItGo";
 
     private static MappingsLoader sMappingsLoader = new MappingsLoader();
     private static MappingsGroup sMappingsGroup;

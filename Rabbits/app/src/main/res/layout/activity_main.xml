@@ -52,7 +52,6 @@
         android:text="demo://rabbits.kyleduo.com/submodule1"
         />
 
-
     <TextView
         style="@style/Contents"
         android:text="demo://rabbits.kyleduo.com/submodule2"
