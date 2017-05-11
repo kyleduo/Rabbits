@@ -28,6 +28,8 @@ class Mappings {
     private static final String MODE_CLEAR_TOP = "clearTop";
     private static final String MODE_NEW_TASK = "newTask";
 
+    private static final String MAPPING_URL_FRAGMENT = "rabbitsUrlFragment";
+
     private static final String PARAM_KEY_INT = "i";
     private static final String PARAM_KEY_LONG = "l";
     private static final String PARAM_KEY_FLOAT = "f";
@@ -244,6 +246,10 @@ class Mappings {
             bundle = new Bundle();
         }
         bundle.putString(Rabbit.KEY_ORIGIN_URI, uri.toString());
+        String fragment = uri.getFragment();
+        if (!TextUtils.isEmpty(fragment)) {
+            bundle.putString(MAPPING_URL_FRAGMENT, fragment);
+        }
         Set<String> keys;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             keys = uri.getQueryParameterNames();
