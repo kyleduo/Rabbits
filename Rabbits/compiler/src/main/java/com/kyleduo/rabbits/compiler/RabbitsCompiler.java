@@ -59,30 +59,9 @@ public class RabbitsCompiler extends AbstractProcessor {
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         mFiler = processingEnv.getFiler();
-        try {
-            File mappingsFile = findMappings();
-            if (mappingsFile != null && mappingsFile.exists()) {
-                debug(mappingsFile.getAbsolutePath());
-                Gson gson = new Gson();
-                MappingTable table = gson.fromJson(new InputStreamReader(new FileInputStream(mappingsFile)), MappingTable.class);
-                for (Map.Entry<String, JsonElement> e : table.mappings.entrySet()) {
-                    String url = e.getKey();
-                    String name = table.mappings.get(url).getAsString();
-                    if (name == null || url == null || "".equals(name) || "".equals(url)) {
-                        continue;
-                    }
-                    if (mTable.containsKey(name)) {
-                        continue;
-                    }
-                    mTable.put(name, url);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
-    private File findMappings() throws IOException, URISyntaxException {
+    private File findMappings(String srcPath) throws IOException, URISyntaxException {
         FileObject resource = mFiler.createResource(StandardLocation.SOURCE_OUTPUT, PACKAGE, "dummy" + System.currentTimeMillis() + ".tmp");
         String dummySourceFilePath = resource.toUri().toString();
 
@@ -104,9 +83,7 @@ public class RabbitsCompiler extends AbstractProcessor {
                 projectRoot = projectRoot.getParentFile();
             }
         }
-        debug(projectRoot.getAbsolutePath());
-        File assets = new File(projectRoot.getAbsolutePath() + "/src/main/assets");
-        debug(assets.getAbsolutePath());
+        File assets = new File(projectRoot.getAbsolutePath() + "/src/" + srcPath + "/assets");
         if (assets.exists()) {
             String[] filenames = assets.list(new FilenameFilter() {
                 @Override
@@ -180,7 +157,7 @@ public class RabbitsCompiler extends AbstractProcessor {
 //			e.printStackTrace();
         }
 
-        generateP(moduleName);
+        generateP(moduleName, module.srcPath());
 
         return true;
     }
@@ -264,7 +241,29 @@ public class RabbitsCompiler extends AbstractProcessor {
         return methods;
     }
 
-    private void generateP(String moduleName) {
+    private void generateP(String moduleName, String srcPath) {
+        try {
+            File mappingsFile = findMappings(srcPath);
+            if (mappingsFile != null && mappingsFile.exists()) {
+                debug(mappingsFile.getAbsolutePath());
+                Gson gson = new Gson();
+                MappingTable table = gson.fromJson(new InputStreamReader(new FileInputStream(mappingsFile)), MappingTable.class);
+                for (Map.Entry<String, JsonElement> e : table.mappings.entrySet()) {
+                    String url = e.getKey();
+                    String name = table.mappings.get(url).getAsString();
+                    if (name == null || url == null || "".equals(name) || "".equals(url)) {
+                        continue;
+                    }
+                    if (mTable.containsKey(name)) {
+                        continue;
+                    }
+                    mTable.put(name, url);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         List<FieldSpec> pFields = new ArrayList<>();
         List<MethodSpec> pMethods = new ArrayList<>();
         for (Map.Entry<String, String> e : mTable.entrySet()) {

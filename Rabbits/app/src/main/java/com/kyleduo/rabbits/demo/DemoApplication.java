@@ -19,7 +19,7 @@ import com.kyleduo.rabbits.navigator.INavigationInterceptor;
  * Created by kyle on 2016/12/8.
  */
 
-@Module(subModules = {"sub1"})
+@Module(subModules = {"sub1"}, srcPath = DemoConstants.SRC_PATH)
 public class DemoApplication extends Application {
     private static final String TAG = "DemoApplication";
 
