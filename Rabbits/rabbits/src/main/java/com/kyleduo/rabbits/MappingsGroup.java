@@ -132,7 +132,6 @@ public class MappingsGroup {
             }
         }
 
-        // TODO: 2017/5/9 control the priority of sub-name
         if (mMappings == null) {
             mMappings = another.mMappings;
         } else if (another.mMappings != null) {

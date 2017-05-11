@@ -53,10 +53,21 @@ public class MappingsSource {
         return this;
     }
 
+    /**
+     * Check if versionCode has updated, if this is a new version, load from assets and update persist;
+     * otherwise load persisted mappings.
+     *
+     * @return MappingsSource
+     */
     public static MappingsSource getDefault() {
         return new MappingsSource(TYPE_DEFAULT, null, true);
     }
 
+    /**
+     * Load from assets.
+     *
+     * @return MappingsSource
+     */
     public static MappingsSource fromAssets() {
         return new MappingsSource(TYPE_ASSETS, null, true);
     }

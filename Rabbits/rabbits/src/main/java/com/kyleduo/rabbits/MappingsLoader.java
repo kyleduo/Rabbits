@@ -73,7 +73,6 @@ class MappingsLoader {
                 break;
             case MappingsSource.TYPE_ASSETS:
                 loaded = loadFromAssets(app);
-                persist = true;
                 break;
             case MappingsSource.TYPE_FILE:
                 File file = new File(source.getValue());
