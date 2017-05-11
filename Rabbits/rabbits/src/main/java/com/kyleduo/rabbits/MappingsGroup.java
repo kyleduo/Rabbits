@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * for Module
+ * Hold the content of mapping.
  * Created by kyleduo on 2017/5/9.
  */
 

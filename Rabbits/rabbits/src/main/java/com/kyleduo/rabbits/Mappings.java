@@ -110,9 +110,9 @@ class Mappings {
         uri = builder.build();
         Uri pureUri;
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            pureUri = builder.query(null).build();
+            pureUri = builder.fragment(null).query(null).build();
         } else {
-            pureUri = builder.clearQuery().build();
+            pureUri = builder.fragment(null).clearQuery().build();
         }
 
         // Try to completely match.
