@@ -86,17 +86,20 @@ class MappingsLoader {
                 throw new IllegalArgumentException("Bad MappingsSource type");
         }
 
+        MappingsGroup result;
+
         if (origin != null) {
-            origin.merge(loaded, source.shouldFullyUpdate());
+            result = new MappingsGroup(origin);
+            result.merge(loaded, source.shouldFullyUpdate());
         } else {
-            origin = loaded;
+            result = new MappingsGroup(loaded);
         }
 
-        if (persist && origin != null) {
-            persist(app, origin, null);
+        if (persist && result.valid()) {
+            persist(app, result, null);
         }
 
-        return origin;
+        return result;
     }
 
     /**

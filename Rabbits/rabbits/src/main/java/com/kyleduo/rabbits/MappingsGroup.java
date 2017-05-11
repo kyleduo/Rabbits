@@ -30,12 +30,20 @@ public class MappingsGroup {
     private MappingsGroup() {
     }
 
+    MappingsGroup(MappingsGroup origin) {
+        this.merge(origin, true);
+    }
+
     public LinkedHashMap<String, String> getMappings() {
         return mMappings;
     }
 
     ArrayList<String> getAllowedHosts() {
         return mAllowedHosts;
+    }
+
+    boolean valid() {
+        return mMappings != null;
     }
 
     static MappingsGroup fromJson(String json) {
@@ -107,6 +115,9 @@ public class MappingsGroup {
      *                 And may be true when update.
      */
     void merge(MappingsGroup another, boolean override) {
+        if (another == null) {
+            return;
+        }
         if (mAllowedHosts == null) {
             mAllowedHosts = another.mAllowedHosts;
         } else if (another.mAllowedHosts != null) {

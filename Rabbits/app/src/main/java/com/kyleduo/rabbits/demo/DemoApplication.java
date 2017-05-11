@@ -30,7 +30,7 @@ public class DemoApplication extends Application {
         RConfig config = RConfig.get()
                 .scheme("demo")
                 .defaultHost("rabbits.kyleduo.com")
-                .forceUpdatePersist(BuildConfig.DEBUG)
+                .forceUpdatePersist(false)
                 .navigatorFactory(new DemoNavigatorFactory());
         Rabbit.init(config);
 
