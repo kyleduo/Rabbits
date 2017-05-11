@@ -56,4 +56,15 @@
         style="@style/Contents"
         android:text="demo://rabbits.kyleduo.com/submodule2"
         />
+
+
+    <Button
+        android:id="@+id/update_bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:minHeight="40dp"
+        android:text="test update"/>
+
 </LinearLayout>

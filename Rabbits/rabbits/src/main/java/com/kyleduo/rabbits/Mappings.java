@@ -89,7 +89,7 @@ class Mappings {
         if (context == null || source == null) {
             throw new NullPointerException();
         }
-        if (source.shouldFullyUpdate()) {
+        if (!source.shouldFullyUpdate()) {
             source.setOriginMappings(sMappingsGroup);
         }
         sMappingsLoader.load(context, source, true);
