@@ -1,5 +1,5 @@
 {
-  "module": "sub1",
+  "version": 1,
   "mappings": {
     "demo://rabbits.kyleduo.com/submodule1": "SUB_MODULE_1",
     "demo://rabbits.kyleduo.com/submodule2": "SUB_MODULE_2"

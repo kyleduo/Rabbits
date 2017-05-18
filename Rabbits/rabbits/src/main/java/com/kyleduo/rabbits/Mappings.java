@@ -98,6 +98,19 @@ class Mappings {
         sMappingsLoader.load(context, source, true);
     }
 
+
+    /**
+     * mappings version
+     *
+     * @return version
+     */
+    static int currentVersion() {
+        if (sMappingsGroup == null) {
+            throw new IllegalStateException("Rabbits does not fully setup.");
+        }
+        return sMappingsGroup.getVersion();
+    }
+
     static Target match(Uri uri) {
         if (sMappingsGroup == null) {
             throw new IllegalStateException("Rabbits does not fully setup.");

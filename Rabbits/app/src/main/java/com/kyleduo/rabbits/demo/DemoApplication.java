@@ -45,6 +45,8 @@ public class DemoApplication extends Application {
             public void onMappingsLoaded(MappingsGroup mappings) {
                 long endTime = SystemClock.elapsedRealtime();
                 Log.d(TAG, "stop  : " + endTime + "  cost: " + (endTime - time) + "ms");
+
+                Log.d(TAG, "Current mappings version: " + Rabbit.currentVersion());
             }
 
             @Override
@@ -55,7 +57,7 @@ public class DemoApplication extends Application {
             @Override
             public void onMappingsPersisted(boolean success) {
                 long endTime = SystemClock.elapsedRealtime();
-                Log.d(TAG, "p stop  : " + endTime + "  cost: " + (endTime - time) + "ms");
+                Log.d(TAG, "persist stop  : " + endTime + "  cost: " + (endTime - time) + "ms");
             }
         });
 

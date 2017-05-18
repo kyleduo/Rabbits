@@ -144,8 +144,22 @@ public class Rabbit {
         }
     }
 
+    /**
+     * Dump mappings.
+     *
+     * @return result string.
+     */
     public static String dumpMappings() {
         return Mappings.dump();
+    }
+
+    /**
+     * mappings version
+     *
+     * @return version
+     */
+    public static int currentVersion() {
+        return Mappings.currentVersion();
     }
 
     public static void init(RConfig config) {

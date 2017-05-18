@@ -18,9 +18,11 @@ import java.util.Set;
 public class MappingsGroup {
     private static final String MAPPING_KEY_MAPPINGS = "mappings";
     private static final String MAPPING_KEY_ALLOWED_HOSTS = "allowed_hosts";
+    private static final String MAPPING_KEY_VERSION = "version";
 
     private ArrayList<String> mAllowedHosts;
     private LinkedHashMap<String, String> mMappings;
+    private int mVersion;
 
     /**
      * origin json if created with {@link MappingsGroup#fromJson(java.lang.String)}
@@ -46,6 +48,10 @@ public class MappingsGroup {
         return mMappings != null;
     }
 
+    public int getVersion() {
+        return mVersion;
+    }
+
     static MappingsGroup fromJson(String json) {
         MappingsGroup mappingsGroup = new MappingsGroup();
         mappingsGroup.mOriginJson = json;
@@ -67,6 +73,7 @@ public class MappingsGroup {
                 String page = mappings.optString(uri);
                 temp.put(uri, page);
             }
+            mappingsGroup.mVersion = jo.optInt(MAPPING_KEY_VERSION, 0);
             mappingsGroup.mMappings = temp;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -83,6 +90,7 @@ public class MappingsGroup {
         if (mMappings.size() > 0) {
             try {
                 JSONObject wrapper = new JSONObject();
+                wrapper.put(MAPPING_KEY_VERSION, mVersion);
                 if (mAllowedHosts != null && mAllowedHosts.size() == 0) {
                     JSONArray allowed = new JSONArray();
                     for (String h : mAllowedHosts) {
@@ -140,6 +148,12 @@ public class MappingsGroup {
             } else {
                 mMappings.putAll(another.mMappings);
             }
+        }
+
+        if (override) {
+            mVersion = another.mVersion;
+        } else {
+            mVersion = Math.max(mVersion, another.mVersion);
         }
     }
 }
