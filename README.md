@@ -23,8 +23,8 @@ You can get these benefits after integrating Rabbits to you project:
 
 ```groovy
 dependencies {
-    compile "com.kyleduo.rabbits:rabbits:1.0.0"
-    annotationProcessor "com.kyleduo.rabbits:compiler:1.0.0"
+    compile "com.kyleduo.rabbits:rabbits:0.9.0"
+    annotationProcessor "com.kyleduo.rabbits:compiler:0.9.0"
 }
 ```
 
