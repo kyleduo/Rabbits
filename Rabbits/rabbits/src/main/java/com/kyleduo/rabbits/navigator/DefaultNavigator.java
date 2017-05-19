@@ -105,9 +105,7 @@ public class DefaultNavigator extends AbstractNavigator {
             }
         } else if (to instanceof AbstractNavigator) {
             boolean ret;
-            AbstractNavigator navigator = (AbstractNavigator) to;
-            navigator.target(mTarget)
-                    .setFrom(mFrom);
+            AbstractNavigator navigator = ((AbstractNavigator) to).setFrom(mFrom).redirect(mTarget);
 
             if (requestCode >= 0) {
                 ret = navigator.startForResult(requestCode);

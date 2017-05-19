@@ -44,7 +44,15 @@ public class Rabbit {
     private static final String ROUTERS_CLASS = PACKAGE + ".Routers";
     private static final String ROUTERS_FIELD_CLASS = "routers";
 
+    /**
+     * URI used in the origin of this navigation.
+     */
     public static final String KEY_ORIGIN_URI = "rabbits_origin_uri";
+    /**
+     * URI used for latest Navigator. If navigate to a page(origin uri) depending on another page(source uri),
+     * you will finally open the second page and you can get the origin uri through {@link Rabbit#KEY_ORIGIN_URI}
+     */
+    public static final String KEY_SOURCE_URI = "rabbits_source_uri";
 
     private static IRouter sRouter;
     static String sAppScheme;
@@ -53,7 +61,6 @@ public class Rabbit {
     private static List<INavigationInterceptor> sInterceptors;
 
     private Object mFrom;
-    private boolean mIgnoreParent = false;
     private List<INavigationInterceptor> mInterceptors;
 
     private static class RabbitInvocationHandler implements InvocationHandler {
@@ -253,17 +260,6 @@ public class Rabbit {
     }
 
     /**
-     * Whether should ignore parent declaration of this target.
-     *
-     * @param ignoreParent true for ignore
-     * @return Rabbit instance.
-     */
-    public Rabbit ignoreParent(boolean ignoreParent) {
-        mIgnoreParent = ignoreParent;
-        return this;
-    }
-
-    /**
      * Used for obtain page object. Intent or Fragment instance.
      *
      * @param uriStr uriStr
@@ -292,8 +288,18 @@ public class Rabbit {
      * @return AbstractNavigator
      */
     public AbstractNavigator to(String uriStr) {
+        return to(uriStr, false);
+    }
+
+    /**
+     * Navigate to page, or perform a not found strategy.
+     *
+     * @param uriStr uri string
+     * @return AbstractNavigator
+     */
+    public AbstractNavigator to(String uriStr, boolean ignoreParent) {
         Uri uri = Uri.parse(uriStr);
-        return to(uri);
+        return to(uri, ignoreParent);
     }
 
     /**
@@ -303,8 +309,18 @@ public class Rabbit {
      * @return AbstractNavigator
      */
     public AbstractNavigator to(Uri uri) {
+        return to(uri, false);
+    }
+
+    /**
+     * Navigate to page, or perform a not found strategy.
+     *
+     * @param uri uri
+     * @return AbstractNavigator
+     */
+    public AbstractNavigator to(Uri uri, boolean ignoreParent) {
         Target target = Mappings.match(uri);
-        if (mIgnoreParent) {
+        if (ignoreParent) {
             target.obtain(sRouter);
         } else {
             target.route(sRouter);
@@ -324,6 +340,17 @@ public class Rabbit {
     }
 
     /**
+     * Navigate to page, or just return null if not found.
+     *
+     * @param uriStr uri
+     * @return AbstractNavigator
+     */
+    public AbstractNavigator tryTo(String uriStr, boolean ignoreParent) {
+        Uri uri = Uri.parse(uriStr);
+        return tryTo(uri, ignoreParent);
+    }
+
+    /**
      * Only if it is a http/https uri, and a page mapping from uri with app scheme and given path
      * exists, a valid navigator will returned.
      *
@@ -331,6 +358,17 @@ public class Rabbit {
      * @return AbstractNavigator
      */
     public AbstractNavigator tryTo(Uri uri) {
+        return tryTo(uri, false);
+    }
+
+    /**
+     * Only if it is a http/https uri, and a page mapping from uri with app scheme and given path
+     * exists, a valid navigator will returned.
+     *
+     * @param uri uri
+     * @return AbstractNavigator
+     */
+    public AbstractNavigator tryTo(Uri uri, boolean ignoreParent) {
         final String scheme = uri.getScheme();
         if (TextUtils.isEmpty(scheme) || (!scheme.startsWith("http") && !scheme.startsWith(sAppScheme))) {
             return new MuteNavigator(mFrom, new Target(uri), assembleInterceptor());
@@ -339,7 +377,7 @@ public class Rabbit {
             uri = uri.buildUpon().scheme(sAppScheme).build();
         }
         Target target = Mappings.match(uri);
-        if (mIgnoreParent) {
+        if (ignoreParent) {
             target.obtain(sRouter);
         } else {
             target.route(sRouter);

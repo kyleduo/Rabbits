@@ -67,7 +67,7 @@ public class DemoApplication extends Application {
                 if (UriUtils.matchPath(target.getUri(), "/intercept/dump")) {
                     Rabbit.from(from)
                             .to(P.DUMP)
-                            .mergeExtras(target.getExtras())
+                            .merge(target)
                             .start();
                     return true;
                 }

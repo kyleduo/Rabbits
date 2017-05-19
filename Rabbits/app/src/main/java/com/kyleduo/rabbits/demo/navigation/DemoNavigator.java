@@ -32,8 +32,7 @@ class DemoNavigator extends DefaultNavigator {
                 if (activity.getTopFragment() == null) {
                     AbstractNavigator navigator = Rabbit.from(mFrom)
                             .to("/common")
-                            .target(mTarget)
-                            .putExtra(Rabbit.KEY_ORIGIN_URI, mTarget.getExtras().getString(Rabbit.KEY_ORIGIN_URI));
+                            .redirect(mTarget);
                     if (requestCode >= 0) {
                         navigator.startForResult(requestCode);
                     } else {

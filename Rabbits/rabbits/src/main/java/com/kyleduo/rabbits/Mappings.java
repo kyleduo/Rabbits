@@ -259,6 +259,7 @@ class Mappings {
             bundle = new Bundle();
         }
         bundle.putString(Rabbit.KEY_ORIGIN_URI, uri.toString());
+        bundle.putString(Rabbit.KEY_SOURCE_URI, uri.toString());
         String fragment = uri.getFragment();
         if (!TextUtils.isEmpty(fragment)) {
             bundle.putString(MAPPING_URL_FRAGMENT, fragment);

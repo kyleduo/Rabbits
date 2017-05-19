@@ -10,6 +10,7 @@ import android.util.Size;
 import android.util.SizeF;
 import android.util.SparseArray;
 
+import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.Target;
 
 import java.io.Serializable;
@@ -89,7 +90,19 @@ public abstract class AbstractNavigator implements IProvider {
         return this;
     }
 
-    public AbstractNavigator target(Target target) {
+    public AbstractNavigator redirect(Target target) {
+        return this.merge(target, false);
+    }
+
+    public AbstractNavigator merge(Target target) {
+        return this.merge(target, true);
+    }
+
+    private AbstractNavigator merge(Target target, boolean clean) {
+        if (clean && target.getExtras() != null) {
+            target.getExtras().remove(Rabbit.KEY_ORIGIN_URI);
+            target.getExtras().remove(Rabbit.KEY_SOURCE_URI);
+        }
         this.mergeExtras(target.getExtras())
                 .setIntentFlags(target.getFlags())
                 .finishPrevious(target.shouldFinishPrevious());
@@ -322,6 +335,9 @@ public abstract class AbstractNavigator implements IProvider {
         if (mTarget.getExtras() == null) {
             mTarget.setExtras(bundle);
         } else {
+            if (mTarget.getExtras().get(Rabbit.KEY_SOURCE_URI) != null) {
+                bundle.remove(Rabbit.KEY_SOURCE_URI);
+            }
             mTarget.getExtras().putAll(bundle);
         }
         return this;

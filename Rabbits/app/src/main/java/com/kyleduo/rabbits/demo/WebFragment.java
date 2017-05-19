@@ -60,7 +60,7 @@ public class WebFragment extends BaseFragment {
 				if (UriUtils.matchPath(target.getUri(),"/tobeintercepted")) {
 					Rabbit.from(WebFragment.this)
 							.to("demo://rabbits.kyleduo.com/test")
-							.mergeExtras(target.getExtras())
+                            .merge(target)
 							.clearTop()
 							.start();
 					return true;

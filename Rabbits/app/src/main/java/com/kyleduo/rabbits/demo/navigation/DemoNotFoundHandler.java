@@ -25,7 +25,7 @@ class DemoNotFoundHandler extends AbstractPageNotFoundHandler {
         AbstractNavigator navigator = Rabbit.from(mFrom)
                 .to("/web")
                 .putExtra("url", httpUrl)
-                .target(mTarget);
+                .merge(mTarget);
         if (requestCode >= 0) {
             navigator.startForResult(requestCode);
         } else {
@@ -40,7 +40,7 @@ class DemoNotFoundHandler extends AbstractPageNotFoundHandler {
         return Rabbit.from(mFrom)
                 .obtain("/web")
                 .putExtra("url", httpUrl)
-                .mergeExtras(mTarget.getExtras())
+                .merge(mTarget)
                 .obtain();
     }
 }
