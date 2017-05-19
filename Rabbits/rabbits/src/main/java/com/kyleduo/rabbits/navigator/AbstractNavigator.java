@@ -90,10 +90,27 @@ public abstract class AbstractNavigator implements IProvider {
         return this;
     }
 
+    /**
+     * Merge all information of {@param target} into this navigator's even the {@link Rabbit#KEY_ORIGIN_URI}.
+     * So you can redirect to the origin url after open this target page. This is used when open an
+     * Activity in which open a Fragment later.
+     *
+     * @param target target to be redirect
+     * @return Navigator
+     */
     public AbstractNavigator redirect(Target target) {
         return this.merge(target, false);
     }
 
+    /**
+     * Merge another into this navigator. This method will merge extras, intent flags and other options
+     * from another target likes {@link AbstractNavigator#redirect(Target)} besides this method will
+     * remove {@link Rabbit#KEY_ORIGIN_URI} and {@link Rabbit#KEY_SOURCE_URI} which means no trace
+     * will be remain of the other target.
+     *
+     * @param target target to be merged
+     * @return Navigator
+     */
     public AbstractNavigator merge(Target target) {
         return this.merge(target, true);
     }
@@ -112,6 +129,11 @@ public abstract class AbstractNavigator implements IProvider {
         return this;
     }
 
+    /**
+     * Navigate to another page.
+     *
+     * @return true for success
+     */
     @SuppressWarnings("SimplifiableIfStatement")
     public boolean start() {
         if (checkInterceptor()) {
@@ -124,6 +146,12 @@ public abstract class AbstractNavigator implements IProvider {
         return handleStart(-1);
     }
 
+    /**
+     * Navigate to another page for result.
+     *
+     * @param requestCode requestCode
+     * @return true for success
+     */
     @SuppressWarnings("SimplifiableIfStatement")
     public boolean startForResult(int requestCode) {
         if (checkInterceptor()) {
