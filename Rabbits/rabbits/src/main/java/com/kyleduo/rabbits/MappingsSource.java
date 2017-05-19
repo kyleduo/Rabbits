@@ -1,7 +1,7 @@
 package com.kyleduo.rabbits;
 
 /**
- * for Module
+ * Mappings source.
  * Created by kyleduo on 2017/5/9.
  */
 

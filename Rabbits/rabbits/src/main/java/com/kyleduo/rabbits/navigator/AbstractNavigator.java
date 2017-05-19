@@ -91,7 +91,7 @@ public abstract class AbstractNavigator implements IProvider {
     }
 
     /**
-     * Merge all information of {@param target} into this navigator's even the {@link Rabbit#KEY_ORIGIN_URI}.
+     * Merge all information of {@code target} into this navigator's even the {@link Rabbit#KEY_ORIGIN_URI}.
      * So you can redirect to the origin url after open this target page. This is used when open an
      * Activity in which open a Fragment later.
      *

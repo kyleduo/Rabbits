@@ -19,6 +19,8 @@ You can get these benefits after integrating Rabbits to you project:
 
 
 
+
+
 ### Download
 
 ```groovy
@@ -36,6 +38,14 @@ dependencies {
 -keep class com.kyleduo.rabbits.Router { *; }
 -keep class com.kyleduo.rabbits.IRouter { *; }
 ```
+
+
+
+### Migration
+
+If you have used previous version of Rabbits, you need to add `@Module` annotaion to any class of your module (usually custom application class) and rebuild.
+
+Since mappings.json was simplified, you need remove unsupported keys. (Every keys besides `version`, `allowed_hosts`, `mappings`)
 
 
 

@@ -20,7 +20,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * for Module
+ * Mappings Loader
+ *
  * Created by kyleduo on 2017/5/9.
  */
 

@@ -50,7 +50,8 @@ if (project.getPlugins().hasPlugin('com.android.application') ||
 
     task javadoc(type: Javadoc) {
         source = android.sourceSets.main.java.srcDirs
-        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator)) + configurations.compile
+        failOnError false
     }
 } else {
     task sourcesJar(type: Jar, dependsOn:classes) {

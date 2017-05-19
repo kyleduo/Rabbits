@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.kyleduo.rabbits.annotations.Page;
 
 /**
- * for Module
+ * for Rabbits
  * Created by kyleduo on 2017/5/10.
  */
 

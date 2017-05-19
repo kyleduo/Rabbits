@@ -294,7 +294,8 @@ public class Rabbit {
     /**
      * Navigate to page, or perform a not found strategy.
      *
-     * @param uriStr uri string
+     * @param uriStr       uri string
+     * @param ignoreParent whether ignore parent when navigate
      * @return AbstractNavigator
      */
     public AbstractNavigator to(String uriStr, boolean ignoreParent) {
@@ -315,7 +316,8 @@ public class Rabbit {
     /**
      * Navigate to page, or perform a not found strategy.
      *
-     * @param uri uri
+     * @param uri          uri
+     * @param ignoreParent whether ignore parent when navigate
      * @return AbstractNavigator
      */
     public AbstractNavigator to(Uri uri, boolean ignoreParent) {
@@ -342,7 +344,8 @@ public class Rabbit {
     /**
      * Navigate to page, or just return null if not found.
      *
-     * @param uriStr uri
+     * @param uriStr       uri
+     * @param ignoreParent whether ignore parent when navigate
      * @return AbstractNavigator
      */
     public AbstractNavigator tryTo(String uriStr, boolean ignoreParent) {
@@ -365,7 +368,8 @@ public class Rabbit {
      * Only if it is a http/https uri, and a page mapping from uri with app scheme and given path
      * exists, a valid navigator will returned.
      *
-     * @param uri uri
+     * @param uri          uri
+     * @param ignoreParent whether ignore parent when navigate
      * @return AbstractNavigator
      */
     public AbstractNavigator tryTo(Uri uri, boolean ignoreParent) {
