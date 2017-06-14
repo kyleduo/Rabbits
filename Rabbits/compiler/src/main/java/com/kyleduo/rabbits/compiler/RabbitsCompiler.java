@@ -125,7 +125,6 @@ public class RabbitsCompiler extends AbstractProcessor {
         String moduleName = module.name();
         String[] subModules = module.subModules();
         boolean standalone = module.standalone();
-        debug(this.toString() + "   " + moduleName);
 
         if (standalone) {
             if (subModules.length == 0) {
@@ -211,12 +210,24 @@ public class RabbitsCompiler extends AbstractProcessor {
                         methodSpecBuilder = MethodSpec.methodBuilder(methodName)
                                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC);
                         methodSpecBuilder.returns(ClassName.get(NAVIGATOR_PACKAGE, "AbstractNavigator"));
-                        String parentMethodName = NameParser.parseRoute(parent);
+                        String parentMethodName;
+                        ClassName moduleClass = null;
+                        if (parent.contains(".")) {
+                            String[] parts = parent.split("\\.");
+                            moduleClass = ClassName.get(PACKAGE, getRouterClassName(parts[0]));
+                            parentMethodName = NameParser.parseRoute(parts[1]);
+                        } else {
+                            parentMethodName = NameParser.parseRoute(parent);
+                        }
                         methodSpecBuilder.addStatement("android.os.Bundle bundle = new android.os.Bundle()");
                         parseExtras(methodSpecBuilder, page);
                         ClassName targetClass = ClassName.get(PACKAGE, "Target");
                         methodSpecBuilder.addStatement("$T target = new $T(null)", targetClass, targetClass);
-                        methodSpecBuilder.addStatement("target.setTo($L())", parentMethodName);
+                        if (moduleClass != null) {
+                            methodSpecBuilder.addStatement("target.setTo($T.$L())", moduleClass, parentMethodName);
+                        } else {
+                            methodSpecBuilder.addStatement("target.setTo($L())", parentMethodName);
+                        }
                         methodSpecBuilder.addStatement("target.setExtras(bundle)");
                         methodSpecBuilder.addStatement("return new $T(null, target, null)", ClassName.get(NAVIGATOR_PACKAGE, "DefaultNavigator"));
                         methods.add(methodSpecBuilder.build());
@@ -245,7 +256,6 @@ public class RabbitsCompiler extends AbstractProcessor {
         try {
             File mappingsFile = findMappings(srcPath);
             if (mappingsFile != null && mappingsFile.exists()) {
-                debug(mappingsFile.getAbsolutePath());
                 Gson gson = new Gson();
                 MappingTable table = gson.fromJson(new InputStreamReader(new FileInputStream(mappingsFile)), MappingTable.class);
                 for (Map.Entry<String, JsonElement> e : table.mappings.entrySet()) {

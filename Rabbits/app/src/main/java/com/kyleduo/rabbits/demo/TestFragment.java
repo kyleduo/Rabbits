@@ -19,7 +19,7 @@ import java.util.Random;
 /**
  * Created by kyle on 2016/12/12.
  */
-@Page(name = "TEST_F", type = PageType.FRAGMENT, parent = "COMMON", intExtras = {"index", "1"})
+@Page(name = "TEST_F", type = PageType.FRAGMENT, parent = "sub1.GENERAL", intExtras = {"index", "1"})
 public class TestFragment extends BaseFragment {
 	@Nullable
 	@Override

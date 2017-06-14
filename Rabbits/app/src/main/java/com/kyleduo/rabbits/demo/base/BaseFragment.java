@@ -53,6 +53,6 @@ public class BaseFragment extends SupportFragment {
 		super.onSupportVisible();
 		String originUri = getArguments().getString(Rabbit.KEY_ORIGIN_URI);
 		Uri uri = Uri.parse(originUri);
-		getActivity().setTitle(uri.getPath());
+		getActivity().setTitle(uri.getPath() + " @" + getActivity().getClass().getSimpleName());
 	}
 }
