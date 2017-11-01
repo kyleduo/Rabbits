@@ -226,7 +226,7 @@ public class Rabbit {
      * @return Rabbit instance.
      */
     public static Rabbit from(Object from) {
-        if (!(from instanceof Activity) && !(from instanceof Fragment || from instanceof android.app.Fragment)) {
+        if (!(from instanceof Activity) && !(from instanceof Fragment || from instanceof android.app.Fragment) && !(from instanceof Context)) {
             throw new IllegalArgumentException("From object must be whether an Activity or a Fragment instance.");
         }
         return new Rabbit(from);
