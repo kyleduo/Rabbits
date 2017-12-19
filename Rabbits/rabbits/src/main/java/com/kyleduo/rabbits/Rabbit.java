@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.kyleduo.rabbits.annotations.utils.NameParser;
+import com.kyleduo.rabbits.interceptor.IInterceptor;
 import com.kyleduo.rabbits.navigator.AbstractNavigator;
 import com.kyleduo.rabbits.navigator.AbstractPageNotFoundHandler;
 import com.kyleduo.rabbits.navigator.DefaultNavigatorFactory;
@@ -256,6 +257,11 @@ public class Rabbit {
             mInterceptors = new ArrayList<>();
         }
         mInterceptors.add(interceptor);
+        return this;
+    }
+
+    public Rabbit registerInterceptor(IInterceptor interceptor, String pattern) {
+        // TODO: 19/12/2017
         return this;
     }
 

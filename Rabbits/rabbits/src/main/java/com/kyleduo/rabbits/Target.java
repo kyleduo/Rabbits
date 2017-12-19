@@ -10,13 +10,17 @@ import android.os.Bundle;
  */
 
 public class Target {
+    private Object mFrom;
+
     private Uri mUri;
     private String mPage;
     private int mFlags;
     private boolean mFinishPrevious;
     private Bundle mExtras;
     private Object mTo;
+    private int mRequestCode;
     private int[] mTransitionAnimations;
+    private Target mNext;
 
     Target(Uri uri) {
         mUri = uri;
@@ -103,5 +107,13 @@ public class Target {
 
     public void setTransitionAnimations(int[] transitionAnimations) {
         mTransitionAnimations = transitionAnimations;
+    }
+
+    public Object getFrom() {
+        return mFrom;
+    }
+
+    public void setFrom(Object from) {
+        mFrom = from;
     }
 }
