@@ -182,7 +182,10 @@ class Mappings {
         for (String uri : uris) {
             // Check match for each uri.
             String[] template = uri.split("(://|/)");
-            if (!template[0].equals(source[0]) || template.length != source.length) {
+            if (template.length != source.length) {
+                continue;
+            }
+            if (!template[0].equals(source[0]) && !Rabbit.sDefaultHost.equals(source[0])) {
                 continue;
             }
             if (!template[1].equals(source[1]) && (sMappingsGroup.getAllowedHosts() == null || !sMappingsGroup.getAllowedHosts().contains(source[1]))) {
