@@ -185,7 +185,7 @@ class Mappings {
             if (template.length != source.length) {
                 continue;
             }
-            if (!template[0].equals(source[0]) && !Rabbit.sDefaultHost.equals(source[0])) {
+            if (!template[0].equals(source[0]) && !Rabbit.sAppScheme.equals(source[0])) {
                 continue;
             }
             if (!template[1].equals(source[1]) && (sMappingsGroup.getAllowedHosts() == null || !sMappingsGroup.getAllowedHosts().contains(source[1]))) {
