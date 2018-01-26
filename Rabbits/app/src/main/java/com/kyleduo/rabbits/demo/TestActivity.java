@@ -9,7 +9,7 @@ import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.demo.base.BaseActivity;
 
-@Page(name = "TEST")
+@Page("/test")
 public class TestActivity extends BaseActivity {
 
 	@SuppressLint("SetTextI18n")

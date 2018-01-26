@@ -3,7 +3,6 @@ package com.kyleduo.rabbits.navigator;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IInterface;
 import android.os.Parcelable;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
@@ -13,10 +12,6 @@ import android.util.SparseArray;
 
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.Target;
-import com.kyleduo.rabbits.dispatcher.DefaultDispatcher;
-import com.kyleduo.rabbits.dispatcher.IDispatcher;
-import com.kyleduo.rabbits.dispatcher.InterceptorDispatcher;
-import com.kyleduo.rabbits.interceptor.IInterceptor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -170,24 +165,27 @@ public abstract class AbstractNavigator implements IProvider {
     }
 
     protected boolean handleStart(int requestCode) {
-        IDispatcher dispatcher = new DefaultDispatcher();
+//        IDispatcher dispatcher = new DefaultDispatcher();
+//
+//        List<Interceptor> is = new ArrayList<>();
+//
+//        final int count = is.size();
+//        InterceptorDispatcher id = null;
+//        for (int i = count - 1; i >= 0; i--) {
+//            id = new InterceptorDispatcher(is.get(i), id == null ? dispatcher : id);
+//        }
+//
+//        id.dispatch(mTarget);
+//
+//        return true;
 
-        List<IInterceptor> is = new ArrayList<>();
-
-        final int count = is.size();
-        InterceptorDispatcher id = null;
-        for (int i = count - 1; i >= 0; i--) {
-            id = new InterceptorDispatcher(is.get(i), id == null ? dispatcher : id);
-        }
-
-        id.dispatch(mTarget);
 
         return true;
     }
 
-    private IDispatcher createDispatcher(List<IInterceptor> is, IDispatcher ds) {
-        return null;
-    }
+//    private IDispatcher createDispatcher(List<Interceptor> is, IDispatcher ds) {
+//        return null;
+//    }
 
     public AbstractNavigator addIntentFlags(int flags) {
         mTarget.setFlags(mTarget.getFlags() | flags);

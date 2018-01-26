@@ -5,14 +5,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.kyleduo.rabbits.Rabbit;
-import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.demo.base.BaseActivity;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
 
 /**
  * Created by kyle on 2016/12/12.
  */
-@Page(name = "COMMON")
+//@Page(name = "COMMON")
 public class CommonActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

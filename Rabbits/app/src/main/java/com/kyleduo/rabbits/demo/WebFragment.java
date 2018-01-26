@@ -23,7 +23,7 @@ import com.kyleduo.rabbits.navigator.INavigationInterceptor;
 /**
  * Created by kyle on 2016/12/12.
  */
-@Page(name = "WEB", type = PageType.FRAGMENT)
+//@Page(name = "WEB", type = PageType.FRAGMENT)
 public class WebFragment extends BaseFragment {
 
 	private WebView mWebView;

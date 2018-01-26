@@ -45,8 +45,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     // Rabbits
-    compile project(':rabbits')
-    annotationProcessor project(':compiler')
+//    compile project(':rabbits')
+//    annotationProcessor project(':compiler')
 
     // Fragmentation
     compile 'me.yokeyword:fragmentation:0.9.3'

@@ -1,20 +1,11 @@
 package com.kyleduo.rabbits;
 
 import android.net.Uri;
-import android.util.Log;
-
-import com.kyleduo.rabbits.dispatcher.DefaultDispatcher;
-import com.kyleduo.rabbits.dispatcher.DispatchResult;
-import com.kyleduo.rabbits.dispatcher.IDispatcher;
-import com.kyleduo.rabbits.dispatcher.InterceptorDispatcher;
-import com.kyleduo.rabbits.interceptor.IInterceptor;
 
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
 
@@ -24,46 +15,54 @@ import static org.junit.Assert.assertEquals;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
-	@Test
-	public void addition_isCorrect() throws Exception {
-		assertEquals(4, 2 + 2);
-	}
+    @Test
+    public void addition_isCorrect() throws Exception {
+        assertEquals(4, 2 + 2);
+    }
 
-	@Test
-	public void dispatcherChain() throws Exception {
-		IDispatcher dispatcher = new DefaultDispatcher() {
+    @Test
+    public void dispatcherChain() throws Exception {
+        List<Interceptor> interceptors = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            final int finalI = i;
+            interceptors.add(new Interceptor() {
+                @Override
+                public DispatchResult intercept(Dispatcher dispatcher) {
+                    print(finalI + " - before " + dispatcher.target().getPage());
+                    if (finalI == 3) {
+                        dispatcher.target().setPage("page 3");
+                    }
+                    if (finalI == 4) {
+                        return new DispatchResult();
+                    }
+                    DispatchResult result = dispatcher.dispatch(dispatcher.target());
+                    print(finalI + " - after");
+                    return result;
+                }
+            });
+        }
+        Interceptor real = new Interceptor() {
             @Override
-            public DispatchResult dispatch(Target target) {
-                System.out.println("dispatch");
-                return super.dispatch(target);
+            public DispatchResult intercept(Dispatcher dispatcher) {
+                Target target = dispatcher.target();
+                print("real navigation to " + target.getPage());
+                return new DispatchResult();
             }
         };
 
-		List<IInterceptor> is = new ArrayList<>();
-		for (int i = 0; i < 3; i++) {
-            final int finalI = i;
-            is.add(new IInterceptor() {
-				@Override
-				public DispatchResult dispatch(IDispatcher dispatcher, Target target) {
-					System.out.println("dispatcher: " + dispatcher + " " + finalI + "   " +  target.hashCode());
-                    if (finalI == 1) {
-                        target = new Target(Uri.EMPTY);
-                    }
-                    DispatchResult r = dispatcher.dispatch(target);
-                    System.out.println("after dispatcher: " + dispatcher + " " + finalI + "   " +  target.hashCode());
-					return r;
-				}
-			});
-		}
-		InterceptorDispatcher id = null;
-		for (IInterceptor i : is) {
-			id = new InterceptorDispatcher(i, id == null ? dispatcher : id);
-		}
+        interceptors.add(real);
 
-        DispatchResult r = null;
-        if (id != null) {
-            r = id.dispatch(new Target(Uri.EMPTY));
-        }
-        System.out.println("r: " + r);
+        Target target = new Target(Uri.EMPTY);
+        target.setPage("origin");
+        RealDispatcher realDispatcher = new RealDispatcher(target, interceptors, 0);
+
+        DispatchResult ret = realDispatcher.dispatch(target);
+
+        print(ret);
     }
+
+    private void print(Object obj) {
+        System.out.println(obj instanceof String ? obj : obj.toString());
+    }
+
 }

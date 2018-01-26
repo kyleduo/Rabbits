@@ -9,14 +9,12 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.kyleduo.rabbits.Rabbit;
-import com.kyleduo.rabbits.annotations.Page;
-import com.kyleduo.rabbits.annotations.PageType;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
 
 /**
  * Created by kyle on 2016/12/12.
  */
-@Page(name = "SECOND", type = PageType.FRAGMENT)
+//@Page(name = "SECOND", type = PageType.FRAGMENT)
 public class SecondFragment extends BaseFragment {
     @Nullable
     @Override

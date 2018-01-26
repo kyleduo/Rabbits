@@ -2,24 +2,18 @@ package com.kyleduo.rabbits;
 
 import android.app.Activity;
 import android.content.Context;
-import android.net.Uri;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.util.Log;
+import android.util.SparseArray;
 
+import com.kyleduo.rabbits.annotations.TargetInfo;
 import com.kyleduo.rabbits.annotations.utils.NameParser;
-import com.kyleduo.rabbits.interceptor.IInterceptor;
-import com.kyleduo.rabbits.navigator.AbstractNavigator;
-import com.kyleduo.rabbits.navigator.AbstractPageNotFoundHandler;
 import com.kyleduo.rabbits.navigator.DefaultNavigatorFactory;
-import com.kyleduo.rabbits.navigator.INavigationInterceptor;
 import com.kyleduo.rabbits.navigator.INavigatorFactory;
-import com.kyleduo.rabbits.navigator.MuteNavigator;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,10 +53,11 @@ public class Rabbit {
     static String sAppScheme;
     static String sDefaultHost;
     private static INavigatorFactory sNavigatorFactory;
-    private static List<INavigationInterceptor> sInterceptors;
-
-    private Object mFrom;
-    private List<INavigationInterceptor> mInterceptors;
+//    private static List<INavigationInterceptor> sInterceptors;
+//
+//    private List<INavigationInterceptor> mInterceptors;
+    private List<Interceptor> mInterceptors;
+    private SparseArray<Navigator> mNavigators;
 
     private static class RabbitInvocationHandler implements InvocationHandler {
 
@@ -145,39 +140,44 @@ public class Rabbit {
         }
     }
 
-    private Rabbit(Object from) {
-        mFrom = from;
-        if (sRouter == null) {
-            sRouter = (IRouter) Proxy.newProxyInstance(IRouter.class.getClassLoader(), new Class[]{IRouter.class}, new RabbitInvocationHandler());
-        }
+    private static  Rabbit sInstance;
+    private Rabbit() { }
+
+    private static Rabbit getInstance() {
+//        synchronized (Rabbit.class) {
+//            if (sInstance == null) {
+//                synchronized (Rabbit.class) {
+//                    sInstance = new Rabbit();
+//                }
+//            }
+//        }
+        return sInstance;
     }
+
+//    private Rabbit(Object from) {
+//        if (sRouter == null) {
+//            sRouter = (IRouter) Proxy.newProxyInstance(IRouter.class.getClassLoader(), new Class[]{IRouter.class}, new RabbitInvocationHandler());
+//        }
+//    }
 
     /**
      * Dump mappings.
      *
      * @return result string.
      */
-    public static String dumpMappings() {
-        return Mappings.dump();
-    }
-
-    /**
-     * mappings version
-     *
-     * @return version
-     */
-    public static int currentVersion() {
-        return Mappings.currentVersion();
-    }
+//    public static String dumpMappings() {
+//        return Mappings.dump();
+//    }
 
     public static void init(RConfig config) {
         if (!config.valid()) {
             throw new IllegalArgumentException("Config object not valid");
         }
+        sInstance = new Rabbit();
+        sInstance.registerNavigator(TargetInfo.TYPE_ACTIVITY, new ActivityNavigator());
         sAppScheme = config.getScheme();
         sDefaultHost = config.getHost();
         sNavigatorFactory = config.getNavigatorFactory() == null ? new DefaultNavigatorFactory() : config.getNavigatorFactory();
-        Mappings.FORCE_UPDATE_PERSIST = config.shouldForceUpdatePersist();
     }
 
     /**
@@ -187,38 +187,11 @@ public class Rabbit {
      * @param defaultHost      Default host when try to match uri without a host.
      * @param navigatorFactory Custom navigator factory.
      */
-    private static void init(String scheme, String defaultHost, INavigatorFactory navigatorFactory) {
-        sAppScheme = scheme;
-        sDefaultHost = defaultHost;
-        sNavigatorFactory = navigatorFactory;
-    }
-
-    /**
-     * Setup in sub-thread.
-     *
-     * @param context  Used for io operation.
-     * @param callback callback run after setup finished.
-     */
-    public static void asyncSetup(Context context, MappingsLoaderCallback callback) {
-        setup(context, true, callback);
-    }
-
-    /**
-     * Synchronously setup.
-     *
-     * @param context Used for io operation.
-     */
-    public static void setup(Context context) {
-        setup(context, false, null);
-    }
-
-    private static void setup(Context context, boolean async, MappingsLoaderCallback callback) {
-        Mappings.setup(context, async, callback);
-    }
-
-    public static void updateMappings(Context context, MappingsSource source) {
-        Mappings.update(context, source);
-    }
+//    private static void init(String scheme, String defaultHost, INavigatorFactory navigatorFactory) {
+//        sAppScheme = scheme;
+//        sDefaultHost = defaultHost;
+//        sNavigatorFactory = navigatorFactory;
+//    }
 
     /**
      * Create a rabbit who has ability to navigate through your pages.
@@ -226,33 +199,40 @@ public class Rabbit {
      * @param from Whether an Activity or a Fragment instance.
      * @return Rabbit instance.
      */
-    public static Rabbit from(Object from) {
+    public static Navigation from(Object from) {
         if (!(from instanceof Activity) && !(from instanceof Fragment || from instanceof android.app.Fragment) && !(from instanceof Context)) {
             throw new IllegalArgumentException("From object must be whether an Activity or a Fragment instance.");
         }
-        return new Rabbit(from);
+        Action action = new Action();
+        action.setFrom(from);
+        return new DefaultNavigation(getInstance(), action);
     }
+
+//    public static Navigation redirect(Object from, Action action) {
+//        action.setFrom(from);
+//        return new DefaultNavigation(getInstance(), action);
+//    }
 
     /**
      * Add global interceptor. These Interceptors' methods will be invoked in every navigation.
      *
      * @param interceptor Interceptor instance.
      */
-    public static void addGlobalInterceptor(INavigationInterceptor interceptor) {
-        if (sInterceptors == null) {
-            sInterceptors = new ArrayList<>();
-        }
-        sInterceptors.add(interceptor);
-    }
+//    public static void addGlobalInterceptor(INavigationInterceptor interceptor) {
+//        if (sInterceptors == null) {
+//            sInterceptors = new ArrayList<>();
+//        }
+//        sInterceptors.add(interceptor);
+//    }
 
     /**
      * Add an interceptor used for this navigation. This is useful when you want to check whether a
-     * uri matches a specific page using {@link com.kyleduo.rabbits.Rabbit#tryTo(Uri)} method.
+     * uri matches a specific page using method.
      *
      * @param interceptor Interceptor instance.
      * @return Rabbit instance.
      */
-    public Rabbit addInterceptor(INavigationInterceptor interceptor) {
+    public Rabbit addInterceptor(Interceptor interceptor) {
         if (mInterceptors == null) {
             mInterceptors = new ArrayList<>();
         }
@@ -260,9 +240,26 @@ public class Rabbit {
         return this;
     }
 
-    public Rabbit registerInterceptor(IInterceptor interceptor, String pattern) {
+    public Rabbit registerNavigator(int type, Navigator navigator) {
+        mNavigators.put(type, navigator);
+        return this;
+    }
+
+    public Rabbit registerInterceptor(Interceptor interceptor, String pattern) {
         // TODO: 19/12/2017
         return this;
+    }
+
+    DispatchResult dispatch(Navigation navigation) {
+        final Action action = navigation.action();
+
+        // interceptors
+
+        List<Interceptor> interceptors = new ArrayList<>(mInterceptors);
+        interceptors.add(new NavigatorInterceptor(mNavigators));
+
+        RealDispatcher dispatcher = new RealDispatcher(action, null, 0);
+        return dispatcher.dispatch(action);
     }
 
     /**
@@ -271,10 +268,10 @@ public class Rabbit {
      * @param uriStr uriStr
      * @return AbstractNavigator
      */
-    public AbstractNavigator obtain(String uriStr) {
-        Uri uri = Uri.parse(uriStr);
-        return obtain(uri);
-    }
+//    public AbstractNavigator obtain(String uriStr) {
+//        Uri uri = Uri.parse(uriStr);
+//        return obtain(uri);
+//    }
 
     /**
      * Used for obtain page object. Intent or Fragment instance.
@@ -282,10 +279,10 @@ public class Rabbit {
      * @param uri uri
      * @return AbstractNavigator
      */
-    public AbstractNavigator obtain(Uri uri) {
-        Target target = Mappings.match(uri).obtain(sRouter);
-        return dispatch(target, false);
-    }
+//    public AbstractNavigator obtain(Uri uri) {
+//        Target target = Mappings.match(uri).obtain(sRouter);
+//        return dispatch(target, false);
+//    }
 
     /**
      * Navigate to page, or perform a not found strategy.
@@ -293,9 +290,9 @@ public class Rabbit {
      * @param uriStr uri string
      * @return AbstractNavigator
      */
-    public AbstractNavigator to(String uriStr) {
-        return to(uriStr, false);
-    }
+//    public AbstractNavigator to(String uriStr) {
+//        return to(uriStr, false);
+//    }
 
     /**
      * Navigate to page, or perform a not found strategy.
@@ -304,10 +301,10 @@ public class Rabbit {
      * @param ignoreParent whether ignore parent when navigate
      * @return AbstractNavigator
      */
-    public AbstractNavigator to(String uriStr, boolean ignoreParent) {
-        Uri uri = Uri.parse(uriStr);
-        return to(uri, ignoreParent);
-    }
+//    public AbstractNavigator to(String uriStr, boolean ignoreParent) {
+//        Uri uri = Uri.parse(uriStr);
+//        return to(uri, ignoreParent);
+//    }
 
     /**
      * Navigate to page, or perform a not found strategy.
@@ -315,9 +312,9 @@ public class Rabbit {
      * @param uri uri
      * @return AbstractNavigator
      */
-    public AbstractNavigator to(Uri uri) {
-        return to(uri, false);
-    }
+//    public AbstractNavigator to(Uri uri) {
+//        return to(uri, false);
+//    }
 
     /**
      * Navigate to page, or perform a not found strategy.
@@ -326,15 +323,16 @@ public class Rabbit {
      * @param ignoreParent whether ignore parent when navigate
      * @return AbstractNavigator
      */
-    public AbstractNavigator to(Uri uri, boolean ignoreParent) {
-        Target target = Mappings.match(uri);
-        if (ignoreParent) {
-            target.obtain(sRouter);
-        } else {
-            target.route(sRouter);
-        }
-        return dispatch(target, false);
-    }
+//    public AbstractNavigator to(Uri uri, boolean ignoreParent) {
+//        Target target = Mappings.match(uri);
+//        if (ignoreParent) {
+//            target.obtain(sRouter);
+//        } else {
+//            target.route(sRouter);
+//        }
+////        return dispatch(target, false);
+//        return null;
+//    }
 
     /**
      * Navigate to page, or just return null if not found.
@@ -342,10 +340,10 @@ public class Rabbit {
      * @param uriStr uri
      * @return AbstractNavigator
      */
-    public AbstractNavigator tryTo(String uriStr) {
-        Uri uri = Uri.parse(uriStr);
-        return tryTo(uri);
-    }
+//    public AbstractNavigator tryTo(String uriStr) {
+//        Uri uri = Uri.parse(uriStr);
+//        return tryTo(uri);
+//    }
 
     /**
      * Navigate to page, or just return null if not found.
@@ -354,10 +352,10 @@ public class Rabbit {
      * @param ignoreParent whether ignore parent when navigate
      * @return AbstractNavigator
      */
-    public AbstractNavigator tryTo(String uriStr, boolean ignoreParent) {
-        Uri uri = Uri.parse(uriStr);
-        return tryTo(uri, ignoreParent);
-    }
+//    public AbstractNavigator tryTo(String uriStr, boolean ignoreParent) {
+//        Uri uri = Uri.parse(uriStr);
+//        return tryTo(uri, ignoreParent);
+//    }
 
     /**
      * Only if it is a http/https uri, and a page mapping from uri with app scheme and given path
@@ -366,9 +364,9 @@ public class Rabbit {
      * @param uri uri
      * @return AbstractNavigator
      */
-    public AbstractNavigator tryTo(Uri uri) {
-        return tryTo(uri, false);
-    }
+//    public AbstractNavigator tryTo(Uri uri) {
+//        return tryTo(uri, false);
+//    }
 
     /**
      * Only if it is a http/https uri, and a page mapping from uri with app scheme and given path
@@ -378,46 +376,46 @@ public class Rabbit {
      * @param ignoreParent whether ignore parent when navigate
      * @return AbstractNavigator
      */
-    public AbstractNavigator tryTo(Uri uri, boolean ignoreParent) {
-        final String scheme = uri.getScheme();
-        if (TextUtils.isEmpty(scheme) || (!scheme.startsWith("http") && !scheme.startsWith(sAppScheme))) {
-            return new MuteNavigator(mFrom, new Target(uri), assembleInterceptor());
-        }
-        if (!TextUtils.equals(scheme, sAppScheme)) {
-            uri = uri.buildUpon().scheme(sAppScheme).build();
-        }
-        Target target = Mappings.match(uri);
-        if (ignoreParent) {
-            target.obtain(sRouter);
-        } else {
-            target.route(sRouter);
-        }
-        return dispatch(target, true);
-    }
+//    public AbstractNavigator tryTo(Uri uri, boolean ignoreParent) {
+//        final String scheme = uri.getScheme();
+//        if (TextUtils.isEmpty(scheme) || (!scheme.startsWith("http") && !scheme.startsWith(sAppScheme))) {
+//            return new MuteNavigator(mFrom, new Target(uri), assembleInterceptor());
+//        }
+//        if (!TextUtils.equals(scheme, sAppScheme)) {
+//            uri = uri.buildUpon().scheme(sAppScheme).build();
+//        }
+//        Target target = Mappings.match(uri);
+//        if (ignoreParent) {
+//            target.obtain(sRouter);
+//        } else {
+//            target.route(sRouter);
+//        }
+//        return dispatch(target, true);
+//    }
 
     /**
-     * Handle the dispatch operation.
+     * Handle the intercept operation.
      *
      * @param target target
      * @param mute   whether mute
      * @return navigator
      */
-    private AbstractNavigator dispatch(Target target, boolean mute) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, target.toString());
-        }
-        if (!target.hasMatched()) {
-            if (!mute) {
-                AbstractPageNotFoundHandler pageNotFoundHandler = sNavigatorFactory.createPageNotFoundHandler(mFrom, target, assembleInterceptor());
-                if (pageNotFoundHandler != null) {
-                    return pageNotFoundHandler;
-                }
-            } else if (target.getTo() == null) {
-                return new MuteNavigator(mFrom, target, assembleInterceptor());
-            }
-        }
-        return sNavigatorFactory.createNavigator(mFrom, target, assembleInterceptor());
-    }
+//    private AbstractNavigator dispatch(Target target, boolean mute) {
+//        if (BuildConfig.DEBUG) {
+//            Log.d(TAG, target.toString());
+//        }
+//        if (!target.hasMatched()) {
+//            if (!mute) {
+//                AbstractPageNotFoundHandler pageNotFoundHandler = sNavigatorFactory.createPageNotFoundHandler(mFrom, target, assembleInterceptor());
+//                if (pageNotFoundHandler != null) {
+//                    return pageNotFoundHandler;
+//                }
+//            } else if (target.getTo() == null) {
+//                return new MuteNavigator(mFrom, target, assembleInterceptor());
+//            }
+//        }
+//        return sNavigatorFactory.createNavigator(mFrom, target, assembleInterceptor());
+//    }
 
     /**
      * Assemble interceptors and static interceptors.
@@ -425,14 +423,14 @@ public class Rabbit {
      *
      * @return a list of valid navigation interceptor
      */
-    private List<INavigationInterceptor> assembleInterceptor() {
-        if (sInterceptors == null) {
-            return mInterceptors;
-        }
-        if (mInterceptors == null) {
-            mInterceptors = new ArrayList<>();
-        }
-        mInterceptors.addAll(sInterceptors);
-        return mInterceptors;
-    }
+//    private List<INavigationInterceptor> assembleInterceptor() {
+//        if (sInterceptors == null) {
+//            return mInterceptors;
+//        }
+//        if (mInterceptors == null) {
+//            mInterceptors = new ArrayList<>();
+//        }
+//        mInterceptors.addAll(sInterceptors);
+//        return mInterceptors;
+//    }
 }

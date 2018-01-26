@@ -11,14 +11,9 @@ import com.kyleduo.rabbits.navigator.INavigatorFactory;
 
 @SuppressWarnings("WeakerAccess")
 public class RConfig {
-    private boolean mForceUpdatePersist;
     private String mScheme;
     private String mHost;
     private INavigatorFactory mNavigatorFactory;
-
-    private RConfig() {
-        mForceUpdatePersist = false;
-    }
 
     public static RConfig get() {
         return new RConfig();
@@ -39,17 +34,8 @@ public class RConfig {
         return this;
     }
 
-    public RConfig forceUpdatePersist(boolean forcePersist) {
-        mForceUpdatePersist = forcePersist;
-        return this;
-    }
-
     public boolean valid() {
         return !(TextUtils.isEmpty(mHost) || TextUtils.isEmpty(mScheme));
-    }
-
-    public boolean shouldForceUpdatePersist() {
-        return mForceUpdatePersist;
     }
 
     public String getScheme() {

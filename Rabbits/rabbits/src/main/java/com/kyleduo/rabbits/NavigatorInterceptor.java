@@ -1,0 +1,45 @@
+package com.kyleduo.rabbits;
+
+import android.util.SparseArray;
+
+import com.kyleduo.rabbits.annotations.TargetInfo;
+
+/**
+ * Created by kyle on 26/01/2018.
+ */
+
+class NavigatorInterceptor implements Interceptor {
+
+    private SparseArray<Navigator> mNavigators;
+
+    NavigatorInterceptor(SparseArray<Navigator> navigators) {
+        mNavigators = navigators;
+    }
+
+    @Override
+    public DispatchResult intercept(Dispatcher dispatcher) {
+        if (mNavigators == null) {
+            throw new NullPointerException("No valid navigator");
+        }
+        DispatchResult result = new DispatchResult();
+        Action action = dispatcher.action();
+        boolean notFound = false;
+        if (action.getTarget() == null
+                || action.getTargetInfo().type == TargetInfo.TYPE_NOT_FOUND) {
+            notFound = true;
+            if (action.isIgnoreFallbacks()) {
+                return result.notFound(action.getOriginUrl());
+            }
+        }
+        Navigator navigator = mNavigators.get(action.getTargetInfo().type);
+        if (navigator == null) {
+            if (notFound) {
+                // fallback handler isn't set.
+                return result.notFound(action.getOriginUrl());
+            } else {
+                throw new IllegalStateException("Navigator not found");
+            }
+        }
+        return navigator.perform(action, result);
+    }
+}
