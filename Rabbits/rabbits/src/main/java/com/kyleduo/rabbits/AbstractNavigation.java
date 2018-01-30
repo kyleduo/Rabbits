@@ -28,6 +28,11 @@ public abstract class AbstractNavigation implements Navigation {
     }
 
     @Override
+    public Action action() {
+        return action;
+    }
+
+    @Override
     public Navigation to(String url) {
         action.setOriginUrl(url);
         return this;

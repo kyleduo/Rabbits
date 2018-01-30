@@ -31,10 +31,11 @@ public class MainActivity extends BaseActivity {
                 public void onClick(View view) {
                     String url = ((TextView) view).getText().toString();
                     Toast.makeText(MainActivity.this, url, Toast.LENGTH_SHORT).show();
-                    Rabbit.from(MainActivity.this)
-                            .to(url)
-                            .setTransitionAnimations(new int[]{R.anim.fadein, R.anim.fadeout})
-                            .start();
+//                    Rabbit.from(MainActivity.this)
+//                            .to(url)
+//                            .setTransitionAnimations(new int[]{R.anim.fadein, R.anim.fadeout})
+//                            .start();
+                    Rabbit.from(MainActivity.this).to("/test?param=test").start();
                 }
             });
         }
@@ -42,23 +43,23 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.update_bt).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Rabbit.updateMappings(MainActivity.this, MappingsSource.fromJson("{\n" +
-                        "  \"allowed_hosts\": [\n" +
-                        "    \"allowed.kyleduo.com\"\n" +
-                        "  ],\n" +
-                        "  \"mappings\": {\n" +
-                        "    \"demo://rabbits.kyleduo.com\": \"MAIN\",\n" +
-                        "    \"demo://rabbits.kyleduo.com/test\": \"DUMP\",\n" +
-                        "    \"demo://rabbits.kyleduo.com/test/listing\": \"DUMP\",\n" +
-                        "    \"demo://rabbits.kyleduo.com/test/{testing}\": \"DUMP\",\n" +
-                        "    \"demo://rabbits.kyleduo.com/test_fragment\": \"DUMP\",\n" +
-                        "    \"demo://rabbits.kyleduo.com/second/{id:l}\": \"DUMP\",\n" +
-                        "    \"demo://rabbits.kyleduo.com/common\": \"COMMON\",\n" +
-                        "    \"demo://rabbits.kyleduo.com/dump\": \"DUMP\",\n" +
-                        "    \"demo://rabbits.kyleduo.com/web\": \"DUMP\",\n" +
-                        "    \"demo://rabbits.kyleduo.com/crazy/{name:s}/{age:i}/{finish:b}/end\": \"DUMP\"\n" +
-                        "  }\n" +
-                        "}").fullyUpdate(false));
+//                Rabbit.updateMappings(MainActivity.this, MappingsSource.fromJson("{\n" +
+//                        "  \"allowed_hosts\": [\n" +
+//                        "    \"allowed.kyleduo.com\"\n" +
+//                        "  ],\n" +
+//                        "  \"mappings\": {\n" +
+//                        "    \"demo://rabbits.kyleduo.com\": \"MAIN\",\n" +
+//                        "    \"demo://rabbits.kyleduo.com/test\": \"DUMP\",\n" +
+//                        "    \"demo://rabbits.kyleduo.com/test/listing\": \"DUMP\",\n" +
+//                        "    \"demo://rabbits.kyleduo.com/test/{testing}\": \"DUMP\",\n" +
+//                        "    \"demo://rabbits.kyleduo.com/test_fragment\": \"DUMP\",\n" +
+//                        "    \"demo://rabbits.kyleduo.com/second/{id:l}\": \"DUMP\",\n" +
+//                        "    \"demo://rabbits.kyleduo.com/common\": \"COMMON\",\n" +
+//                        "    \"demo://rabbits.kyleduo.com/dump\": \"DUMP\",\n" +
+//                        "    \"demo://rabbits.kyleduo.com/web\": \"DUMP\",\n" +
+//                        "    \"demo://rabbits.kyleduo.com/crazy/{name:s}/{age:i}/{finish:b}/end\": \"DUMP\"\n" +
+//                        "  }\n" +
+//                        "}").fullyUpdate(false));
             }
         });
     }

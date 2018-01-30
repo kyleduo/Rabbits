@@ -4,6 +4,11 @@ import android.app.Application;
 import android.os.SystemClock;
 import android.util.Log;
 
+import com.kyleduo.rabbits.RConfig;
+import com.kyleduo.rabbits.Rabbit;
+import com.kyleduo.rabbits.Router;
+import com.kyleduo.rabbits.Rules;
+
 /**
  * Created by kyle on 2016/12/8.
  */
@@ -27,6 +32,11 @@ public class DemoApplication extends Application {
 //        Rabbit.setup(this);
 
         Router.generate();
+        RConfig config = RConfig.get()
+                .scheme("demo")
+                .defaultHost("rabbits.kyleduo.com");
+        Rabbit.init(config);
+        Rules.add("demo", "rabbits.kyleduo.com");
 
         final long time = SystemClock.elapsedRealtime();
         Log.d(TAG, "start : " + time);

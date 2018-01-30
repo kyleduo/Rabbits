@@ -2,8 +2,6 @@ package com.kyleduo.rabbits;
 
 import android.text.TextUtils;
 
-import com.kyleduo.rabbits.navigator.INavigatorFactory;
-
 /**
  * Config object for Rabbits
  * Created by kyleduo on 2017/5/10.
@@ -13,7 +11,6 @@ import com.kyleduo.rabbits.navigator.INavigatorFactory;
 public class RConfig {
     private String mScheme;
     private String mHost;
-    private INavigatorFactory mNavigatorFactory;
 
     public static RConfig get() {
         return new RConfig();
@@ -29,11 +26,6 @@ public class RConfig {
         return this;
     }
 
-    public RConfig navigatorFactory(INavigatorFactory navigatorFactory) {
-        mNavigatorFactory = navigatorFactory;
-        return this;
-    }
-
     public boolean valid() {
         return !(TextUtils.isEmpty(mHost) || TextUtils.isEmpty(mScheme));
     }
@@ -44,9 +36,5 @@ public class RConfig {
 
     public String getHost() {
         return mHost;
-    }
-
-    public INavigatorFactory getNavigatorFactory() {
-        return mNavigatorFactory;
     }
 }

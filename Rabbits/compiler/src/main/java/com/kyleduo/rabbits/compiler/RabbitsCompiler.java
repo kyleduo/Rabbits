@@ -4,6 +4,7 @@ import com.google.auto.service.AutoService;
 import com.kyleduo.rabbits.annotations.Module;
 import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.annotations.PageType;
+import com.kyleduo.rabbits.annotations.TargetInfo;
 import com.kyleduo.rabbits.annotations.utils.NameParser;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
@@ -132,12 +133,21 @@ public class RabbitsCompiler extends AbstractProcessor {
                     ClassName target = ClassName.get((TypeElement) e);
                     ClassName mappingTable = ClassName.get(PACKAGE, "MappingTable");
                     ClassName pageMaker = ClassName.get(PACKAGE, "PageMaker");
+                    ClassName targetInfo = ClassName.get(PACKAGE + ".annotations", "TargetInfo");
+                    int type = TargetInfo.TYPE_NOT_FOUND;
                     // 判断是否是activity
                     if (types.isSubtype(mirror, activityType)) {
-                        generateBuilder.addStatement("$T.map(\"$L\", new $T() { public Object make() { return $T.class; }});", mappingTable, url, pageMaker, target);
-                    } else {
-                        generateBuilder.addStatement("$T.map(\"$L\", new $T() { public Object make() { return new $T(); }});", mappingTable, url, pageMaker, target);
+                        type = TargetInfo.TYPE_ACTIVITY;
+//                        generateBuilder.addStatement("$T.map(\"$L\", new $T() { public Object make() { return $T.class; }});", mappingTable, url, pageMaker, target);
+                    } else if (types.isSubtype(mirror, fragmentType)) {
+                        type = TargetInfo.TYPE_FRAGMENT;
+//                        generateBuilder.addStatement("$T.map(\"$L\", new $T() { public Object make() { return new $T(); }});", mappingTable, url, pageMaker, target);
+                    } else if (types.isSubtype(mirror, fragmentV4Type)) {
+                        type = TargetInfo.TYPE_FRAGMENT_V4;
                     }
+
+                    generateBuilder.addStatement("$T.map(\"$L\", new $T(\"$L\", $T.class, $L, $L));", mappingTable, url, targetInfo, url, target, String.valueOf(type), String.valueOf(page.flags()));
+
                 } else {
                     URI uri = URI.create(url);
                 }

@@ -3,7 +3,6 @@ package com.kyleduo.rabbits.demo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
 
 /**
@@ -14,7 +13,7 @@ public class DumpFragment extends BaseFragment {
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		Bundle args = getArguments();
-		args.putString("dump", Rabbit.dumpMappings());
+//		args.putString("dump", Rabbit.dumpMappings());
 		super.onCreate(savedInstanceState);
 	}
 }

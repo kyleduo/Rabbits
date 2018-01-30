@@ -8,8 +8,6 @@ import android.util.SparseArray;
 
 import com.kyleduo.rabbits.annotations.TargetInfo;
 import com.kyleduo.rabbits.annotations.utils.NameParser;
-import com.kyleduo.rabbits.navigator.DefaultNavigatorFactory;
-import com.kyleduo.rabbits.navigator.INavigatorFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -52,12 +50,12 @@ public class Rabbit {
     private static IRouter sRouter;
     static String sAppScheme;
     static String sDefaultHost;
-    private static INavigatorFactory sNavigatorFactory;
+//    private static INavigatorFactory sNavigatorFactory;
 //    private static List<INavigationInterceptor> sInterceptors;
 //
 //    private List<INavigationInterceptor> mInterceptors;
-    private List<Interceptor> mInterceptors;
-    private SparseArray<Navigator> mNavigators;
+    private List<Interceptor> mInterceptors = new ArrayList<>();
+    private SparseArray<Navigator> mNavigators = new SparseArray<>();
 
     private static class RabbitInvocationHandler implements InvocationHandler {
 
@@ -143,7 +141,7 @@ public class Rabbit {
     private static  Rabbit sInstance;
     private Rabbit() { }
 
-    private static Rabbit getInstance() {
+    static Rabbit getInstance() {
 //        synchronized (Rabbit.class) {
 //            if (sInstance == null) {
 //                synchronized (Rabbit.class) {
@@ -177,7 +175,7 @@ public class Rabbit {
         sInstance.registerNavigator(TargetInfo.TYPE_ACTIVITY, new ActivityNavigator());
         sAppScheme = config.getScheme();
         sDefaultHost = config.getHost();
-        sNavigatorFactory = config.getNavigatorFactory() == null ? new DefaultNavigatorFactory() : config.getNavigatorFactory();
+//        sNavigatorFactory = config.getNavigatorFactory() == null ? new DefaultNavigatorFactory() : config.getNavigatorFactory();
     }
 
     /**
@@ -246,7 +244,7 @@ public class Rabbit {
     }
 
     public Rabbit registerInterceptor(Interceptor interceptor, String pattern) {
-        // TODO: 19/12/2017
+        mInterceptors.add(new PatternInterceptor(interceptor, pattern));
         return this;
     }
 
@@ -256,9 +254,11 @@ public class Rabbit {
         // interceptors
 
         List<Interceptor> interceptors = new ArrayList<>(mInterceptors);
+        interceptors.add(new MappingInterceptor());
+        interceptors.add(new AssembleInterceptor());
         interceptors.add(new NavigatorInterceptor(mNavigators));
 
-        RealDispatcher dispatcher = new RealDispatcher(action, null, 0);
+        RealDispatcher dispatcher = new RealDispatcher(action, interceptors, 0);
         return dispatcher.dispatch(action);
     }
 

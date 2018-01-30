@@ -10,21 +10,32 @@ import com.kyleduo.rabbits.annotations.TargetInfo;
  */
 
 public class Action {
+    // Set before dispatch
     private Object mFrom;
-    private Object mTarget;
+    /**
+     * Origin url witch the caller use.
+     */
     private String mOriginUrl;
-    private Uri mUri;
-    private TargetInfo mTargetInfo;
-    private String mReferer;
-    private boolean mRedirect;
     private Bundle mExtras;
     private int mIntentFlags;
     private int[] mTransitionAnimations;
-    private int mRequestCode;
-    private String parent;
     private boolean mIgnoreIntercepts;
     private boolean mIgnoreFallbacks;
     private boolean mJustObtain;
+    private int mRequestCode;
+
+    // Generate during dispatch
+    /**
+     * Uri used by Rabbit to find the target page.
+     */
+    private Uri mUri;
+    private TargetInfo mTargetInfo;
+    private Object mTarget;
+
+    // Not used for now
+    private String mReferer;
+    private boolean mRedirect;
+    private String parent;
     private Action mNext;
 
     public Object getFrom() {

@@ -12,12 +12,8 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.Target;
-import com.kyleduo.rabbits.annotations.Page;
-import com.kyleduo.rabbits.annotations.PageType;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
-import com.kyleduo.rabbits.demo.utils.UriUtils;
 import com.kyleduo.rabbits.navigator.INavigationInterceptor;
 
 /**
@@ -57,27 +53,27 @@ public class WebFragment extends BaseFragment {
 		INavigationInterceptor webInterceptor = new INavigationInterceptor() {
 			@Override
 			public boolean intercept(Object from, Target target) {
-				if (UriUtils.matchPath(target.getUri(),"/tobeintercepted")) {
-					Rabbit.from(WebFragment.this)
-							.to("demo://rabbits.kyleduo.com/test")
-                            .merge(target)
-							.clearTop()
-							.start();
-					return true;
-				}
+//				if (UriUtils.matchPath(target.getUri(),"/tobeintercepted")) {
+//					Rabbit.from(WebFragment.this)
+//							.to("demo://rabbits.kyleduo.com/test")
+//                            .merge(target)
+//							.clearTop()
+//							.start();
+//					return true;
+//				}
 				return false;
 			}
 		};
 
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
-			boolean ret = Rabbit.from(WebFragment.this)
-					.addInterceptor(webInterceptor)
-					.tryTo(url)
-					.start();
-			if (ret) {
-				return true;
-			}
+//			boolean ret = Rabbit.from(WebFragment.this)
+//					.addInterceptor(webInterceptor)
+//					.tryTo(url)
+//					.start();
+//			if (ret) {
+//				return true;
+//			}
 			if (url.startsWith("tel:")) {
 				Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(url));
 				startActivity(intent);

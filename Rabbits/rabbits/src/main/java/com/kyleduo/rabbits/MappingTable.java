@@ -4,6 +4,7 @@ import android.net.Uri;
 
 import com.kyleduo.rabbits.annotations.TargetInfo;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -11,7 +12,7 @@ import java.util.Map;
  */
 
 public class MappingTable {
-    private static Map<String, TargetInfo> sMappings;
+    private static Map<String, TargetInfo> sMappings = new LinkedHashMap<>();
 
     public static void map(String path, TargetInfo targetInfo) {
         sMappings.put(path, targetInfo);

@@ -31,9 +31,11 @@ class NavigatorInterceptor implements Interceptor {
                 return result.notFound(action.getOriginUrl());
             }
         }
+        // Normal navigation or fallback navigation all handled here.
         Navigator navigator = mNavigators.get(action.getTargetInfo().type);
         if (navigator == null) {
             if (notFound) {
+                // need to be handled by fallback.
                 // fallback handler isn't set.
                 return result.notFound(action.getOriginUrl());
             } else {

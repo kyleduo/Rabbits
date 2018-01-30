@@ -17,6 +17,8 @@ public @interface Page {
 
     String parent() default "";
 
+    int flags() default 0;
+
     String[] stringExtras() default {};
 
     String[] floatExtras() default {};

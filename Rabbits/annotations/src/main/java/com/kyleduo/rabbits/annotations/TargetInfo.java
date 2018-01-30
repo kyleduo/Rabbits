@@ -1,5 +1,7 @@
 package com.kyleduo.rabbits.annotations;
 
+import java.util.Map;
+
 /**
  * Created by kyle on 26/01/2018.
  */
@@ -14,6 +16,8 @@ public class TargetInfo {
     public Class<?> target;
     public int type;
     public int flags;
+    //params from REST url.
+    public Map<String, Object> params;
 
     public TargetInfo(String pattern, Class<?> target, int type, int flags) {
         this.pattern = pattern;
