@@ -23,7 +23,7 @@ public class AssembleInterceptor implements Interceptor {
             return dispatcher.dispatch(action);
         }
 
-        // TODO: 30/01/2018 Add Rabbits custom content params
+        // TODO: 30/01/2018 Add Rabbits custom control params
 
 
         // assemble Intent or Fragment instance.

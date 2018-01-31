@@ -1,9 +1,9 @@
 package com.kyleduo.rabbits;
 
-import com.kyleduo.rabbits.Action;
-import com.kyleduo.rabbits.DispatchResult;
-
 /**
+ * Abstract interceptor used in action process chain.
+ * Every process in the chain is an interceptor.
+ *
  * Created by kyle on 19/12/2017.
  */
 

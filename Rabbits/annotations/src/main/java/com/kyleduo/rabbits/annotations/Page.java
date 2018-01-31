@@ -15,15 +15,16 @@ import java.lang.annotation.Target;
 public @interface Page {
     String value();
 
-    String parent() default "";
-
     int flags() default 0;
 
-    String[] stringExtras() default {};
+//    String parent() default "";
 
-    String[] floatExtras() default {};
-
-    String[] intExtras() default {};
-
-    String[] doubleExtras() default {};
+//
+//    String[] stringExtras() default {};
+//
+//    String[] floatExtras() default {};
+//
+//    String[] intExtras() default {};
+//
+//    String[] doubleExtras() default {};
 }

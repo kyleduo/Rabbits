@@ -12,8 +12,9 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 
-import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -120,38 +121,90 @@ public class RabbitsCompiler extends AbstractProcessor {
             return false;
         }
 
+        ClassName mappingTable = ClassName.get(PACKAGE, "MappingTable");
+        ClassName targetInfo = ClassName.get(PACKAGE + ".annotations", "TargetInfo");
+
         MethodSpec.Builder generateBuilder = MethodSpec.methodBuilder("generate")
                 .addModifiers(Modifier.STATIC, Modifier.PUBLIC);
 
+        List<PageInfo> pages = new ArrayList<>();
         for (Element e : roundEnv.getElementsAnnotatedWith(Page.class)) {
             Page page = e.getAnnotation(Page.class);
             if (page != null) {
                 TypeMirror mirror = e.asType();
                 String url = page.value();
-                if (url.startsWith("/")) {
-                    // path
-                    ClassName target = ClassName.get((TypeElement) e);
-                    ClassName mappingTable = ClassName.get(PACKAGE, "MappingTable");
-                    ClassName pageMaker = ClassName.get(PACKAGE, "PageMaker");
-                    ClassName targetInfo = ClassName.get(PACKAGE + ".annotations", "TargetInfo");
-                    int type = TargetInfo.TYPE_NOT_FOUND;
-                    // 判断是否是activity
-                    if (types.isSubtype(mirror, activityType)) {
-                        type = TargetInfo.TYPE_ACTIVITY;
-//                        generateBuilder.addStatement("$T.map(\"$L\", new $T() { public Object make() { return $T.class; }});", mappingTable, url, pageMaker, target);
-                    } else if (types.isSubtype(mirror, fragmentType)) {
-                        type = TargetInfo.TYPE_FRAGMENT;
-//                        generateBuilder.addStatement("$T.map(\"$L\", new $T() { public Object make() { return new $T(); }});", mappingTable, url, pageMaker, target);
-                    } else if (types.isSubtype(mirror, fragmentV4Type)) {
-                        type = TargetInfo.TYPE_FRAGMENT_V4;
-                    }
 
-                    generateBuilder.addStatement("$T.map(\"$L\", new $T(\"$L\", $T.class, $L, $L));", mappingTable, url, targetInfo, url, target, String.valueOf(type), String.valueOf(page.flags()));
+                // 只接受这种格式的url
+                // (scheme://domain)/path
 
-                } else {
-                    URI uri = URI.create(url);
+                while (url.endsWith("/")) {
+                    url = url.substring(url.length() - 1);
                 }
+
+                // path
+                ClassName target = ClassName.get((TypeElement) e);
+                int type = TargetInfo.TYPE_NOT_FOUND;
+
+                if (types.isSubtype(mirror, activityType)) {
+                    type = TargetInfo.TYPE_ACTIVITY;
+                } else if (types.isSubtype(mirror, fragmentType)) {
+                    type = TargetInfo.TYPE_FRAGMENT;
+                } else if (types.isSubtype(mirror, fragmentV4Type)) {
+                    type = TargetInfo.TYPE_FRAGMENT_V4;
+                }
+
+                pages.add(new PageInfo(url, target, type, page.flags()));
             }
+        }
+
+        // sort pages
+        Collections.sort(pages, new Comparator<PageInfo>() {
+            @Override
+            public int compare(PageInfo p1, PageInfo p2) {
+                String u1 = p1.url;
+                String u2 = p2.url;
+
+                if (u1.contains("://") && !u2.contains("://")) {
+                    return -1;
+                } else if (u2.contains("://") && !u1.contains("://")) {
+                    return 1;
+                }
+
+                int c1 = 0, c2 = 0, last = 0, index;
+                index = u1.indexOf("{", last);
+                last = index;
+                while (index >= 0) {
+                    c1++;
+                    index = u1.indexOf("{", last + 1);
+                    last = index;
+                }
+                index = u2.indexOf("{", last);
+                last = index;
+                while (index >= 0) {
+                    c2++;
+                    index = u2.indexOf("{", last + 1);
+                    last = index;
+                }
+
+                if (c1 < c2) {
+                    return -1;
+                } else if (c2 > c1) {
+                    return 1;
+                }
+
+                return 0;
+            }
+        });
+
+        for (PageInfo p : pages) {
+            generateBuilder.addStatement("$T.map(\"$L\", new $T(\"$L\", $T.class, $L, $L));",
+                    mappingTable,
+                    p.url,
+                    targetInfo,
+                    p.url,
+                    p.target,
+                    String.valueOf(p.type),
+                    String.valueOf(p.flag));
         }
 
         TypeSpec router = TypeSpec.classBuilder("Router")
@@ -163,7 +216,7 @@ public class RabbitsCompiler extends AbstractProcessor {
                     .build()
                     .writeTo(mFiler);
         } catch (Throwable e) {
-//			e.printStackTrace();
+			e.printStackTrace();
         }
 
 
