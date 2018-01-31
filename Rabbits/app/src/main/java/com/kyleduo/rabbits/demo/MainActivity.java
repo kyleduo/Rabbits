@@ -35,7 +35,7 @@ public class MainActivity extends BaseActivity {
 //                            .to(url)
 //                            .setTransitionAnimations(new int[]{R.anim.fadein, R.anim.fadeout})
 //                            .start();
-                    Rabbit.from(MainActivity.this).to("/test?param=test").start();
+                    Rabbit.from(MainActivity.this).to("/test/act?param=test").start();
                 }
             });
         }
