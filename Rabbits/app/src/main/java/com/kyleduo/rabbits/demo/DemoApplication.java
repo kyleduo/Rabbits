@@ -1,13 +1,21 @@
 package com.kyleduo.rabbits.demo;
 
+import android.app.AlertDialog;
 import android.app.Application;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.SystemClock;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.kyleduo.rabbits.Action;
+import com.kyleduo.rabbits.DispatchResult;
+import com.kyleduo.rabbits.Interceptor;
+import com.kyleduo.rabbits.Navigator;
 import com.kyleduo.rabbits.RConfig;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.Router;
-import com.kyleduo.rabbits.Rules;
+import com.kyleduo.rabbits.annotations.TargetInfo;
 
 /**
  * Created by kyle on 2016/12/8.
@@ -21,59 +29,41 @@ public class DemoApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-//        RConfig config = RConfig.get()
-//                .scheme("demo")
-//                .defaultHost("rabbits.kyleduo.com")
-//                .forceUpdatePersist(BuildConfig.DEBUG)
-//                .navigatorFactory(new DemoNavigatorFactory());
-//        Rabbit.init(config);
-
-        // syc setup
-//        Rabbit.setup(this);
-
         Router.generate();
+
         RConfig config = RConfig.get()
-                .scheme("demo")
-                .defaultHost("rabbits.kyleduo.com");
+                .schemes("demo")
+                .domains("rabbits.kyleduo.com");
+
         Rabbit.init(config);
-        Rules.add("demo", "rabbits.kyleduo.com");
+        Rabbit.get().addInterceptor(new Interceptor() {
+            @Override
+            public DispatchResult intercept(final Dispatcher dispatcher) {
+                final Action action = dispatcher.action();
+                if ((action.getTargetFlags() & 1) > 0) {
+                    action.getExtras().putString("param", "拦截器中修改");
+                    new AlertDialog.Builder((Context) action.getFrom())
+                            .setTitle("拦截")
+                            .setPositiveButton("继续", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dispatcher.dispatch(action);
+                                }
+                            })
+                            .setNegativeButton("取消", null).create().show();
+                    return null;
+                }
+                return dispatcher.dispatch(action);
+            }
+        }).registerNavigator(TargetInfo.TYPE_NOT_FOUND, new Navigator() {
+            @Override
+            public DispatchResult perform(Action action, DispatchResult result) {
+                Toast.makeText((Context) action.getFrom(), "NOT_FOUND", Toast.LENGTH_SHORT).show();
+                return result;
+            }
+        });
 
         final long time = SystemClock.elapsedRealtime();
         Log.d(TAG, "start : " + time);
-        // async setup
-//        Rabbit.asyncSetup(this, new MappingsLoaderCallback() {
-//            @Override
-//            public void onMappingsLoaded(MappingsGroup mappings) {
-//                long endTime = SystemClock.elapsedRealtime();
-//                Log.d(TAG, "stop  : " + endTime + "  cost: " + (endTime - time) + "ms");
-//
-//                Log.d(TAG, "Current mappings version: " + Rabbit.currentVersion());
-//            }
-//
-//            @Override
-//            public void onMappingsLoadFail() {
-//                Log.d(TAG, "fail");
-//            }
-//
-//            @Override
-//            public void onMappingsPersisted(boolean success) {
-//                long endTime = SystemClock.elapsedRealtime();
-//                Log.d(TAG, "persist stop  : " + endTime + "  cost: " + (endTime - time) + "ms");
-//            }
-//        });
-
-//        Rabbit.addGlobalInterceptor(new INavigationInterceptor() {
-//            @Override
-//            public boolean intercept(Object from, Target target) {
-//                if (UriUtils.matchPath(target.getUri(), "/intercept/dump")) {
-//                    Rabbit.from(from)
-//                            .to(P.DUMP)
-//                            .merge(target)
-//                            .start();
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
     }
 }

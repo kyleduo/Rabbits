@@ -3,6 +3,7 @@ package com.kyleduo.rabbits;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,11 +29,27 @@ public interface Navigation {
 
     Navigation putExtras(Map<String, Object> extras);
 
-    Navigation justObtain(boolean justObtain);
+    Navigation addInterceptor(Interceptor interceptor);
 
+    Navigation addInterceptor(Interceptor interceptor, String pattern);
+
+    Navigation justObtain();
+
+    Navigation forResult(int requestCode);
+
+    Navigation redirect();
+
+    @NonNull
     DispatchResult start();
 
+    @NonNull
+    DispatchResult startForResult(int requestCode);
+
+    @NonNull
     DispatchResult obtain();
 
+    @NonNull
     Action action();
+
+    List<Interceptor> interceptors();
 }

@@ -12,7 +12,7 @@ public class RealDispatcher implements Interceptor.Dispatcher {
     private List<Interceptor> mInterceptors;
     private int mIndex;
 
-    public RealDispatcher(Action action, List<Interceptor> interceptors, int index) {
+    RealDispatcher(Action action, List<Interceptor> interceptors, int index) {
         mAction = action;
         mInterceptors = interceptors;
         mIndex = index;

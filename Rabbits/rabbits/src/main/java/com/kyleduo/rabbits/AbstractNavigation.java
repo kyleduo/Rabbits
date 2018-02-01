@@ -12,6 +12,7 @@ import android.util.SparseArray;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,16 +21,21 @@ import java.util.Map;
 
 public abstract class AbstractNavigation implements Navigation {
     protected Action action;
-    protected Rabbit rabbit;
+    private List<Interceptor> mInterceptors;
 
-    AbstractNavigation(Rabbit rabbit, Action action) {
-        this.rabbit = rabbit;
+    AbstractNavigation(Action action) {
         this.action = action;
     }
 
+    @NonNull
     @Override
     public Action action() {
         return action;
+    }
+
+    @Override
+    public List<Interceptor> interceptors() {
+        return mInterceptors;
     }
 
     @Override
@@ -65,6 +71,12 @@ public abstract class AbstractNavigation implements Navigation {
     @Override
     public Navigation singleTop() {
         addIntentFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        return this;
+    }
+
+    @Override
+    public Navigation redirect() {
+        action.setRedirect(true);
         return this;
     }
 
@@ -173,8 +185,33 @@ public abstract class AbstractNavigation implements Navigation {
     }
 
     @Override
-    public Navigation justObtain(boolean justObtain) {
-        action.setJustObtain(justObtain);
+    public Navigation addInterceptor(Interceptor interceptor) {
+        if (mInterceptors == null) {
+            mInterceptors = new ArrayList<>();
+        }
+        mInterceptors.add(interceptor);
         return this;
     }
+
+    @Override
+    public Navigation addInterceptor(Interceptor interceptor, String pattern) {
+        if (mInterceptors == null) {
+            mInterceptors = new ArrayList<>();
+        }
+        mInterceptors.add(new PatternInterceptor(interceptor, pattern));
+        return this;
+    }
+
+    @Override
+    public Navigation justObtain() {
+        action.setJustObtain(true);
+        return this;
+    }
+
+    @Override
+    public Navigation forResult(int requestCode) {
+        action.setRequestCode(requestCode);
+        return this;
+    }
+
 }

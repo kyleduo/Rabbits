@@ -16,10 +16,10 @@ public class AssembleInterceptor implements Interceptor {
     @Override
     public DispatchResult intercept(Dispatcher dispatcher) {
         Action action = dispatcher.action();
+        int targetType = action.getTargetType();
 
-        TargetInfo targetInfo = action.getTargetInfo();
-        if (targetInfo == null) {
-            // Handled by NavigationInterceptor
+        if (targetType == TargetInfo.TYPE_NOT_FOUND) {
+            // process on
             return dispatcher.dispatch(action);
         }
 
@@ -28,15 +28,15 @@ public class AssembleInterceptor implements Interceptor {
 
         // assemble Intent or Fragment instance.
         Object target = null;
-        if (targetInfo.type == TargetInfo.TYPE_ACTIVITY) {
-            Intent intent = new Intent((Context) action.getFrom(), targetInfo.target);
+        if (targetType == TargetInfo.TYPE_ACTIVITY) {
+            Intent intent = new Intent((Context) action.getFrom(), action.getTargetClass());
             intent.setFlags(action.getIntentFlags());
             intent.putExtras(action.getExtras());
             target = intent;
-        } else if (targetInfo.type == TargetInfo.TYPE_FRAGMENT) {
+        } else if (targetType == TargetInfo.TYPE_FRAGMENT) {
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    android.app.Fragment fragment = (android.app.Fragment) targetInfo.target.newInstance();
+                    android.app.Fragment fragment = (android.app.Fragment) action.getTargetClass().newInstance();
                     fragment.setArguments(action.getExtras());
                     target = fragment;
                 }
@@ -45,9 +45,9 @@ public class AssembleInterceptor implements Interceptor {
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-        } else if (targetInfo.type == TargetInfo.TYPE_FRAGMENT_V4) {
+        } else if (targetType == TargetInfo.TYPE_FRAGMENT_V4) {
             try {
-                android.support.v4.app.Fragment fragment = (android.support.v4.app.Fragment) targetInfo.target.newInstance();
+                android.support.v4.app.Fragment fragment = (android.support.v4.app.Fragment) action.getTargetClass().newInstance();
                 fragment.setArguments(action.getExtras());
                 target = fragment;
             } catch (InstantiationException e) {

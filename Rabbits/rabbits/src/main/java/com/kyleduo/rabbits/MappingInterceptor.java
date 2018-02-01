@@ -2,7 +2,6 @@ package com.kyleduo.rabbits;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
 
 import com.kyleduo.rabbits.annotations.TargetInfo;
 
@@ -28,25 +27,28 @@ public class MappingInterceptor implements Interceptor {
         // generate uri
         if (uri == null) {
             String url = action.getOriginUrl();
-            if (TextUtils.isEmpty(url)) {
-                return new DispatchResult().error("Url can not be empty");
-            }
+//            "" ~ "/"
+//            if (TextUtils.isEmpty(url)) {
+//                return new DispatchResult().error("Url can not be empty");
+//            }
             if (url.contains("://")) {
                 uri = Uri.parse(url);
             } else {
                 if (!url.startsWith("/")) {
                     url = "/" + url;
                 }
-                url = Rabbit.sAppScheme + "://" + Rabbit.sDefaultHost + url;
+                url = Rabbit.get().getSchemes().get(0) + "://" + Rabbit.get().getDomains().get(0) + url;
                 uri = Uri.parse(url);
             }
             action.setUri(uri);
         }
 
-        TargetInfo target = MappingTable.match(action.getUri());
-        action.setTargetInfo(target);
+        TargetInfo target = RouteTable.match(action.getUri());
+        action.setTargetType(target == null ? TargetInfo.TYPE_NOT_FOUND : target.type);
+        action.setTargetFlags(target == null ? 0 : target.flags);
+        action.setTargetPattern(target == null ? null : target.pattern);
+        action.setTargetClass(target == null ? null : target.target);
 
-        // fetch params from url.
         if (target != null) {
             // params from REST url
             Bundle bundle = new Bundle();

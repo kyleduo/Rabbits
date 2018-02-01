@@ -2,8 +2,7 @@ package com.kyleduo.rabbits;
 
 import android.net.Uri;
 import android.os.Bundle;
-
-import com.kyleduo.rabbits.annotations.TargetInfo;
+import android.support.annotation.Nullable;
 
 /**
  * Created by kyle on 26/01/2018.
@@ -29,14 +28,18 @@ public class Action {
      * Uri used by Rabbit to find the target page.
      */
     private Uri mUri;
-    private TargetInfo mTargetInfo;
+    // information from target info
+    private String mTargetPattern;
+    private int mTargetFlags;
+    private int mTargetType;
+    private Class<?> mTargetClass;
+    /**
+     * Real navigation target, maybe an Intent or a Fragment instance.
+     */
     private Object mTarget;
 
     // Not used for now
-    private String mReferer;
     private boolean mRedirect;
-    private String parent;
-    private Action mNext;
 
     public Object getFrom() {
         return mFrom;
@@ -46,6 +49,7 @@ public class Action {
         mFrom = from;
     }
 
+    @Nullable
     public Object getTarget() {
         return mTarget;
     }
@@ -70,19 +74,11 @@ public class Action {
         mUri = uri;
     }
 
-    public String getReferer() {
-        return mReferer;
-    }
-
-    public void setReferer(String referer) {
-        mReferer = referer;
-    }
-
     public boolean isRedirect() {
         return mRedirect;
     }
 
-    public void setRedirect(boolean redirect) {
+    public void setRedirect(@SuppressWarnings("SameParameterValue") boolean redirect) {
         mRedirect = redirect;
     }
 
@@ -134,14 +130,6 @@ public class Action {
         mIgnoreFallbacks = ignoreFallbacks;
     }
 
-    public Action getNext() {
-        return mNext;
-    }
-
-    public void setNext(Action next) {
-        mNext = next;
-    }
-
     public boolean isJustObtain() {
         return mJustObtain;
     }
@@ -150,20 +138,35 @@ public class Action {
         mJustObtain = justObtain;
     }
 
-    public String getParent() {
-        return parent;
+    public int getTargetFlags() {
+        return mTargetFlags;
     }
 
-    public void setParent(String parent) {
-        this.parent = parent;
+    public void setTargetFlags(int targetFlags) {
+        mTargetFlags = targetFlags;
     }
 
-
-    public TargetInfo getTargetInfo() {
-        return mTargetInfo;
+    public int getTargetType() {
+        return mTargetType;
     }
 
-    public void setTargetInfo(TargetInfo targetInfo) {
-        mTargetInfo = targetInfo;
+    public void setTargetType(int targetType) {
+        mTargetType = targetType;
+    }
+
+    public Class<?> getTargetClass() {
+        return mTargetClass;
+    }
+
+    public void setTargetClass(Class<?> targetClass) {
+        mTargetClass = targetClass;
+    }
+
+    public String getTargetPattern() {
+        return mTargetPattern;
+    }
+
+    public void setTargetPattern(String targetPattern) {
+        mTargetPattern = targetPattern;
     }
 }

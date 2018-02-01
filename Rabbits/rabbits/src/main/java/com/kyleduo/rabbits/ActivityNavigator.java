@@ -18,6 +18,15 @@ public class ActivityNavigator implements Navigator {
         if (result.getStatus() == DispatchResult.STATUS_NOT_FOUND) {
             return result;
         }
+        Object target = action.getTarget();
+        if (target == null) {
+            return result.notFound(action.getOriginUrl());
+        }
+        if (action.isJustObtain()) {
+            result.setTarget(target);
+            return result.success();
+        }
+
         Object from = action.getFrom();
         if (from == null) {
             return result.error("From can not be null");
@@ -40,12 +49,15 @@ public class ActivityNavigator implements Navigator {
             }
         } else {
             if (from instanceof Context) {
-                Intent intent = (Intent) action.getTarget();
+                Intent intent = (Intent) target;
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 ((Context) from).startActivity(intent);
             } else {
                 return result.error("Invalid from.");
             }
+        }
+        if (activity != null && action.isRedirect()) {
+            activity.finish();
         }
 
         int[] animations = action.getTransitionAnimations();

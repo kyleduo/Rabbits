@@ -1,6 +1,7 @@
 package com.kyleduo.rabbits;
 
-import android.text.TextUtils;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Config object for Rabbits
@@ -9,32 +10,32 @@ import android.text.TextUtils;
 
 @SuppressWarnings("WeakerAccess")
 public class RConfig {
-    private String mScheme;
-    private String mHost;
+    private List<String> mSchemes;
+    private List<String> mDomains;
 
     public static RConfig get() {
         return new RConfig();
     }
 
-    public RConfig scheme(String scheme) {
-        mScheme = scheme;
+    public RConfig schemes(String... schemes) {
+        mSchemes = Arrays.asList(schemes);
         return this;
     }
 
-    public RConfig defaultHost(String host) {
-        mHost = host;
+    public RConfig domains(String... domains) {
+        mDomains = Arrays.asList(domains);
         return this;
     }
 
     public boolean valid() {
-        return !(TextUtils.isEmpty(mHost) || TextUtils.isEmpty(mScheme));
+        return mSchemes != null && mSchemes.size() > 0 && mDomains != null && mDomains.size() > 0;
     }
 
-    public String getScheme() {
-        return mScheme;
+    public List<String> getSchemes() {
+        return mSchemes;
     }
 
-    public String getHost() {
-        return mHost;
+    public List<String> getDomains() {
+        return mDomains;
     }
 }

@@ -46,7 +46,7 @@ dependencies {
 
     // Rabbits
 //    compile project(':rabbits')
-//    annotationProcessor project(':compiler')
+    annotationProcessor project(':compiler')
 
     // Fragmentation
     compile 'me.yokeyword:fragmentation:0.9.3'

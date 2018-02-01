@@ -47,13 +47,8 @@ public class Rabbit {
      */
     public static final String KEY_SOURCE_URI = "rabbits_source_uri";
 
-    private static IRouter sRouter;
-    static String sAppScheme;
-    static String sDefaultHost;
-//    private static INavigatorFactory sNavigatorFactory;
-//    private static List<INavigationInterceptor> sInterceptors;
-//
-//    private List<INavigationInterceptor> mInterceptors;
+    private List<String> mSchemes;
+    private List<String> mDomains;
     private List<Interceptor> mInterceptors = new ArrayList<>();
     private SparseArray<Navigator> mNavigators = new SparseArray<>();
 
@@ -139,24 +134,20 @@ public class Rabbit {
     }
 
     private static  Rabbit sInstance;
-    private Rabbit() { }
 
-    static Rabbit getInstance() {
-//        synchronized (Rabbit.class) {
-//            if (sInstance == null) {
-//                synchronized (Rabbit.class) {
-//                    sInstance = new Rabbit();
-//                }
-//            }
-//        }
-        return sInstance;
+    private Rabbit(RConfig config) {
+        this.registerNavigator(TargetInfo.TYPE_ACTIVITY, new ActivityNavigator());
+        this.mSchemes = config.getSchemes();
+        this.mDomains = config.getDomains();
     }
 
-//    private Rabbit(Object from) {
-//        if (sRouter == null) {
-//            sRouter = (IRouter) Proxy.newProxyInstance(IRouter.class.getClassLoader(), new Class[]{IRouter.class}, new RabbitInvocationHandler());
-//        }
-//    }
+    public List<String> getDomains() {
+        return mDomains;
+    }
+
+    public List<String> getSchemes() {
+        return mSchemes;
+    }
 
     /**
      * Dump mappings.
@@ -167,15 +158,16 @@ public class Rabbit {
 //        return Mappings.dump();
 //    }
 
-    public static void init(RConfig config) {
+    public static Rabbit get() {
+        return sInstance;
+    }
+
+    public static Rabbit init(RConfig config) {
         if (!config.valid()) {
             throw new IllegalArgumentException("Config object not valid");
         }
-        sInstance = new Rabbit();
-        sInstance.registerNavigator(TargetInfo.TYPE_ACTIVITY, new ActivityNavigator());
-        sAppScheme = config.getScheme();
-        sDefaultHost = config.getHost();
-//        sNavigatorFactory = config.getNavigatorFactory() == null ? new DefaultNavigatorFactory() : config.getNavigatorFactory();
+        sInstance = new Rabbit(config);
+        return sInstance;
     }
 
     /**
@@ -203,12 +195,12 @@ public class Rabbit {
         }
         Action action = new Action();
         action.setFrom(from);
-        return new DefaultNavigation(getInstance(), action);
+        return new NavigationImpl(get(), action);
     }
 
 //    public static Navigation redirect(Object from, Action action) {
 //        action.setFrom(from);
-//        return new DefaultNavigation(getInstance(), action);
+//        return new NavigationImpl(getInstance(), action);
 //    }
 
     /**
@@ -243,7 +235,7 @@ public class Rabbit {
         return this;
     }
 
-    public Rabbit registerInterceptor(Interceptor interceptor, String pattern) {
+    public Rabbit addInterceptor(Interceptor interceptor, String pattern) {
         mInterceptors.add(new PatternInterceptor(interceptor, pattern));
         return this;
     }
@@ -253,13 +245,27 @@ public class Rabbit {
 
         // interceptors
 
-        List<Interceptor> interceptors = new ArrayList<>(mInterceptors);
+        List<Interceptor> interceptors = new ArrayList<>();
         interceptors.add(new MappingInterceptor());
+
+        // custom interceptors
+        interceptors.addAll(mInterceptors);
+
+        // action specific interceptors
+        if (navigation.interceptors() != null) {
+            interceptors.addAll(navigation.interceptors());
+        }
+
         interceptors.add(new AssembleInterceptor());
         interceptors.add(new NavigatorInterceptor(mNavigators));
 
         RealDispatcher dispatcher = new RealDispatcher(action, interceptors, 0);
-        return dispatcher.dispatch(action);
+
+        DispatchResult result = dispatcher.dispatch(action);
+        if (result == null) {
+
+        }
+        return result;
     }
 
     /**

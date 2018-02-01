@@ -10,7 +10,7 @@ public class DispatchResult {
     public static final int STATUS_ERROR = 0;
     public static final int STATUS_SUCCESS = 1;
     public static final int STATUS_NOT_FOUND = 2;
-    public static final int STATUS_FALLBACK = 3;
+    public static final int STATUS_NOT_FINISH = 3;
 
     private int status;
     private String reason;
@@ -55,7 +55,6 @@ public class DispatchResult {
 
     DispatchResult success() {
         this.status = STATUS_SUCCESS;
-        this.target = null;
         this.reason = null;
         return this;
     }

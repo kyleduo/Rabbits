@@ -24,15 +24,14 @@ class NavigatorInterceptor implements Interceptor {
         DispatchResult result = new DispatchResult();
         Action action = dispatcher.action();
         boolean notFound = false;
-        if (action.getTarget() == null
-                || action.getTargetInfo().type == TargetInfo.TYPE_NOT_FOUND) {
+        if (action.getTarget() == null || action.getTargetType() == TargetInfo.TYPE_NOT_FOUND) {
             notFound = true;
             if (action.isIgnoreFallbacks()) {
                 return result.notFound(action.getOriginUrl());
             }
         }
         // Normal navigation or fallback navigation all handled here.
-        Navigator navigator = mNavigators.get(action.getTargetInfo().type);
+        Navigator navigator = mNavigators.get(action.getTargetType());
         if (navigator == null) {
             if (notFound) {
                 // need to be handled by fallback.
