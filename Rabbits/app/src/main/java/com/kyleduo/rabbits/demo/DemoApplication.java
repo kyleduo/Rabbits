@@ -35,33 +35,34 @@ public class DemoApplication extends Application {
                 .schemes("demo")
                 .domains("rabbits.kyleduo.com");
 
-        Rabbit.init(config);
-        Rabbit.get().addInterceptor(new Interceptor() {
-            @Override
-            public DispatchResult intercept(final Dispatcher dispatcher) {
-                final Action action = dispatcher.action();
-                if ((action.getTargetFlags() & 1) > 0) {
-                    action.getExtras().putString("param", "拦截器中修改");
-                    new AlertDialog.Builder((Context) action.getFrom())
-                            .setTitle("拦截")
-                            .setPositiveButton("继续", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dispatcher.dispatch(action);
-                                }
-                            })
-                            .setNegativeButton("取消", null).create().show();
-                    return null;
-                }
-                return dispatcher.dispatch(action);
-            }
-        }).registerNavigator(TargetInfo.TYPE_NOT_FOUND, new Navigator() {
-            @Override
-            public DispatchResult perform(Action action, DispatchResult result) {
-                Toast.makeText((Context) action.getFrom(), "NOT_FOUND", Toast.LENGTH_SHORT).show();
-                return result;
-            }
-        });
+        Rabbit.init(config)
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public DispatchResult intercept(final Dispatcher dispatcher) {
+                        final Action action = dispatcher.action();
+                        if ((action.getTargetFlags() & 1) > 0) {
+                            action.getExtras().putString("param", "拦截器中修改");
+                            new AlertDialog.Builder((Context) action.getFrom())
+                                    .setTitle("拦截")
+                                    .setPositiveButton("继续", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dispatcher.dispatch(action);
+                                        }
+                                    })
+                                    .setNegativeButton("取消", null).create().show();
+                            return null;
+                        }
+                        return dispatcher.dispatch(action);
+                    }
+                })
+                .registerNavigator(TargetInfo.TYPE_NOT_FOUND, new Navigator() {
+                    @Override
+                    public DispatchResult perform(Action action, DispatchResult result) {
+                        Toast.makeText((Context) action.getFrom(), "NOT_FOUND", Toast.LENGTH_SHORT).show();
+                        return result;
+                    }
+                });
 
         final long time = SystemClock.elapsedRealtime();
         Log.d(TAG, "start : " + time);
