@@ -10,9 +10,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kyleduo.rabbits.Rabbit;
+import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.demo.base.BaseActivity;
 
-//@Page(name = "MAIN")
+@Page("/")
 public class MainActivity extends BaseActivity {
 
     @Override

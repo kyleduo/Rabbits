@@ -12,9 +12,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.kyleduo.rabbits.Target;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
-import com.kyleduo.rabbits.navigator.INavigationInterceptor;
 
 /**
  * Created by kyle on 2016/12/12.
@@ -50,20 +48,20 @@ public class WebFragment extends BaseFragment {
 	}
 
 	private class DefaultWebViewClient extends WebViewClient {
-		INavigationInterceptor webInterceptor = new INavigationInterceptor() {
-			@Override
-			public boolean intercept(Object from, Target target) {
-//				if (UriUtils.matchPath(target.getUri(),"/tobeintercepted")) {
-//					Rabbit.from(WebFragment.this)
-//							.to("demo://rabbits.kyleduo.com/test")
-//                            .merge(target)
-//							.clearTop()
-//							.start();
-//					return true;
-//				}
-				return false;
-			}
-		};
+//		INavigationInterceptor webInterceptor = new INavigationInterceptor() {
+//			@Override
+//			public boolean intercept(Object from, Target target) {
+////				if (UriUtils.matchPath(target.getUri(),"/tobeintercepted")) {
+////					Rabbit.from(WebFragment.this)
+////							.to("demo://rabbits.kyleduo.com/test")
+////                            .merge(target)
+////							.clearTop()
+////							.start();
+////					return true;
+////				}
+//				return false;
+//			}
+//		};
 
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {

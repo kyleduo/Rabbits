@@ -77,7 +77,7 @@ public class RabbitsCompiler extends AbstractProcessor {
             return false;
         }
 
-        ClassName mappingTable = ClassName.get(PACKAGE, "MappingTable");
+        ClassName routeTable = ClassName.get(PACKAGE, "RouteTable");
         ClassName targetInfo = ClassName.get(PACKAGE + ".annotations", "TargetInfo");
 
         MethodSpec.Builder generateBuilder = MethodSpec.methodBuilder("generate")
@@ -93,8 +93,8 @@ public class RabbitsCompiler extends AbstractProcessor {
                 // 只接受这种格式的url
                 // (scheme://domain)/path
 
-                while (url.endsWith("/")) {
-                    url = url.substring(url.length() - 1);
+                while (url.length() > 1 && url.endsWith("/")) {
+                    url = url.substring(0, url.length() - 1);
                 }
 
                 // path
@@ -154,7 +154,7 @@ public class RabbitsCompiler extends AbstractProcessor {
 
         for (PageInfo p : pages) {
             generateBuilder.addStatement("$T.map(\"$L\", new $T(\"$L\", $T.class, $L, $L));",
-                    mappingTable,
+                    routeTable,
                     p.url,
                     targetInfo,
                     p.url,
