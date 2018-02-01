@@ -9,26 +9,26 @@ import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.demo.base.BaseActivity;
 
-@Page(value = "/test/act", flags = 1)
+@Page(value = "/test", flags = 1)
 public class TestActivity extends BaseActivity {
 
-	@SuppressLint("SetTextI18n")
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_test);
+    @SuppressLint("SetTextI18n")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_test);
 
-		TextView tv = (TextView) findViewById(R.id.params_tv);
-		tv.setText("testing: " + getIntent().getStringExtra("param"));
+        TextView tv = (TextView) findViewById(R.id.params_tv);
+        tv.setText("testing: " + getIntent().getStringExtra("param"));
 
-		findViewById(R.id.back_home_bt).setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Rabbit.from(TestActivity.this)
-						.to("")
-						.clearTop()
-						.start();
-			}
-		});
-	}
+        findViewById(R.id.back_home_bt).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Rabbit.from(TestActivity.this)
+                        .to("")
+                        .clearTop()
+                        .start();
+            }
+        });
+    }
 }

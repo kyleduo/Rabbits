@@ -16,6 +16,8 @@ import com.kyleduo.rabbits.RConfig;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.Router;
 import com.kyleduo.rabbits.annotations.TargetInfo;
+import com.kyleduo.rabbits.demo.base.BaseActivity;
+import com.kyleduo.rabbits.demo.base.BaseFragment;
 
 /**
  * Created by kyle on 2016/12/8.
@@ -56,6 +58,7 @@ public class DemoApplication extends Application {
                         return dispatcher.dispatch(action);
                     }
                 })
+                .registerNavigator(TargetInfo.TYPE_FRAGMENT_V4, new FragmentNavigator())
                 .registerNavigator(TargetInfo.TYPE_NOT_FOUND, new Navigator() {
                     @Override
                     public DispatchResult perform(Action action, DispatchResult result) {
@@ -66,5 +69,31 @@ public class DemoApplication extends Application {
 
         final long time = SystemClock.elapsedRealtime();
         Log.d(TAG, "start : " + time);
+    }
+
+    public static class FragmentNavigator implements Navigator {
+
+        @Override
+        public DispatchResult perform(Action action, DispatchResult result) {
+            Object from = action.getFrom();
+            Object target = action.getTarget();
+
+            if (!(target instanceof BaseFragment)) {
+                return result.error("Target invalid");
+            }
+
+            BaseFragment fragment = (BaseFragment) target;
+
+            if (from instanceof BaseActivity) {
+                BaseActivity act = (BaseActivity) from;
+                act.start(fragment);
+            } else if (from instanceof BaseFragment) {
+                ((BaseFragment) from).start(fragment);
+            } else {
+                return result.error("From invalid");
+            }
+
+            return result.success();
+        }
     }
 }

@@ -1,6 +1,5 @@
 package com.kyleduo.rabbits.demo.base;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -8,8 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.kyleduo.rabbits.Rabbit;
 
 import java.util.Set;
 
@@ -51,8 +48,8 @@ public class BaseFragment extends SupportFragment {
 	@Override
 	public void onSupportVisible() {
 		super.onSupportVisible();
-		String originUri = getArguments().getString(Rabbit.KEY_ORIGIN_URI);
-		Uri uri = Uri.parse(originUri);
-		getActivity().setTitle(uri.getPath() + " @" + getActivity().getClass().getSimpleName());
+//		String originUri = getArguments().getString(Rabbit.KEY_ORIGIN_URI);
+//		Uri uri = Uri.parse(originUri);
+//		getActivity().setTitle(uri.getPath() + " @" + getActivity().getClass().getSimpleName());
 	}
 }

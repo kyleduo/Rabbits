@@ -185,6 +185,18 @@ public abstract class AbstractNavigation implements Navigation {
     }
 
     @Override
+    public Navigation ignoreInterceptors() {
+        action.setIgnoreInterceptors(true);
+        return this;
+    }
+
+    @Override
+    public Navigation ignoreFallback() {
+        action.setIgnoreFallback(true);
+        return this;
+    }
+
+    @Override
     public Navigation addInterceptor(Interceptor interceptor) {
         if (mInterceptors == null) {
             mInterceptors = new ArrayList<>();

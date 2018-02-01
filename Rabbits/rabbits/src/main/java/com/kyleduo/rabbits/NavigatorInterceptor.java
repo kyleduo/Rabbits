@@ -26,7 +26,7 @@ class NavigatorInterceptor implements Interceptor {
         boolean notFound = false;
         if (action.getTarget() == null || action.getTargetType() == TargetInfo.TYPE_NOT_FOUND) {
             notFound = true;
-            if (action.isIgnoreFallbacks()) {
+            if (action.isIgnoreFallback()) {
                 return result.notFound(action.getOriginUrl());
             }
         }

@@ -20,8 +20,8 @@ public class Action {
     private Bundle mExtras;
     private int mIntentFlags;
     private int[] mTransitionAnimations;
-    private boolean mIgnoreIntercepts;
-    private boolean mIgnoreFallbacks;
+    private boolean mIgnoreInterceptors;
+    private boolean mIgnoreFallback;
     private boolean mJustObtain;
     private int mRequestCode;
     /**
@@ -117,20 +117,20 @@ public class Action {
         mRequestCode = requestCode;
     }
 
-    public boolean isIgnoreIntercepts() {
-        return mIgnoreIntercepts;
+    public boolean isIgnoreInterceptors() {
+        return mIgnoreInterceptors;
     }
 
-    public void setIgnoreIntercepts(boolean ignoreIntercepts) {
-        mIgnoreIntercepts = ignoreIntercepts;
+    public void setIgnoreInterceptors(boolean ignoreInterceptors) {
+        mIgnoreInterceptors = ignoreInterceptors;
     }
 
-    public boolean isIgnoreFallbacks() {
-        return mIgnoreFallbacks;
+    public boolean isIgnoreFallback() {
+        return mIgnoreFallback;
     }
 
-    public void setIgnoreFallbacks(boolean ignoreFallbacks) {
-        mIgnoreFallbacks = ignoreFallbacks;
+    public void setIgnoreFallback(boolean ignoreFallback) {
+        mIgnoreFallback = ignoreFallback;
     }
 
     public boolean isJustObtain() {

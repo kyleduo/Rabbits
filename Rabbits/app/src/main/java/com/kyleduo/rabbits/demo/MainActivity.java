@@ -37,8 +37,8 @@ public class MainActivity extends BaseActivity {
 //                            .setTransitionAnimations(new int[]{R.anim.fadein, R.anim.fadeout})
 //                            .start();
                     Rabbit.from(MainActivity.this)
-                            .to("/test/act?param=test")
-                            .putExtra("param2", "testing")
+                            .to(url)
+                            .putExtra("param", "testing")
                             .start();
                 }
             });

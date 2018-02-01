@@ -40,7 +40,7 @@ public class DispatchResult {
         this.target = target;
     }
 
-    DispatchResult error(String reason) {
+    public DispatchResult error(String reason) {
         this.status = STATUS_ERROR;
         this.reason = reason;
         return this;
@@ -53,7 +53,7 @@ public class DispatchResult {
         return this;
     }
 
-    DispatchResult success() {
+    public DispatchResult success() {
         this.status = STATUS_SUCCESS;
         this.reason = null;
         return this;

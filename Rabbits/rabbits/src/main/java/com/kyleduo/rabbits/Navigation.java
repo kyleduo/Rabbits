@@ -39,6 +39,10 @@ public interface Navigation {
 
     Navigation redirect();
 
+    Navigation ignoreInterceptors();
+
+    Navigation ignoreFallback();
+
     @NonNull
     DispatchResult start();
 
