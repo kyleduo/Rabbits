@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 /**
+ * Representing an navigation request.
+ *
  * Created by kyle on 26/01/2018.
  */
 
@@ -22,6 +24,10 @@ public class Action {
     private boolean mIgnoreFallbacks;
     private boolean mJustObtain;
     private int mRequestCode;
+    /**
+     * finish current parent after navigation
+     */
+    private boolean mRedirect;
 
     // Generate during dispatch
     /**
@@ -37,9 +43,6 @@ public class Action {
      * Real navigation target, maybe an Intent or a Fragment instance.
      */
     private Object mTarget;
-
-    // Not used for now
-    private boolean mRedirect;
 
     public Object getFrom() {
         return mFrom;

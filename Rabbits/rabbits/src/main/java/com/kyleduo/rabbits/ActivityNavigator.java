@@ -56,7 +56,9 @@ public class ActivityNavigator implements Navigator {
                 return result.error("Invalid from.");
             }
         }
-        if (activity != null && action.isRedirect()) {
+
+        // only finish activity when navigate from an Activity.
+        if (activity != null && activity == action.getFrom() && action.isRedirect()) {
             activity.finish();
         }
 
