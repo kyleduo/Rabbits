@@ -49,6 +49,11 @@
 
     <TextView
         style="@style/Contents"
+        android:text="demo://rabbits.kyleduo.com/second/1"
+        />
+
+    <TextView
+        style="@style/Contents"
         android:text="demo://rabbits.kyleduo.com/submodule1"
         />
 

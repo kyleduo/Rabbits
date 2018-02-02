@@ -5,7 +5,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.SystemClock;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.kyleduo.rabbits.Action;
@@ -23,7 +22,6 @@ import com.kyleduo.rabbits.demo.base.BaseFragment;
  * Created by kyle on 2016/12/8.
  */
 
-//@Module(subModules = {"sub1"}, srcPath = DemoConstants.SRC_PATH)
 public class DemoApplication extends Application {
     private static final String TAG = "DemoApplication";
 
@@ -34,7 +32,7 @@ public class DemoApplication extends Application {
         Router.generate();
 
         RConfig config = RConfig.get()
-                .schemes("demo")
+                .schemes("demo", "http", "https")
                 .domains("rabbits.kyleduo.com");
 
         Rabbit.init(config)
@@ -68,7 +66,6 @@ public class DemoApplication extends Application {
                 });
 
         final long time = SystemClock.elapsedRealtime();
-        Log.d(TAG, "start : " + time);
     }
 
     public static class FragmentNavigator implements Navigator {
@@ -78,7 +75,9 @@ public class DemoApplication extends Application {
             Object from = action.getFrom();
             Object target = action.getTarget();
 
-            if (!(target instanceof BaseFragment)) {
+            boolean f = target instanceof BaseFragment;
+
+            if (!f) {
                 return result.error("Target invalid");
             }
 

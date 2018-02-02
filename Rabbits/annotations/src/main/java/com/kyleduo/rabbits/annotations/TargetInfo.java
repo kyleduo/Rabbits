@@ -25,4 +25,11 @@ public class TargetInfo {
         this.type = type;
         this.flags = flags;
     }
+
+    public TargetInfo(TargetInfo info) {
+        this.pattern = info.pattern;
+        this.target = info.target;
+        this.type = info.type;
+        this.flags = info.flags;
+    }
 }
