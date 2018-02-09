@@ -263,7 +263,9 @@ public class Rabbit {
 
         DispatchResult result = dispatcher.dispatch(action);
         if (result == null) {
-
+            result = new DispatchResult();
+            result.setStatus(DispatchResult.STATUS_NOT_FINISH);
+            result.setReason("");
         }
         return result;
     }

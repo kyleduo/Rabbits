@@ -7,14 +7,18 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
@@ -175,84 +179,115 @@ public class RabbitsCompiler extends AbstractProcessor {
             e.printStackTrace();
         }
 
-        TypeSpec.Builder pBuilder = TypeSpec.classBuilder(ROUTER_P_CLASS)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
+        List<FieldSpec> pFields = new ArrayList<>();
+        List<MethodSpec> pMethods = new ArrayList<>();
+        for (PageInfo page : pages) {
+            debug(page.toString());
+            String alias = page.alias;
+            String url = page.url;
 
-        for (PageInfo p : pages) {
-            String name = p.alias;
-            if (name == null || name.length() == 0) {
-                name = p.url;
+            String name = isEmpty(alias) ? url : alias;
+            if (name.length() > 1) {
                 while (name.startsWith("/")) {
                     name = name.substring(1);
                 }
                 while (name.endsWith("/")) {
                     name = name.substring(0, name.length() - 1);
                 }
-                name = name.replaceAll("/", "_");
-                if (name.contains("{")) {
-                    // TODO: 09/02/2018 P methods
-                    continue;
-                }
             }
-            if (name.length() == 0) {
-                continue;
-            }
-            name = name.toUpperCase();
-            debug("name: " + name);
-            FieldSpec.Builder fieldBuilder = FieldSpec.builder(String.class, name, Modifier.PUBLIC, Modifier.FINAL)
-                    .initializer("\"$L\"", p.url);
+            name = name.replaceAll("/", "_").toUpperCase();
 
-            pBuilder.addField(fieldBuilder.build());
+            if (url.contains("{") && url.contains("}")) {
+                Pattern pattern = Pattern.compile("\\{([^{}:]+):?([^{}]*)\\}");
+                Matcher matcher = pattern.matcher(url);
+                List<ParameterSpec> params = new ArrayList<>();
+                List<String> holder = new ArrayList<>();
+                while (matcher.find()) {
+                    int count = matcher.groupCount() + 1;
+                    if (count < 2) {
+                        continue;
+                    }
+                    String paramName = matcher.group(1);
+                    String paramType = "";
+                    if (count == 3) {
+                        paramType = matcher.group(2);
+                    }
+                    Type t;
+                    switch (paramType) {
+                        case "i":
+                            t = int.class;
+                            holder.add("%d");
+                            break;
+                        case "l":
+                            t = long.class;
+                            holder.add("%d");
+                            break;
+                        case "f":
+                            t = float.class;
+                            holder.add("%f");
+                            break;
+                        case "d":
+                            t = double.class;
+                            holder.add("%f");
+                            break;
+                        case "b":
+                            t = boolean.class;
+                            holder.add("%b");
+                            break;
+                        case "s":
+                        default:
+                            t = String.class;
+                            holder.add("%s");
+                            break;
+                    }
+                    if (isEmpty(alias)) {
+                        name = name.replaceFirst("\\{([^{}:]+):?([^{}]*)\\}", paramName.toUpperCase());
+                    }
+                    params.add(ParameterSpec.builder(t, paramName).build());
+                }
+                MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(name)
+                        .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+                        .returns(String.class);
+                methodBuilder.addParameters(params);
+                StringBuilder objBuilder = new StringBuilder();
+                for (int i = 0; i < params.size(); i++) {
+                    objBuilder.append("$L, ");
+                }
+                if (objBuilder.length() > 2) {
+                    objBuilder.delete(objBuilder.length() - 2, objBuilder.length());
+                }
+                String format = url;
+                for (int i = 0; i < params.size(); i++) {
+                    format = format.replaceFirst("\\{([^{}:]+):?([^{}]*)\\}", holder.get(i));
+                }
+                String statement = "return String.format(\"$L\", " + objBuilder.toString() + ")";
+                List<String> obj = new ArrayList<>();
+                obj.add(format);
+                for (int i = 0; i < params.size(); i++) {
+                    obj.add(params.get(i).name);
+                }
+                methodBuilder.addStatement(statement, obj.toArray());
+                pMethods.add(methodBuilder.build());
+            } else {
+                FieldSpec.Builder fieldBuilder = FieldSpec.builder(String.class, name, Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+                        .initializer("\"$L\"", url);
+                FieldSpec fieldSpec = fieldBuilder.build();
+                pFields.add(fieldSpec);
+            }
         }
 
+        TypeSpec pTypeSpec = TypeSpec.classBuilder(ROUTER_P_CLASS)
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                .addFields(pFields)
+                .addMethods(pMethods)
+                .build();
         try {
-            JavaFile.builder(PACKAGE, pBuilder.build())
+            JavaFile.builder(PACKAGE, pTypeSpec)
                     .build()
                     .writeTo(mFiler);
         } catch (Throwable e) {
             e.printStackTrace();
         }
-
-
-//        Module module = parseRabbits(roundEnv);
-//        if (module == null) {
-//            throw new IllegalStateException("A Module annotation is required.");
-//        }
-//        String moduleName = module.name();
-//        String[] subModules = module.subModules();
-//        boolean standalone = module.standalone();
-//
-//        if (standalone) {
-//            if (subModules.length == 0) {
-//                if (moduleName.length() != 0) {
-//                    // In standalone mode.
-//                    String[] m = {moduleName};
-//                    generateRouters(m);
-//                }
-//            } else {
-//                String[] m = new String[subModules.length + 1];
-//                m[0] = "";
-//                System.arraycopy(subModules, 0, m, 1, subModules.length);
-//                generateRouters(m);
-//            }
-//        }
-//
-//        List<MethodSpec> methods = parsePages(roundEnv);
-//        String routerClassName = getRouterClassName(moduleName);
-//
-//        TypeSpec routerTypeSpec = TypeSpec.classBuilder(routerClassName)
-//                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-//                .addMethods(methods)
-//                .build();
-//        try {
-//            JavaFile.builder(PACKAGE, routerTypeSpec)
-//                    .build()
-//                    .writeTo(mFiler);
-//        } catch (Throwable e) {
-////			e.printStackTrace();
-//        }
-//
-//        generateP(moduleName, module.srcPath());
 
         return true;
     }
@@ -305,6 +340,10 @@ public class RabbitsCompiler extends AbstractProcessor {
             e.printStackTrace();
         }
 
+    }
+
+    private boolean isEmpty(String text) {
+        return text == null || text.length() == 0;
     }
 
     private void debug(String message) {

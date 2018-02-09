@@ -5,11 +5,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.kyleduo.rabbits.P;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.demo.base.BaseActivity;
 
-@Page(value = "/test", flags = 1)
+@Page(value = "/test", alias="testact", flags = 1)
 public class TestActivity extends BaseActivity {
 
     @SuppressLint("SetTextI18n")
@@ -25,7 +26,7 @@ public class TestActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 Rabbit.from(TestActivity.this)
-                        .to("")
+                        .to(P._)
                         .clearTop()
                         .start();
             }
