@@ -17,6 +17,8 @@ public @interface Page {
 
     int flags() default 0;
 
+    String alias() default "";
+
 //    String parent() default "";
 
 //

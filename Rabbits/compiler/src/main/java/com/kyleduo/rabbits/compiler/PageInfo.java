@@ -11,12 +11,14 @@ public class PageInfo {
     public ClassName target;
     public int type;
     public int flag;
+    public String alias;
 
-    public PageInfo(String url, ClassName target, int type, int flag) {
+    public PageInfo(String url, ClassName target, int type, int flag, String alias) {
         this.url = url;
         this.target = target;
         this.type = type;
         this.flag = flag;
+        this.alias = alias;
     }
 
     @Override
@@ -26,6 +28,7 @@ public class PageInfo {
                 ", target=" + target +
                 ", type=" + type +
                 ", flag=" + flag +
+                ", alias=" + alias +
                 '}';
     }
 }

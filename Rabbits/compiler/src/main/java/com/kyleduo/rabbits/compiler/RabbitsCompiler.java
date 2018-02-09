@@ -109,7 +109,7 @@ public class RabbitsCompiler extends AbstractProcessor {
                     type = TargetInfo.TYPE_FRAGMENT_V4;
                 }
 
-                pages.add(new PageInfo(url, target, type, page.flags()));
+                pages.add(new PageInfo(url, target, type, page.flags(), page.alias()));
             }
         }
 
@@ -172,7 +172,45 @@ public class RabbitsCompiler extends AbstractProcessor {
                     .build()
                     .writeTo(mFiler);
         } catch (Throwable e) {
-			e.printStackTrace();
+            e.printStackTrace();
+        }
+
+        TypeSpec.Builder pBuilder = TypeSpec.classBuilder(ROUTER_P_CLASS)
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
+
+        for (PageInfo p : pages) {
+            String name = p.alias;
+            if (name == null || name.length() == 0) {
+                name = p.url;
+                while (name.startsWith("/")) {
+                    name = name.substring(1);
+                }
+                while (name.endsWith("/")) {
+                    name = name.substring(0, name.length() - 1);
+                }
+                name = name.replaceAll("/", "_");
+                if (name.contains("{")) {
+                    // TODO: 09/02/2018 P methods
+                    continue;
+                }
+            }
+            if (name.length() == 0) {
+                continue;
+            }
+            name = name.toUpperCase();
+            debug("name: " + name);
+            FieldSpec.Builder fieldBuilder = FieldSpec.builder(String.class, name, Modifier.PUBLIC, Modifier.FINAL)
+                    .initializer("\"$L\"", p.url);
+
+            pBuilder.addField(fieldBuilder.build());
+        }
+
+        try {
+            JavaFile.builder(PACKAGE, pBuilder.build())
+                    .build()
+                    .writeTo(mFiler);
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
 
 
@@ -258,7 +296,7 @@ public class RabbitsCompiler extends AbstractProcessor {
         TypeSpec routersTypeSpec = TypeSpec.classBuilder(ROUTE_MAP_ENTRY_CLASS)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addField(routersField)
-                       .build();
+                .build();
         try {
             JavaFile.builder(PACKAGE, routersTypeSpec)
                     .build()

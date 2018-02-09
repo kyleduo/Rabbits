@@ -13,7 +13,6 @@ import com.kyleduo.rabbits.Interceptor;
 import com.kyleduo.rabbits.Navigator;
 import com.kyleduo.rabbits.RConfig;
 import com.kyleduo.rabbits.Rabbit;
-import com.kyleduo.rabbits.Router;
 import com.kyleduo.rabbits.annotations.TargetInfo;
 import com.kyleduo.rabbits.demo.base.BaseActivity;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
@@ -29,7 +28,7 @@ public class DemoApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Router.generate();
+//        Router.generate();
 
         RConfig config = RConfig.get()
                 .schemes("demo", "http", "https")
