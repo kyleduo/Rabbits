@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * Created by kyle on 26/01/2018.
  */
-
+// TODO: 09/02/2018 move in rabbits module
 public class TargetInfo {
     public static final int TYPE_NOT_FOUND = 0;
     public static final int TYPE_ACTIVITY = 1;

@@ -18,7 +18,7 @@ import java.util.Set;
  * Created by kyle on 30/01/2018.
  */
 
-public class MappingInterceptor implements Interceptor {
+public class ActionParser implements Interceptor {
     @Override
     public DispatchResult intercept(Dispatcher dispatcher) {
         Action action = dispatcher.action();

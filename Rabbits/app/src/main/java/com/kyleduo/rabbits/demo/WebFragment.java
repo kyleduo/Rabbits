@@ -57,7 +57,7 @@ public class WebFragment extends BaseFragment {
                     .to(url)
                     .ignoreFallback()
                     .start()
-                    .getStatus() == DispatchResult.STATUS_SUCCESS;
+                    .getCode() == DispatchResult.STATUS_SUCCESS;
             if (ret) {
                 return true;
             }

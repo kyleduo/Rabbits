@@ -9,7 +9,7 @@ import java.util.List;
  */
 
 @SuppressWarnings("WeakerAccess")
-public class RConfig {
+public final class RConfig {
     private List<String> mSchemes;
     private List<String> mDomains;
 

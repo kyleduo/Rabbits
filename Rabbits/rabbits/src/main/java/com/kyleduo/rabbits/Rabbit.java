@@ -30,7 +30,7 @@ import java.util.Map;
  */
 
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class Rabbit {
+public final class Rabbit {
     private static final String TAG = Rabbit.class.getSimpleName();
     private static final String PACKAGE = "com.kyleduo.rabbits";
     private static final String ROUTER_CLASS = PACKAGE + ".Router";
@@ -149,39 +149,19 @@ public class Rabbit {
         return mSchemes;
     }
 
-    /**
-     * Dump mappings.
-     *
-     * @return result string.
-     */
-//    public static String dumpMappings() {
-//        return Mappings.dump();
-//    }
-
     public static Rabbit get() {
         return sInstance;
     }
 
-    public static Rabbit init(RConfig config) {
+    public static synchronized Rabbit init(RConfig config) {
         if (!config.valid()) {
             throw new IllegalArgumentException("Config object not valid");
         }
-        sInstance = new Rabbit(config);
+        if (sInstance == null) {
+            sInstance = new Rabbit(config);
+        }
         return sInstance;
     }
-
-    /**
-     * Initial rabbits with basic elements.
-     *
-     * @param scheme           Scheme for this application.
-     * @param defaultHost      Default host when try to match uri without a host.
-     * @param navigatorFactory Custom navigator factory.
-     */
-//    private static void init(String scheme, String defaultHost, INavigatorFactory navigatorFactory) {
-//        sAppScheme = scheme;
-//        sDefaultHost = defaultHost;
-//        sNavigatorFactory = navigatorFactory;
-//    }
 
     /**
      * Create a rabbit who has ability to navigate through your pages.
@@ -190,6 +170,9 @@ public class Rabbit {
      * @return Rabbit instance.
      */
     public static Navigation from(Object from) {
+        if (get() == null) {
+            throw new IllegalStateException("Rabbit has not been initialized properly");
+        }
         if (!(from instanceof Activity) && !(from instanceof Fragment || from instanceof android.app.Fragment) && !(from instanceof Context)) {
             throw new IllegalArgumentException("From object must be whether an Activity or a Fragment instance.");
         }
@@ -197,23 +180,6 @@ public class Rabbit {
         action.setFrom(from);
         return new NavigationImpl(get(), action);
     }
-
-//    public static Navigation redirect(Object from, Action action) {
-//        action.setFrom(from);
-//        return new NavigationImpl(getInstance(), action);
-//    }
-
-    /**
-     * Add global interceptor. These Interceptors' methods will be invoked in every navigation.
-     *
-     * @param interceptor Interceptor instance.
-     */
-//    public static void addGlobalInterceptor(INavigationInterceptor interceptor) {
-//        if (sInterceptors == null) {
-//            sInterceptors = new ArrayList<>();
-//        }
-//        sInterceptors.add(interceptor);
-//    }
 
     /**
      * Add an interceptor used for this navigation. This is useful when you want to check whether a
@@ -246,7 +212,7 @@ public class Rabbit {
         // interceptors
 
         List<Interceptor> interceptors = new ArrayList<>();
-        interceptors.add(new MappingInterceptor());
+        interceptors.add(new ActionParser());
 
         // custom interceptors
         interceptors.addAll(mInterceptors);
@@ -256,189 +222,15 @@ public class Rabbit {
             interceptors.addAll(navigation.interceptors());
         }
 
-        interceptors.add(new AssembleInterceptor());
+        interceptors.add(new TargetAssembler());
         interceptors.add(new NavigatorInterceptor(mNavigators));
 
         RealDispatcher dispatcher = new RealDispatcher(action, interceptors, 0);
 
         DispatchResult result = dispatcher.dispatch(action);
         if (result == null) {
-            result = new DispatchResult();
-            result.setStatus(DispatchResult.STATUS_NOT_FINISH);
-            result.setReason("");
+            return DispatchResult.notFinished();
         }
         return result;
     }
-
-    /**
-     * Used for obtain page object. Intent or Fragment instance.
-     *
-     * @param uriStr uriStr
-     * @return AbstractNavigator
-     */
-//    public AbstractNavigator obtain(String uriStr) {
-//        Uri uri = Uri.parse(uriStr);
-//        return obtain(uri);
-//    }
-
-    /**
-     * Used for obtain page object. Intent or Fragment instance.
-     *
-     * @param uri uri
-     * @return AbstractNavigator
-     */
-//    public AbstractNavigator obtain(Uri uri) {
-//        Target target = Mappings.match(uri).obtain(sRouter);
-//        return dispatch(target, false);
-//    }
-
-    /**
-     * Navigate to page, or perform a not found strategy.
-     *
-     * @param uriStr uri string
-     * @return AbstractNavigator
-     */
-//    public AbstractNavigator to(String uriStr) {
-//        return to(uriStr, false);
-//    }
-
-    /**
-     * Navigate to page, or perform a not found strategy.
-     *
-     * @param uriStr       uri string
-     * @param ignoreParent whether ignore parent when navigate
-     * @return AbstractNavigator
-     */
-//    public AbstractNavigator to(String uriStr, boolean ignoreParent) {
-//        Uri uri = Uri.parse(uriStr);
-//        return to(uri, ignoreParent);
-//    }
-
-    /**
-     * Navigate to page, or perform a not found strategy.
-     *
-     * @param uri uri
-     * @return AbstractNavigator
-     */
-//    public AbstractNavigator to(Uri uri) {
-//        return to(uri, false);
-//    }
-
-    /**
-     * Navigate to page, or perform a not found strategy.
-     *
-     * @param uri          uri
-     * @param ignoreParent whether ignore parent when navigate
-     * @return AbstractNavigator
-     */
-//    public AbstractNavigator to(Uri uri, boolean ignoreParent) {
-//        Target target = Mappings.match(uri);
-//        if (ignoreParent) {
-//            target.obtain(sRouter);
-//        } else {
-//            target.route(sRouter);
-//        }
-////        return dispatch(target, false);
-//        return null;
-//    }
-
-    /**
-     * Navigate to page, or just return null if not found.
-     *
-     * @param uriStr uri
-     * @return AbstractNavigator
-     */
-//    public AbstractNavigator tryTo(String uriStr) {
-//        Uri uri = Uri.parse(uriStr);
-//        return tryTo(uri);
-//    }
-
-    /**
-     * Navigate to page, or just return null if not found.
-     *
-     * @param uriStr       uri
-     * @param ignoreParent whether ignore parent when navigate
-     * @return AbstractNavigator
-     */
-//    public AbstractNavigator tryTo(String uriStr, boolean ignoreParent) {
-//        Uri uri = Uri.parse(uriStr);
-//        return tryTo(uri, ignoreParent);
-//    }
-
-    /**
-     * Only if it is a http/https uri, and a page mapping from uri with app scheme and given path
-     * exists, a valid navigator will returned.
-     *
-     * @param uri uri
-     * @return AbstractNavigator
-     */
-//    public AbstractNavigator tryTo(Uri uri) {
-//        return tryTo(uri, false);
-//    }
-
-    /**
-     * Only if it is a http/https uri, and a page mapping from uri with app scheme and given path
-     * exists, a valid navigator will returned.
-     *
-     * @param uri          uri
-     * @param ignoreParent whether ignore parent when navigate
-     * @return AbstractNavigator
-     */
-//    public AbstractNavigator tryTo(Uri uri, boolean ignoreParent) {
-//        final String scheme = uri.getScheme();
-//        if (TextUtils.isEmpty(scheme) || (!scheme.startsWith("http") && !scheme.startsWith(sAppScheme))) {
-//            return new MuteNavigator(mFrom, new Target(uri), assembleInterceptor());
-//        }
-//        if (!TextUtils.equals(scheme, sAppScheme)) {
-//            uri = uri.buildUpon().scheme(sAppScheme).build();
-//        }
-//        Target target = Mappings.match(uri);
-//        if (ignoreParent) {
-//            target.obtain(sRouter);
-//        } else {
-//            target.route(sRouter);
-//        }
-//        return dispatch(target, true);
-//    }
-
-    /**
-     * Handle the intercept operation.
-     *
-     * @param target target
-     * @param mute   whether mute
-     * @return navigator
-     */
-//    private AbstractNavigator dispatch(Target target, boolean mute) {
-//        if (BuildConfig.DEBUG) {
-//            Log.d(TAG, target.toString());
-//        }
-//        if (!target.hasMatched()) {
-//            if (!mute) {
-//                AbstractPageNotFoundHandler pageNotFoundHandler = sNavigatorFactory.createPageNotFoundHandler(mFrom, target, assembleInterceptor());
-//                if (pageNotFoundHandler != null) {
-//                    return pageNotFoundHandler;
-//                }
-//            } else if (target.getTo() == null) {
-//                return new MuteNavigator(mFrom, target, assembleInterceptor());
-//            }
-//        }
-//        return sNavigatorFactory.createNavigator(mFrom, target, assembleInterceptor());
-//    }
-
-    /**
-     * Assemble interceptors and static interceptors.
-     * order static interceptors after instance's interceptors.
-     *
-     * @return a list of valid navigation interceptor
-     */
-//    private List<INavigationInterceptor> assembleInterceptor() {
-//        if (sInterceptors == null) {
-//            return mInterceptors;
-//        }
-//        if (mInterceptors == null) {
-//            mInterceptors = new ArrayList<>();
-//        }
-//        mInterceptors.addAll(sInterceptors);
-//        return mInterceptors;
-//    }
 }

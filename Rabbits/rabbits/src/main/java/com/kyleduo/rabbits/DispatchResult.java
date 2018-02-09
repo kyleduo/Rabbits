@@ -12,50 +12,53 @@ public class DispatchResult {
     public static final int STATUS_NOT_FOUND = 2;
     public static final int STATUS_NOT_FINISH = 3;
 
-    private int status;
+    private int code;
     private String reason;
     private Object target;
 
-    public int getStatus() {
-        return status;
+    public DispatchResult(int code, String reason, Object target) {
+        this.code = code;
+        this.reason = reason;
+        this.target = target;
     }
 
-    public void setStatus(int status) {
-        this.status = status;
+    public static DispatchResult error(String reason) {
+        return new DispatchResult(STATUS_ERROR, reason, null);
+    }
+
+    public static DispatchResult notFound(String url) {
+        return new DispatchResult(STATUS_NOT_FOUND, "Page not found: " + url, null);
+    }
+
+    public static DispatchResult success(Object target) {
+        return new DispatchResult(STATUS_SUCCESS, "success", target);
+    }
+
+    public static DispatchResult success() {
+        return success(null);
+    }
+
+    public static DispatchResult notFinished() {
+        return new DispatchResult(STATUS_NOT_FINISH, "", null);
+    }
+
+    public int getCode() {
+        return code;
     }
 
     public String getReason() {
         return reason;
     }
 
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
     public Object getTarget() {
         return target;
     }
 
-    public void setTarget(Object target) {
-        this.target = target;
-    }
-
-    public DispatchResult error(String reason) {
-        this.status = STATUS_ERROR;
-        this.reason = reason;
-        return this;
-    }
-
-    DispatchResult notFound(String url) {
-        this.status = STATUS_NOT_FOUND;
-        this.reason = "Page NOT FOUND: " + url;
-        this.target = null;
-        return this;
-    }
-
-    public DispatchResult success() {
-        this.status = STATUS_SUCCESS;
-        this.reason = null;
-        return this;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof DispatchResult) {
+            return this.code == ((DispatchResult) obj).code && this.target == ((DispatchResult) obj).target;
+        }
+        return false;
     }
 }

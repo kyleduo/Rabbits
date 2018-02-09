@@ -12,7 +12,7 @@ import com.kyleduo.rabbits.annotations.TargetInfo;
  * Created by kyle on 26/01/2018.
  */
 
-public class AssembleInterceptor implements Interceptor {
+public class TargetAssembler implements Interceptor {
     @Override
     public DispatchResult intercept(Dispatcher dispatcher) {
         Action action = dispatcher.action();

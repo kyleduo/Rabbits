@@ -26,7 +26,7 @@ public class TestActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 Rabbit.from(TestActivity.this)
-                        .to(P._)
+                        .to(P.P_)
                         .clearTop()
                         .start();
             }

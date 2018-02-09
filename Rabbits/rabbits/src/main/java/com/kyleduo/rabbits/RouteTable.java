@@ -10,6 +10,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * Storing the routes, this class is responsible for find the proper page that matches the uri.
+ *
  * Created by kyle on 24/01/2018.
  */
 

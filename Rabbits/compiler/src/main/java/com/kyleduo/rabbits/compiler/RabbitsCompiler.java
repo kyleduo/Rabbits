@@ -185,17 +185,19 @@ public class RabbitsCompiler extends AbstractProcessor {
             debug(page.toString());
             String alias = page.alias;
             String url = page.url;
+            final boolean useUrl = isEmpty(alias);
 
-            String name = isEmpty(alias) ? url : alias;
-            if (name.length() > 1) {
-                while (name.startsWith("/")) {
-                    name = name.substring(1);
-                }
-                while (name.endsWith("/")) {
-                    name = name.substring(0, name.length() - 1);
-                }
+            String name = useUrl ? url : alias;
+            while (name.startsWith("/")) {
+                name = name.substring(1);
+            }
+            while (name.endsWith("/")) {
+                name = name.substring(0, name.length() - 1);
             }
             name = name.replaceAll("/", "_").toUpperCase();
+            if (useUrl) {
+                name = "P_" + name;
+            }
 
             if (url.contains("{") && url.contains("}")) {
                 Pattern pattern = Pattern.compile("\\{([^{}:]+):?([^{}]*)\\}");
@@ -240,7 +242,7 @@ public class RabbitsCompiler extends AbstractProcessor {
                             holder.add("%s");
                             break;
                     }
-                    if (isEmpty(alias)) {
+                    if (useUrl) {
                         name = name.replaceFirst("\\{([^{}:]+):?([^{}]*)\\}", paramName.toUpperCase());
                     }
                     params.add(ParameterSpec.builder(t, paramName).build());

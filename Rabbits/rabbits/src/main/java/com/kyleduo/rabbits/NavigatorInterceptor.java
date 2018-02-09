@@ -21,13 +21,12 @@ class NavigatorInterceptor implements Interceptor {
         if (mNavigators == null) {
             throw new NullPointerException("No valid navigator");
         }
-        DispatchResult result = new DispatchResult();
         Action action = dispatcher.action();
         boolean notFound = false;
         if (action.getTarget() == null || action.getTargetType() == TargetInfo.TYPE_NOT_FOUND) {
             notFound = true;
             if (action.isIgnoreFallback()) {
-                return result.notFound(action.getOriginUrl());
+                return DispatchResult.notFound(action.getOriginUrl());
             }
         }
         // Normal navigation or fallback navigation all handled here.
@@ -36,11 +35,11 @@ class NavigatorInterceptor implements Interceptor {
             if (notFound) {
                 // need to be handled by fallback.
                 // fallback handler isn't set.
-                return result.notFound(action.getOriginUrl());
+                return DispatchResult.notFound(action.getOriginUrl());
             } else {
                 throw new IllegalStateException("Navigator not found");
             }
         }
-        return navigator.perform(action, result);
+        return navigator.perform(action);
     }
 }

@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.SystemClock;
 import android.widget.Toast;
 
 import com.kyleduo.rabbits.Action;
@@ -19,10 +18,12 @@ import com.kyleduo.rabbits.demo.base.BaseActivity;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
 
 /**
+ *
  * Created by kyle on 2016/12/8.
  */
 
 public class DemoApplication extends Application {
+    @SuppressWarnings("unused")
     private static final String TAG = "DemoApplication";
 
     @Override
@@ -59,26 +60,24 @@ public class DemoApplication extends Application {
                 .registerNavigator(TargetInfo.TYPE_FRAGMENT_V4, new FragmentNavigator())
                 .registerNavigator(TargetInfo.TYPE_NOT_FOUND, new Navigator() {
                     @Override
-                    public DispatchResult perform(Action action, DispatchResult result) {
+                    public DispatchResult perform(Action action) {
                         Toast.makeText((Context) action.getFrom(), "NOT_FOUND", Toast.LENGTH_SHORT).show();
-                        return result;
+                        return DispatchResult.success();
                     }
                 });
-
-        final long time = SystemClock.elapsedRealtime();
     }
 
     public static class FragmentNavigator implements Navigator {
 
         @Override
-        public DispatchResult perform(Action action, DispatchResult result) {
+        public DispatchResult perform(Action action) {
             Object from = action.getFrom();
             Object target = action.getTarget();
 
             boolean f = target instanceof BaseFragment;
 
             if (!f) {
-                return result.error("Target invalid");
+                return DispatchResult.error("Target invalid");
             }
 
             BaseFragment fragment = (BaseFragment) target;
@@ -89,10 +88,10 @@ public class DemoApplication extends Application {
             } else if (from instanceof BaseFragment) {
                 ((BaseFragment) from).start(fragment);
             } else {
-                return result.error("From invalid");
+                return DispatchResult.error("From invalid");
             }
 
-            return result.success();
+            return DispatchResult.success();
         }
     }
 }

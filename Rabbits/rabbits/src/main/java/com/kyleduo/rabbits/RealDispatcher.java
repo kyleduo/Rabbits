@@ -21,7 +21,7 @@ public class RealDispatcher implements Interceptor.Dispatcher {
     @Override
     public DispatchResult dispatch(Action action) {
         if (mIndex >= mInterceptors.size()) {
-            return new DispatchResult().error("Action has not been performed.");
+            return DispatchResult.error("Action has not been performed.");
         }
 
         Interceptor interceptor = mInterceptors.get(mIndex);

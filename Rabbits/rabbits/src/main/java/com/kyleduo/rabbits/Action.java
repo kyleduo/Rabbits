@@ -57,15 +57,15 @@ public class Action {
         return mTarget;
     }
 
-    public void setTarget(Object target) {
+    void setTarget(Object target) {
         mTarget = target;
     }
 
-    public String getOriginUrl() {
+    String getOriginUrl() {
         return mOriginUrl;
     }
 
-    public void setOriginUrl(String originUrl) {
+    void setOriginUrl(String originUrl) {
         mOriginUrl = originUrl;
     }
 

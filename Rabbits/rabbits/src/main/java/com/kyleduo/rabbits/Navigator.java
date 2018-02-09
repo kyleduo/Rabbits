@@ -6,6 +6,6 @@ package com.kyleduo.rabbits;
 
 public interface Navigator {
 
-    DispatchResult perform(Action action, DispatchResult result);
+    DispatchResult perform(Action action);
 
 }

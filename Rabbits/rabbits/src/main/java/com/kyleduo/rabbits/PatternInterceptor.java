@@ -1,15 +1,18 @@
 package com.kyleduo.rabbits;
 
 /**
+ * Used for Interceptor which wants to be invoked when the url match the pattern
+ *
  * Created by kyle on 30/01/2018.
  */
 
-public class PatternInterceptor implements Interceptor {
+final class PatternInterceptor implements Interceptor {
 
     private Interceptor mInterceptor;
     private String pattern;
 
-    public PatternInterceptor(Interceptor interceptor, String pattern) {
+    // TODO: 09/02/2018 more elegant match rule
+    PatternInterceptor(Interceptor interceptor, String pattern) {
         mInterceptor = interceptor;
         this.pattern = pattern;
     }
