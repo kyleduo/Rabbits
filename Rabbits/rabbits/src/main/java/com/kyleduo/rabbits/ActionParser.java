@@ -3,8 +3,6 @@ package com.kyleduo.rabbits;
 import android.net.Uri;
 import android.os.Bundle;
 
-import com.kyleduo.rabbits.annotations.TargetInfo;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Collections;
@@ -44,7 +42,8 @@ public class ActionParser implements Interceptor {
         }
 
         TargetInfo target = RouteTable.match(action.getUri());
-        action.setTargetType(target == null ? TargetInfo.TYPE_NOT_FOUND : target.type);
+
+        action.setTargetType(target == null ? TargetInfo.TYPE_NONE : target.type);
         action.setTargetFlags(target == null ? 0 : target.flags);
         action.setTargetPattern(target == null ? null : target.pattern);
         action.setTargetClass(target == null ? null : target.target);

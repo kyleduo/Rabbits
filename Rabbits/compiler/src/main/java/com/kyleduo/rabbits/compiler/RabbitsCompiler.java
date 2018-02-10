@@ -2,7 +2,6 @@ package com.kyleduo.rabbits.compiler;
 
 import com.google.auto.service.AutoService;
 import com.kyleduo.rabbits.annotations.Page;
-import com.kyleduo.rabbits.annotations.TargetInfo;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -41,6 +40,10 @@ public class RabbitsCompiler extends AbstractProcessor {
     private static final String ROUTE_MAP_CLASS = "RouteMap";
     private static final String ROUTE_MAP_ENTRY_CLASS = "RouteMapEntry";
     private static final String ROUTER_P_CLASS = "P";
+
+    private static final int TYPE_ACTIVITY = 1;
+    private static final int TYPE_FRAGMENT = 2;
+    private static final int TYPE_FRAGMENT_V4 = 3;
 
     private Elements elements;
     private Types types;
@@ -82,7 +85,7 @@ public class RabbitsCompiler extends AbstractProcessor {
         }
 
         ClassName routeTable = ClassName.get(PACKAGE, "RouteTable");
-        ClassName targetInfo = ClassName.get(PACKAGE + ".annotations", "TargetInfo");
+        ClassName targetInfo = ClassName.get(PACKAGE, "TargetInfo");
 
         MethodSpec.Builder generateBuilder = MethodSpec.methodBuilder("generate")
                 .addModifiers(Modifier.STATIC, Modifier.PUBLIC);
@@ -103,14 +106,14 @@ public class RabbitsCompiler extends AbstractProcessor {
 
                 // path
                 ClassName target = ClassName.get((TypeElement) e);
-                int type = TargetInfo.TYPE_NOT_FOUND;
+                int type = 0;
 
                 if (types.isSubtype(mirror, activityType)) {
-                    type = TargetInfo.TYPE_ACTIVITY;
+                    type = TYPE_ACTIVITY;
                 } else if (types.isSubtype(mirror, fragmentType)) {
-                    type = TargetInfo.TYPE_FRAGMENT;
+                    type = TYPE_FRAGMENT;
                 } else if (types.isSubtype(mirror, fragmentV4Type)) {
-                    type = TargetInfo.TYPE_FRAGMENT_V4;
+                    type = TYPE_FRAGMENT_V4;
                 }
 
                 pages.add(new PageInfo(url, target, type, page.flags(), page.alias()));

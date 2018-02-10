@@ -3,8 +3,6 @@ package com.kyleduo.rabbits;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.kyleduo.rabbits.annotations.TargetInfo;
-
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;

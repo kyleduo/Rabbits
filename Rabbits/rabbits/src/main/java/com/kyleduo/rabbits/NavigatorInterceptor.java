@@ -2,8 +2,6 @@ package com.kyleduo.rabbits;
 
 import android.util.SparseArray;
 
-import com.kyleduo.rabbits.annotations.TargetInfo;
-
 /**
  * Created by kyle on 26/01/2018.
  */
@@ -23,7 +21,7 @@ class NavigatorInterceptor implements Interceptor {
         }
         Action action = dispatcher.action();
         boolean notFound = false;
-        if (action.getTarget() == null || action.getTargetType() == TargetInfo.TYPE_NOT_FOUND) {
+        if (action.getTarget() == null || action.getTargetType() == TargetInfo.TYPE_NONE) {
             notFound = true;
             if (action.isIgnoreFallback()) {
                 return DispatchResult.notFound(action.getOriginUrl());

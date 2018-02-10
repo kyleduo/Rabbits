@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
-import com.kyleduo.rabbits.annotations.TargetInfo;
-
 /**
  * Assemble all the start information to target, which is an Intent or a Fragment object.
  * <p>
@@ -18,7 +16,7 @@ public class TargetAssembler implements Interceptor {
         Action action = dispatcher.action();
         int targetType = action.getTargetType();
 
-        if (targetType == TargetInfo.TYPE_NOT_FOUND) {
+        if (targetType == TargetInfo.TYPE_NONE) {
             // process on
             return dispatcher.dispatch(action);
         }

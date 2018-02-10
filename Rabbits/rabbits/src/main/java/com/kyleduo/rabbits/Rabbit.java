@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.SparseArray;
 
-import com.kyleduo.rabbits.annotations.TargetInfo;
 import com.kyleduo.rabbits.annotations.utils.NameParser;
 
 import java.lang.reflect.Field;
@@ -198,6 +197,11 @@ public final class Rabbit {
 
     public Rabbit registerNavigator(int type, Navigator navigator) {
         mNavigators.put(type, navigator);
+        return this;
+    }
+
+    public Rabbit registerFallbackNavigator(Navigator navigator) {
+        mNavigators.put(TargetInfo.TYPE_NONE, navigator);
         return this;
     }
 

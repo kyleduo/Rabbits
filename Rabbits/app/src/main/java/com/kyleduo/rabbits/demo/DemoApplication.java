@@ -13,7 +13,7 @@ import com.kyleduo.rabbits.Navigator;
 import com.kyleduo.rabbits.RConfig;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.Router;
-import com.kyleduo.rabbits.annotations.TargetInfo;
+import com.kyleduo.rabbits.TargetInfo;
 import com.kyleduo.rabbits.demo.base.BaseActivity;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
 
@@ -58,7 +58,7 @@ public class DemoApplication extends Application {
                     }
                 })
                 .registerNavigator(TargetInfo.TYPE_FRAGMENT_V4, new FragmentNavigator())
-                .registerNavigator(TargetInfo.TYPE_NOT_FOUND, new Navigator() {
+                .registerFallbackNavigator(new Navigator() {
                     @Override
                     public DispatchResult perform(Action action) {
                         Toast.makeText((Context) action.getFrom(), "NOT_FOUND", Toast.LENGTH_SHORT).show();
