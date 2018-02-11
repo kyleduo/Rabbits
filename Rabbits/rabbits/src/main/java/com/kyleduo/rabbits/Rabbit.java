@@ -21,7 +21,7 @@ import java.util.List;
  * Created by kyle on 2016/12/7.
  */
 
-@SuppressWarnings({"WeakerAccess", "unused"})
+@SuppressWarnings({"WeakerAccess", "unused", "UnusedReturnValue"})
 public final class Rabbit {
     private static final String TAG = Rabbit.class.getSimpleName();
     private static final String PACKAGE = "com.kyleduo.rabbits";
@@ -64,6 +64,9 @@ public final class Rabbit {
     }
 
     public static synchronized Rabbit init(RConfig config) {
+        if (sInstance != null) {
+            throw new IllegalStateException("Rabbit has already initialed.");
+        }
         if (!config.valid()) {
             throw new IllegalArgumentException("Config object not valid");
         }
@@ -79,7 +82,7 @@ public final class Rabbit {
      * @param from Whether an Activity or a Fragment instance.
      * @return Rabbit instance.
      */
-    public static Navigation from(Object from) {
+    public static Builder from(Object from) {
         if (get() == null) {
             throw new IllegalStateException("Rabbit has not been initialized properly");
         }
@@ -88,7 +91,7 @@ public final class Rabbit {
         }
         Action action = new Action();
         action.setFrom(from);
-        return new NavigationImpl(get(), action);
+        return new Builder(action);
     }
 
     /**
@@ -125,7 +128,6 @@ public final class Rabbit {
         final Action action = navigation.action();
 
         // interceptors
-
         List<Interceptor> interceptors = new ArrayList<>();
         interceptors.add(new ActionParser());
 
@@ -149,5 +151,21 @@ public final class Rabbit {
             return DispatchResult.notFinished();
         }
         return result;
+    }
+
+    /**
+     * Used to create Navigation instance.
+     */
+    public static class Builder {
+        private Action mAction;
+
+        Builder(Action action) {
+            mAction = action;
+        }
+
+        public Navigation to(String url) {
+            mAction.setOriginUrl(url);
+            return new NavigationImpl(Rabbit.get(), mAction);
+        }
     }
 }

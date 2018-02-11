@@ -39,12 +39,6 @@ public abstract class AbstractNavigation implements Navigation {
     }
 
     @Override
-    public Navigation to(String url) {
-        action.setOriginUrl(url);
-        return this;
-    }
-
-    @Override
     public Navigation addIntentFlags(int flags) {
         action.setIntentFlags(action.getIntentFlags() | flags);
         return this;

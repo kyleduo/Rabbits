@@ -14,8 +14,6 @@ import java.util.Map;
 
 @SuppressWarnings("unused")
 public interface Navigation {
-    Navigation to(String url);
-
     Navigation addIntentFlags(int flags);
 
     Navigation setIntentFlags(int flags);
