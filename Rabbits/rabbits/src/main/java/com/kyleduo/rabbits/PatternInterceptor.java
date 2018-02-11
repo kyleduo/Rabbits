@@ -9,17 +9,17 @@ package com.kyleduo.rabbits;
 final class PatternInterceptor implements Interceptor {
 
     private Interceptor mInterceptor;
-    private String pattern;
+    private Rule mRule;
 
-    // TODO: 09/02/2018 more elegant match rule
-    PatternInterceptor(Interceptor interceptor, String pattern) {
+    PatternInterceptor(Interceptor interceptor, Rule rule) {
         mInterceptor = interceptor;
-        this.pattern = pattern;
+        this.mRule = rule;
     }
 
     @Override
     public DispatchResult intercept(Dispatcher dispatcher) {
-        if (dispatcher.action().getUri().toString().matches(this.pattern)) {
+        final Action action = dispatcher.action();
+        if (mRule != null && mRule.valid(action.getUri())) {
             return mInterceptor.intercept(dispatcher);
         }
         return dispatcher.dispatch(dispatcher.action());

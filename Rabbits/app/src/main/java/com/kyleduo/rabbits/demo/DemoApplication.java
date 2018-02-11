@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.widget.Toast;
 
 import com.kyleduo.rabbits.Action;
@@ -13,6 +14,8 @@ import com.kyleduo.rabbits.Navigator;
 import com.kyleduo.rabbits.RConfig;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.Router;
+import com.kyleduo.rabbits.Rule;
+import com.kyleduo.rabbits.Rules;
 import com.kyleduo.rabbits.TargetInfo;
 import com.kyleduo.rabbits.demo.base.BaseActivity;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
@@ -55,6 +58,28 @@ public class DemoApplication extends Application {
                             return null;
                         }
                         return dispatcher.dispatch(action);
+                    }
+                })
+                // do not open any native pages when there is a query named 'greenChannel'
+                // and it's value equals '1'. This useful when use Rabbit as a bridge between
+                // native and web page.
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public DispatchResult intercept(Dispatcher dispatcher) {
+                        dispatcher.action().discard();
+                        return dispatcher.dispatch(dispatcher.action());
+                    }
+                }, Rules.query("greenChannel").is("1"))
+                // add Interceptor with totally custom rules
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public DispatchResult intercept(Dispatcher dispatcher) {
+                        return null;
+                    }
+                }, new Rule() {
+                    @Override
+                    public boolean valid(Uri uri) {
+                        return false;
                     }
                 })
                 .registerNavigator(TargetInfo.TYPE_FRAGMENT_V4, new FragmentNavigator())

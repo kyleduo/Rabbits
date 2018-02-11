@@ -24,6 +24,11 @@
 
     <TextView
         style="@style/Contents"
+        android:text="demo://rabbits.kyleduo.com/test/Params?greenChannel=1"
+        />
+
+    <TextView
+        style="@style/Contents"
         android:text="demo://rabbits.kyleduo.com/test2/Params"
         />
 

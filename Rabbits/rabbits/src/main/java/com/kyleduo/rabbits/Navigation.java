@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Represent a Navigation into which the caller put extras and configures and perform the navigation.
+ *
  * Created by kyle on 26/01/2018.
  */
 
+@SuppressWarnings("unused")
 public interface Navigation {
     Navigation to(String url);
 
@@ -31,7 +34,7 @@ public interface Navigation {
 
     Navigation addInterceptor(Interceptor interceptor);
 
-    Navigation addInterceptor(Interceptor interceptor, String pattern);
+    Navigation addInterceptor(Interceptor interceptor, Rule rule);
 
     Navigation justObtain();
 
@@ -42,6 +45,8 @@ public interface Navigation {
     Navigation ignoreInterceptors();
 
     Navigation ignoreFallback();
+
+    Navigation setTransitionAnimations(int[] transitionAnimations);
 
     @NonNull
     DispatchResult start();

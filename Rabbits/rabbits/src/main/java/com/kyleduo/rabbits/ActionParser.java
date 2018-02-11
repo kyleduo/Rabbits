@@ -27,7 +27,7 @@ public class ActionParser implements Interceptor {
             String url = action.getOriginUrl();
 //            "" ~ "/"
 //            if (TextUtils.isEmpty(url)) {
-//                return new DispatchResult().error("Url can not be empty");
+//                return DispatchResult.error("Url can not be empty");
 //            }
             if (url.contains("://")) {
                 uri = Uri.parse(url);

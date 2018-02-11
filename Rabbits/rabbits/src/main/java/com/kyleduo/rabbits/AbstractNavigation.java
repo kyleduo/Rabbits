@@ -206,11 +206,11 @@ public abstract class AbstractNavigation implements Navigation {
     }
 
     @Override
-    public Navigation addInterceptor(Interceptor interceptor, String pattern) {
+    public Navigation addInterceptor(Interceptor interceptor, Rule rule) {
         if (mInterceptors == null) {
             mInterceptors = new ArrayList<>();
         }
-        mInterceptors.add(new PatternInterceptor(interceptor, pattern));
+        mInterceptors.add(new PatternInterceptor(interceptor, rule));
         return this;
     }
 
@@ -226,4 +226,9 @@ public abstract class AbstractNavigation implements Navigation {
         return this;
     }
 
+    @Override
+    public Navigation setTransitionAnimations(int[] transitionAnimations) {
+        action.setTransitionAnimations(transitionAnimations);
+        return this;
+    }
 }

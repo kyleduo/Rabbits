@@ -132,7 +132,7 @@ public final class Rabbit {
         }
     }
 
-    private static  Rabbit sInstance;
+    private static Rabbit sInstance;
 
     private Rabbit(RConfig config) {
         this.registerNavigator(TargetInfo.TYPE_ACTIVITY, new ActivityNavigator());
@@ -205,8 +205,8 @@ public final class Rabbit {
         return this;
     }
 
-    public Rabbit addInterceptor(Interceptor interceptor, String pattern) {
-        mInterceptors.add(new PatternInterceptor(interceptor, pattern));
+    public Rabbit addInterceptor(Interceptor interceptor, Rule rule) {
+        mInterceptors.add(new PatternInterceptor(interceptor, rule));
         return this;
     }
 
@@ -219,14 +219,14 @@ public final class Rabbit {
         // TODO: 11/02/2018 skip native route
         interceptors.add(new ActionParser());
 
-        // TODO: 11/02/2018 skip interceptors, skip native routes
+        if (!action.isIgnoreInterceptors()) {
+            // custom interceptors
+            interceptors.addAll(mInterceptors);
 
-        // custom interceptors
-        interceptors.addAll(mInterceptors);
-
-        // action specific interceptors
-        if (navigation.interceptors() != null) {
-            interceptors.addAll(navigation.interceptors());
+            // action specific interceptors
+            if (navigation.interceptors() != null) {
+                interceptors.addAll(navigation.interceptors());
+            }
         }
 
         interceptors.add(new TargetAssembler());
