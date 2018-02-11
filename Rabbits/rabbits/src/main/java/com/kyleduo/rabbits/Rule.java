@@ -3,6 +3,8 @@ package com.kyleduo.rabbits;
 import android.net.Uri;
 
 /**
+ * Rules used when matching url.
+ *
  * Created by kyle on 11/02/2018.
  */
 
