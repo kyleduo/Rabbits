@@ -45,6 +45,7 @@ public class RouteTable {
     }
 
     private static TargetInfo deepMatch(Uri uri) {
+        // TODO: 11/02/2018 full url in rest format
         String path = uri.getPath();
         String[] segs = path.split("/");
 
