@@ -13,7 +13,6 @@ import com.kyleduo.rabbits.Interceptor;
 import com.kyleduo.rabbits.Navigator;
 import com.kyleduo.rabbits.RConfig;
 import com.kyleduo.rabbits.Rabbit;
-import com.kyleduo.rabbits.Router;
 import com.kyleduo.rabbits.Rule;
 import com.kyleduo.rabbits.Rules;
 import com.kyleduo.rabbits.TargetInfo;
@@ -33,13 +32,7 @@ public class DemoApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Router.generate();
-
-        RConfig config = RConfig.get()
-                .schemes("demo", "http", "https")
-                .domains("rabbits.kyleduo.com");
-
-        Rabbit.init(config)
+        Rabbit.init(RConfig.get().schemes("demo", "http", "https").domains("rabbits.kyleduo.com"))
                 .addInterceptor(new Interceptor() {
                     @Override
                     public DispatchResult intercept(final Dispatcher dispatcher) {

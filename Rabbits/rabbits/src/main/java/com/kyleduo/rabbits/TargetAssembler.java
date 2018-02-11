@@ -21,9 +21,6 @@ public class TargetAssembler implements Interceptor {
             return dispatcher.dispatch(action);
         }
 
-        // TODO: 30/01/2018 Add Rabbits custom control params
-
-
         // assemble Intent or Fragment instance.
         Object target = null;
         if (targetType == TargetInfo.TYPE_ACTIVITY) {
