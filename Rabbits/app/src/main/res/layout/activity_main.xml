@@ -24,6 +24,16 @@
 
     <TextView
         style="@style/Contents"
+        android:text="demo://rabbits.kyleduo.com/test2/Params"
+        />
+
+    <TextView
+        style="@style/Contents"
+        android:text="demo://rabbits.kyleduo.com/test/test/test"
+        />
+
+    <TextView
+        style="@style/Contents"
         android:text="demo://rabbits.kyleduo.com/test?testing=Params"
         />
 

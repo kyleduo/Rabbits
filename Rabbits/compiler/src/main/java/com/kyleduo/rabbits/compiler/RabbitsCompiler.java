@@ -98,7 +98,7 @@ public class RabbitsCompiler extends AbstractProcessor {
                 String url = page.value();
 
                 // 只接受这种格式的url
-                // (scheme://domain)/path
+                // (scheme://domain)/(path/path)
 
                 while (url.length() > 1 && url.endsWith("/")) {
                     url = url.substring(0, url.length() - 1);
@@ -116,7 +116,14 @@ public class RabbitsCompiler extends AbstractProcessor {
                     type = TYPE_FRAGMENT_V4;
                 }
 
-                pages.add(new PageInfo(url, target, type, page.flags(), page.alias()));
+                pages.add(new PageInfo(url, target, type, page.flags(), page.alias(), true));
+
+                String[] variety = page.variety();
+                if (variety.length > 0) {
+                    for (String v : variety) {
+                        pages.add(new PageInfo(v, target, type, page.flags(), page.alias(), false));
+                    }
+                }
             }
         }
 
@@ -182,10 +189,15 @@ public class RabbitsCompiler extends AbstractProcessor {
             e.printStackTrace();
         }
 
+        String restPattern = "\\{([^{}:]+):?([^{}]*)}";
+
         List<FieldSpec> pFields = new ArrayList<>();
         List<MethodSpec> pMethods = new ArrayList<>();
         for (PageInfo page : pages) {
             debug(page.toString());
+            if (!page.main) {
+                continue;
+            }
             String alias = page.alias;
             String url = page.url;
             final boolean useUrl = isEmpty(alias);
@@ -203,7 +215,7 @@ public class RabbitsCompiler extends AbstractProcessor {
             }
 
             if (url.contains("{") && url.contains("}")) {
-                Pattern pattern = Pattern.compile("\\{([^{}:]+):?([^{}]*)\\}");
+                Pattern pattern = Pattern.compile(restPattern);
                 Matcher matcher = pattern.matcher(url);
                 List<ParameterSpec> params = new ArrayList<>();
                 List<String> holder = new ArrayList<>();
@@ -247,7 +259,7 @@ public class RabbitsCompiler extends AbstractProcessor {
                             break;
                     }
                     if (useUrl) {
-                        name = name.replaceFirst("\\{([^{}:]+):?([^{}]*)\\}", paramName.toUpperCase());
+                        name = name.replaceFirst(restPattern, paramName.toUpperCase());
                     }
                     params.add(ParameterSpec.builder(t, paramName).build());
                 }
@@ -264,7 +276,7 @@ public class RabbitsCompiler extends AbstractProcessor {
                 }
                 String format = url;
                 for (int i = 0; i < params.size(); i++) {
-                    format = format.replaceFirst("\\{([^{}:]+):?([^{}]*)\\}", holder.get(i));
+                    format = format.replaceFirst(restPattern, holder.get(i));
                 }
                 String statement = "return String.format(\"$L\", " + objBuilder.toString() + ")";
                 List<String> obj = new ArrayList<>();

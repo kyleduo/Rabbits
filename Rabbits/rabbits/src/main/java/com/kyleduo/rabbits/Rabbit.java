@@ -216,7 +216,10 @@ public final class Rabbit {
         // interceptors
 
         List<Interceptor> interceptors = new ArrayList<>();
+        // TODO: 11/02/2018 skip native route
         interceptors.add(new ActionParser());
+
+        // TODO: 11/02/2018 skip interceptors, skip native routes
 
         // custom interceptors
         interceptors.addAll(mInterceptors);

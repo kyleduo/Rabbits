@@ -3,32 +3,25 @@ package com.kyleduo.rabbits.compiler;
 import com.squareup.javapoet.ClassName;
 
 /**
+ * Information used in compiler.
+ *
  * Created by kyle on 30/01/2018.
  */
 
-public class PageInfo {
-    public String url;
-    public ClassName target;
-    public int type;
-    public int flag;
-    public String alias;
+class PageInfo {
+    String url;
+    ClassName target;
+    int type;
+    int flag;
+    String alias;
+    boolean main;
 
-    public PageInfo(String url, ClassName target, int type, int flag, String alias) {
+    PageInfo(String url, ClassName target, int type, int flag, String alias, boolean main) {
         this.url = url;
         this.target = target;
         this.type = type;
         this.flag = flag;
         this.alias = alias;
-    }
-
-    @Override
-    public String toString() {
-        return "PageInfo{" +
-                "url='" + url + '\'' +
-                ", target=" + target +
-                ", type=" + type +
-                ", flag=" + flag +
-                ", alias=" + alias +
-                '}';
+        this.main = main;
     }
 }
