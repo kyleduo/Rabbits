@@ -216,7 +216,7 @@ public class RabbitsCompiler extends AbstractProcessor {
                     String paramType = "";
                     if (count == 3) {
                         paramType = matcher.group(2);
-                        paramType.toLowerCase();
+                        paramType = paramType.toLowerCase();
                     }
                     Type t;
                     switch (paramType) {
