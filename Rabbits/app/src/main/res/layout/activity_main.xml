@@ -29,6 +29,11 @@
 
     <TextView
         style="@style/Contents"
+        android:text="https://blog.kyleduo.com/test/LALALA"
+        />
+
+    <TextView
+        style="@style/Contents"
         android:text="demo://rabbits.kyleduo.com/test2/Params"
         />
 

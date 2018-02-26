@@ -38,7 +38,7 @@ public class DemoApplication extends Application {
                     public DispatchResult intercept(final Dispatcher dispatcher) {
                         final Action action = dispatcher.action();
                         if ((action.getTargetFlags() & 1) > 0) {
-                            action.getExtras().putString("param", "拦截器中修改");
+//                            action.getExtras().putString("param", "拦截器中修改");
                             new AlertDialog.Builder((Context) action.getFrom())
                                     .setTitle("拦截")
                                     .setPositiveButton("继续", new DialogInterface.OnClickListener() {

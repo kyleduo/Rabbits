@@ -203,6 +203,9 @@ public class RabbitsCompiler extends AbstractProcessor {
             final boolean useUrl = isEmpty(alias);
 
             String name = useUrl ? url : alias;
+            if (name.contains("://")) {
+                name = name.replaceAll("(://|\\.)", "_");
+            }
             while (name.startsWith("/")) {
                 name = name.substring(1);
             }
@@ -210,6 +213,9 @@ public class RabbitsCompiler extends AbstractProcessor {
                 name = name.substring(0, name.length() - 1);
             }
             name = name.replaceAll("/", "_").toUpperCase();
+            if (name.contains(" ")) {
+                name = name.replaceAll(" ", "_");
+            }
             if (useUrl) {
                 name = "P_" + name;
             }

@@ -38,7 +38,6 @@ public class MainActivity extends BaseActivity {
 //                            .start();
                     Rabbit.from(MainActivity.this)
                             .to(url)
-                            .putExtra("param", "testing")
                             .start();
                 }
             });

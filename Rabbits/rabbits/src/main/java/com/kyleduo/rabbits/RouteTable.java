@@ -2,6 +2,7 @@ package com.kyleduo.rabbits;
 
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -40,24 +41,41 @@ public class RouteTable {
             Uri pure = uri.buildUpon().query(null).build();
             to = sMappings.get(pure.toString());
         }
-        if (to == null && valid(uri)) {
+        if (to == null) {
             return deepMatch(uri);
         }
         return to;
     }
 
     private static TargetInfo deepMatch(Uri uri) {
-        // TODO: 11/02/2018 full url in rest format
+        boolean valid = valid(uri);
         String path = uri.getPath();
         String[] segs = path.split("/");
 
         outer:
         for (Map.Entry<String, TargetInfo> entry : sMappings.entrySet()) {
             String pattern = entry.getKey();
-            if (!pattern.contains("{")) {
+            String patternPath;
+            if (pattern.contains("://")) {
+                Uri patternUri = Uri.parse(pattern);
+                if (valid || (TextUtils.equals(patternUri.getScheme(), uri.getScheme()) && TextUtils.equals(patternUri.getAuthority(), uri.getAuthority()))) {
+                    // If one page has been annotated with a full url, it can only be opened by
+                    // url with same scheme and domain.
+                    patternPath = Uri.parse(pattern).getPath();
+                } else {
+                    break;
+                }
+            } else {
+                patternPath = pattern;
+            }
+            if (path.equals(patternPath)) {
+                // scheme和domain不同，但是pattern相同，认为匹配
+                return entry.getValue();
+            }
+            if (!patternPath.contains("{")) {
                 continue;
             }
-            String[] pSegs = pattern.split("/");
+            String[] pSegs = patternPath.split("/");
             if (segs.length != pSegs.length) {
                 continue;
             }
