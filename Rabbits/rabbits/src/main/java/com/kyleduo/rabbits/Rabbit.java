@@ -27,6 +27,7 @@ public final class Rabbit {
     private static final String PACKAGE = "com.kyleduo.rabbits";
     private static final String ROUTER_CLASS_NAME = PACKAGE + ".Router";
     private static final String GENERATE_METHOD_NAME = "generate";
+    public static final String KEY_RABBITS_PATTERN = "rabbits_pattern";
 
     private List<String> mSchemes;
     private List<String> mDomains;

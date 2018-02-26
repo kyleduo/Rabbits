@@ -47,8 +47,12 @@ public class ActionParser implements Interceptor {
         action.setTargetClass(target == null ? null : target.target);
 
         if (target != null) {
-            // params from REST url
             Bundle bundle = new Bundle();
+
+            // Rabbits param
+            bundle.putString(Rabbit.KEY_RABBITS_PATTERN, target.pattern);
+
+            // params from REST url
             Map<String, Object> urlParams = target.params;
             if (urlParams != null) {
                 for (Map.Entry<String, Object> entry : urlParams.entrySet()) {
@@ -68,6 +72,7 @@ public class ActionParser implements Interceptor {
                 }
             }
 
+            // query params
             Set<String> keys;
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
                 keys = uri.getQueryParameterNames();
