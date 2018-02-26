@@ -3,8 +3,6 @@ package com.kyleduo.rabbits;
 import android.net.Uri;
 import android.os.Bundle;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -121,23 +119,12 @@ public class ActionParser implements Interceptor {
             }
 
             String name = query.substring(start, separator);
-            names.add(decode(name));
+            names.add(Utils.decode(name));
 
             // Move start to end of name.
             start = end + 1;
         } while (start < query.length());
 
         return Collections.unmodifiableSet(names);
-    }
-
-    private static String decode(String origin) {
-        String out;
-        try {
-            out = URLDecoder.decode(origin, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-            out = origin;
-        }
-        return out;
     }
 }
