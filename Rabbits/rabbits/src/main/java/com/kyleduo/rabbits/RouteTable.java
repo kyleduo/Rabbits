@@ -36,7 +36,9 @@ public class RouteTable {
         TargetInfo to = sMappings.get(uri.getPath());
         if (to == null) {
             // 处理完全匹配的模式
-            to = sMappings.get(uri.toString());
+            // 不能用完整uri来匹配，如果有参数，要先移除参数.
+            Uri pure = uri.buildUpon().query(null).build();
+            to = sMappings.get(pure.toString());
         }
         if (to == null && valid(uri)) {
             return deepMatch(uri);
