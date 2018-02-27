@@ -36,9 +36,8 @@ import javax.tools.Diagnostic;
 @AutoService(Processor.class)
 public class RabbitsCompiler extends AbstractProcessor {
     private static final String PACKAGE = "com.kyleduo.rabbits";
-    private static final String NAVIGATOR_PACKAGE = "com.kyleduo.rabbits.navigator";
-    private static final String ROUTE_MAP_CLASS = "RouteMap";
-    private static final String ROUTE_MAP_ENTRY_CLASS = "RouteMapEntry";
+    private static final String ROUTE_TABLE_CLASS = "RouteTable";
+    private static final String TARGET_INFO_CLASS = "TargetInfo";
     private static final String ROUTER_P_CLASS = "P";
     private static final String REST_PATTERN = "\\{([^{}:]+):?([^{}]*)}";
 
@@ -46,7 +45,6 @@ public class RabbitsCompiler extends AbstractProcessor {
     private static final int TYPE_FRAGMENT = 2;
     private static final int TYPE_FRAGMENT_V4 = 3;
 
-    private Elements elements;
     private Types types;
     private TypeMirror activityType;
     private TypeMirror fragmentType;
@@ -59,7 +57,7 @@ public class RabbitsCompiler extends AbstractProcessor {
         super.init(processingEnv);
         mFiler = processingEnv.getFiler();
 
-        elements = processingEnv.getElementUtils();
+        Elements elements = processingEnv.getElementUtils();
         types = processingEnv.getTypeUtils();
 
         activityType = elements.getTypeElement("android.app.Activity").asType();
@@ -85,8 +83,8 @@ public class RabbitsCompiler extends AbstractProcessor {
             return false;
         }
 
-        ClassName routeTable = ClassName.get(PACKAGE, "RouteTable");
-        ClassName targetInfo = ClassName.get(PACKAGE, "TargetInfo");
+        ClassName routeTable = ClassName.get(PACKAGE, ROUTE_TABLE_CLASS);
+        ClassName targetInfo = ClassName.get(PACKAGE, TARGET_INFO_CLASS);
 
         MethodSpec.Builder generateBuilder = MethodSpec.methodBuilder("generate")
                 .addModifiers(Modifier.STATIC, Modifier.PUBLIC);
@@ -325,56 +323,6 @@ public class RabbitsCompiler extends AbstractProcessor {
         }
 
         return true;
-    }
-
-    private String getRouterClassName(String moduleName) {
-        String routerClassName = ROUTE_MAP_CLASS;
-        if (moduleName.length() > 0) {
-            moduleName = moduleName.substring(0, 1).toUpperCase() + moduleName.substring(1).toLowerCase();
-            routerClassName += moduleName;
-        }
-        return routerClassName;
-    }
-
-//    private Module parseRabbits(RoundEnvironment roundEnv) {
-//        Module module = null;
-//        for (Element e : roundEnv.getElementsAnnotatedWith(Module.class)) {
-//            module = e.getAnnotation(Module.class);
-//            if (module != null) {
-//                break;
-//            }
-//        }
-//        return module;
-//    }
-
-    private void generateRouters(String[] subModules) {
-        ArrayList<String> routerNames = new ArrayList<>();
-        for (String module : subModules) {
-            routerNames.add(getRouterClassName(module));
-        }
-
-        StringBuilder init = new StringBuilder();
-        for (String name : routerNames) {
-            init.append('"').append(name).append('"').append(",");
-        }
-        init.deleteCharAt(init.length() - 1);
-
-        FieldSpec routersField = FieldSpec.builder(String[].class, "routers", Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                .initializer("new String[]{$L}", init.toString())
-                .build();
-
-        TypeSpec routersTypeSpec = TypeSpec.classBuilder(ROUTE_MAP_ENTRY_CLASS)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addField(routersField)
-                .build();
-        try {
-            JavaFile.builder(PACKAGE, routersTypeSpec)
-                    .build()
-                    .writeTo(mFiler);
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-
     }
 
     private boolean isEmpty(String text) {
