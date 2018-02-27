@@ -24,9 +24,13 @@ public class RouteTable {
     private static final String PARAM_KEY_STRING = "s";
 
     private static Map<String, TargetInfo> sMappings = new LinkedHashMap<>();
+    private static boolean sHasCompletePattern = false;
 
     public static void map(String path, TargetInfo targetInfo) {
         sMappings.put(path, targetInfo);
+        if (path.contains("://")) {
+            sHasCompletePattern = true;
+        }
     }
 
     static TargetInfo match(Uri uri) {
@@ -49,6 +53,10 @@ public class RouteTable {
 
     private static TargetInfo deepMatch(Uri uri) {
         boolean valid = valid(uri);
+        if (!sHasCompletePattern && !valid) {
+            // Only execute deep match when there complete pattern and the uri is valid.
+            return null;
+        }
         String path = uri.getPath();
         String[] segs = path.split("/");
 
@@ -59,7 +67,7 @@ public class RouteTable {
             if (pattern.contains("://")) {
                 Uri patternUri = Uri.parse(pattern);
                 if (valid || (TextUtils.equals(patternUri.getScheme(), uri.getScheme()) && TextUtils.equals(patternUri.getAuthority(), uri.getAuthority()))) {
-                    // If one page has been annotated with a full url, it can only be opened by
+                    // If one page has been annotated with a complete url, it can only be opened by
                     // url with same scheme and domain.
                     patternPath = Uri.parse(pattern).getPath();
                 } else {
