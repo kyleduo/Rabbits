@@ -36,30 +36,30 @@ public class FragmentContainerActivity extends BaseActivity {
                     loadRootFragment(R.id.common_fragment_container, (SupportFragment) target);
                 }
             }
-
-
-//            String uri = getIntent().getStringExtra(Rabbit.KEY_ORIGIN_URI);
-//            BaseFragment fragment = (BaseFragment) Rabbit.from(this)
-//                    .obtain(uri)
-//                    .mergeExtras(getIntent().getExtras())
-//                    .obtain();
-//            loadRootFragment(R.id.common_fragment_container, fragment);
         }
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-//        String uri = intent.getStringExtra(Rabbit.KEY_ORIGIN_URI);
-//        BaseFragment fragment = (BaseFragment) Rabbit.from(this)
-//                .obtain(uri)
-//                .mergeExtras(getIntent().getExtras())
-//                .obtain();
+        String pattern = intent.getStringExtra(Rabbit.KEY_RABBITS_PATTERN);
 
-//        if (getTopFragment() == null) {
-//            loadRootFragment(R.id.common_fragment_container, fragment);
-//        } else {
-//            start(fragment);
-//        }
+        BaseFragment fragment = (BaseFragment) Rabbit.from(this)
+                .to(intent.getStringExtra(KEY_FRAG_URL))
+                .putExtras(intent.getExtras())
+                .obtain().getTarget();
+
+        if (fragment == null) {
+            return;
+        }
+
+        SupportFragment topFragment = getTopFragment();
+        if (topFragment != null && topFragment.getArguments().getString(Rabbit.KEY_RABBITS_PATTERN, "").equals(pattern)) {
+            topFragment.replaceFragment(fragment, false);
+        } else if (topFragment == null) {
+            loadRootFragment(R.id.common_fragment_container, fragment);
+        } else {
+            start(fragment);
+        }
     }
 }

@@ -18,7 +18,7 @@ import java.util.Random;
 /**
  * Created by kyle on 2016/12/12.
  */
-@Page("/test/{param}")
+@Page("/test_fragment")
 public class TestFragment extends BaseFragment {
     @Nullable
     @Override

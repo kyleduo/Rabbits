@@ -32,6 +32,16 @@ public class DemoApplication extends Application {
         super.onCreate();
 
         Rabbit.init(RConfig.get().schemes("demo", "http", "https").domains("rabbits.kyleduo.com", "allowed.kyleduo.com"))
+                // do not open any native pages when there is a query named 'greenChannel'
+                // and it's value equals '1'. This useful when use Rabbit as a bridge between
+                // native and web page.
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public DispatchResult intercept(Dispatcher dispatcher) {
+                        dispatcher.action().discard();
+                        return dispatcher.dispatch(dispatcher.action());
+                    }
+                }, Rules.query("greenChannel").is("1"))
                 .addInterceptor(new Interceptor() {
                     @Override
                     public DispatchResult intercept(final Dispatcher dispatcher) {
@@ -53,16 +63,6 @@ public class DemoApplication extends Application {
                         return dispatcher.dispatch(action);
                     }
                 })
-                // do not open any native pages when there is a query named 'greenChannel'
-                // and it's value equals '1'. This useful when use Rabbit as a bridge between
-                // native and web page.
-                .addInterceptor(new Interceptor() {
-                    @Override
-                    public DispatchResult intercept(Dispatcher dispatcher) {
-                        dispatcher.action().discard();
-                        return dispatcher.dispatch(dispatcher.action());
-                    }
-                }, Rules.query("greenChannel").is("1"))
                 // add Interceptor with totally custom rules
                 .addInterceptor(new Interceptor() {
                     @Override
