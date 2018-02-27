@@ -33,6 +33,7 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 
+@SuppressWarnings("unused")
 @AutoService(Processor.class)
 public class RabbitsCompiler extends AbstractProcessor {
     private static final String PACKAGE = "com.kyleduo.rabbits";
@@ -203,7 +204,6 @@ public class RabbitsCompiler extends AbstractProcessor {
         List<FieldSpec> pFields = new ArrayList<>();
         List<MethodSpec> pMethods = new ArrayList<>();
         for (PageInfo page : pages) {
-            debug(page.toString());
             if (!page.main) {
                 continue;
             }
