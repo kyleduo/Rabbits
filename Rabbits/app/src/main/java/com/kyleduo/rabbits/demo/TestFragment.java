@@ -8,13 +8,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import com.kyleduo.rabbits.P;
+import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
+
+import java.util.Random;
 
 /**
  * Created by kyle on 2016/12/12.
  */
-@Page("/test_fragment")
+@Page("/test/{param}")
 public class TestFragment extends BaseFragment {
     @Nullable
     @Override
@@ -28,9 +32,9 @@ public class TestFragment extends BaseFragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//				Rabbit.from(TestFragment.this)
-//						.to(P.SECOND(new Random().nextInt(10)))
-//						.start();
+				Rabbit.from(TestFragment.this)
+						.to(P.P_SECOND_ID(new Random().nextInt(10)))
+						.start();
             }
         });
         ll.addView(button);

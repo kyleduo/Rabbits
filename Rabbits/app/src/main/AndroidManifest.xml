@@ -19,7 +19,7 @@
 		</activity>
 		<activity android:name=".TestActivity">
 		</activity>
-		<activity android:name=".CommonActivity">
+		<activity android:name=".FragmentContainerActivity">
 		</activity>
 	</application>
 

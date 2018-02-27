@@ -69,7 +69,7 @@ public final class Rabbit {
             throw new IllegalStateException("Rabbit has already initialed.");
         }
         if (!config.valid()) {
-            throw new IllegalArgumentException("Config object not valid");
+            throw new IllegalArgumentException("Config object not verify");
         }
         if (sInstance == null) {
             sInstance = new Rabbit(config);
@@ -88,11 +88,9 @@ public final class Rabbit {
             throw new IllegalStateException("Rabbit has not been initialized properly");
         }
         if (!(from instanceof Activity) && !(from instanceof Fragment || from instanceof android.app.Fragment) && !(from instanceof Context)) {
-            throw new IllegalArgumentException("From object must be whether an Activity or a Fragment instance.");
+            throw new IllegalArgumentException("From object must be whether an Context or a Fragment instance.");
         }
-        Action action = new Action();
-        action.setFrom(from);
-        return new Builder(action);
+        return new Builder(from);
     }
 
     /**
@@ -136,7 +134,7 @@ public final class Rabbit {
             // custom interceptors
             interceptors.addAll(mInterceptors);
 
-            // action specific interceptors
+            // mAction specific interceptors
             if (navigation.interceptors() != null) {
                 interceptors.addAll(navigation.interceptors());
             }
@@ -160,8 +158,9 @@ public final class Rabbit {
     public static class Builder {
         private Action mAction;
 
-        Builder(Action action) {
-            mAction = action;
+        Builder(Object from) {
+            mAction = new Action();
+            mAction.setFrom(from);
         }
 
         public Navigation to(String url) {

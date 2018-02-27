@@ -32,7 +32,7 @@ public class QueryRule extends RuleImpl {
     }
 
     @Override
-    public boolean valid(Uri uri) {
+    public boolean verify(Uri uri) {
         String q = uri.getQueryParameter(mKey);
         return super.valid(q);
     }

@@ -1,7 +1,7 @@
 package com.kyleduo.rabbits;
 
 /**
- * Abstract interceptor used in action process chain.
+ * Abstract interceptor used in mAction process chain.
  * Every process in the chain is an interceptor.
  *
  * Created by kyle on 19/12/2017.

@@ -3,6 +3,8 @@ package com.kyleduo.rabbits;
 import android.util.SparseArray;
 
 /**
+ * Final phase of navigation.
+ *
  * Created by kyle on 26/01/2018.
  */
 
@@ -17,9 +19,15 @@ class NavigatorInterceptor implements Interceptor {
     @Override
     public DispatchResult intercept(Dispatcher dispatcher) {
         if (mNavigators == null) {
-            throw new NullPointerException("No valid navigator");
+            throw new NullPointerException("No verify navigator");
         }
         Action action = dispatcher.action();
+
+        // Just return the target when "justObtain" was specific.
+        if (action.isJustObtain() && action.getTarget() != null) {
+            return DispatchResult.success(action.getTarget());
+        }
+
         boolean notFound = false;
         if (action.getTarget() == null || action.getTargetType() == TargetInfo.TYPE_NONE) {
             notFound = true;
@@ -27,6 +35,7 @@ class NavigatorInterceptor implements Interceptor {
                 return DispatchResult.notFound(action.getOriginUrl());
             }
         }
+
         // Normal navigation or fallback navigation all handled here.
         Navigator navigator = mNavigators.get(action.getTargetType());
         if (navigator == null) {

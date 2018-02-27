@@ -19,7 +19,7 @@ final class PatternInterceptor implements Interceptor {
     @Override
     public DispatchResult intercept(Dispatcher dispatcher) {
         final Action action = dispatcher.action();
-        if (mRule != null && mRule.valid(action.getUri())) {
+        if (mRule != null && mRule.verify(action.getUri())) {
             return mInterceptor.intercept(dispatcher);
         }
         return dispatcher.dispatch(dispatcher.action());

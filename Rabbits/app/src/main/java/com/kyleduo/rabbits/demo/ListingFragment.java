@@ -6,6 +6,6 @@ import com.kyleduo.rabbits.demo.base.BaseFragment;
 /**
  * Created by kyle on 2016/12/12.
  */
-@Page("/listing")
+@Page("/test/listing")
 public class ListingFragment extends BaseFragment {
 }

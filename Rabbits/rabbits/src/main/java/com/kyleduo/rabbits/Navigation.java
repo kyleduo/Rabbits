@@ -46,6 +46,8 @@ public interface Navigation {
 
     Navigation setTransitionAnimations(int[] transitionAnimations);
 
+    Navigation action(Action action);
+
     @NonNull
     DispatchResult start();
 

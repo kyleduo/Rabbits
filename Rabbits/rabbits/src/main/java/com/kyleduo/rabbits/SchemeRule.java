@@ -14,7 +14,7 @@ public class SchemeRule extends RuleImpl {
     }
 
     @Override
-    public boolean valid(Uri uri) {
+    public boolean verify(Uri uri) {
         return valid(uri.getScheme());
     }
 }

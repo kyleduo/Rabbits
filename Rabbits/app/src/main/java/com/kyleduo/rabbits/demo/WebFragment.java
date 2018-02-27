@@ -14,12 +14,14 @@ import android.webkit.WebViewClient;
 
 import com.kyleduo.rabbits.DispatchResult;
 import com.kyleduo.rabbits.Rabbit;
+import com.kyleduo.rabbits.Rules;
+import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
 
 /**
  * Created by kyle on 2016/12/12.
  */
-//@Page(name = "WEB", type = PageType.FRAGMENT)
+@Page("/web")
 public class WebFragment extends BaseFragment {
 
     private WebView mWebView;
@@ -61,7 +63,7 @@ public class WebFragment extends BaseFragment {
             if (ret) {
                 return true;
             }
-            if (url.startsWith("tel:")) {
+            if (Rules.scheme().is("tel").verify(Uri.parse(url))) {
                 Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(url));
                 startActivity(intent);
                 view.reload();

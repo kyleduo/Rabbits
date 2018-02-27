@@ -104,6 +104,23 @@ public final class Action {
         setTargetFlags(0);
     }
 
+    /**
+     * Used internally when navigate with an {@link Action} instance. This probably happens
+     * in {@link Interceptor} or custom {@link Navigator} where redirecting from current mAction is needed.
+     *
+     * @param action origin mAction
+     */
+    void setAction(Action action) {
+        this.setExtras(action.getExtras());
+        this.setIntentFlags(action.getIntentFlags());
+        this.setTransitionAnimations(action.getTransitionAnimations());
+        this.setIgnoreInterceptors(action.isIgnoreInterceptors());
+        this.setIgnoreFallback(action.isIgnoreFallback());
+        this.setJustObtain(action.isJustObtain());
+        this.setRequestCode(action.getRequestCode());
+        this.setRedirect(action.isRedirect());
+    }
+
     public Object getFrom() {
         return mFrom;
     }

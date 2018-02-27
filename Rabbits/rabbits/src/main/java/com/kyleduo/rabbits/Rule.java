@@ -13,5 +13,5 @@ public interface Rule {
         IS, STARTS_WITH, ENDS_WITH, IN, CONTAINS, EXISTS
     }
 
-    boolean valid(Uri uri);
+    boolean verify(Uri uri);
 }

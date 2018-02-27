@@ -16,21 +16,23 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Abstract class implements {@link Navigation} interface. Used to assemble a navigation.
+ *
  * Created by kyle on 26/01/2018.
  */
 
 public abstract class AbstractNavigation implements Navigation {
-    protected Action action;
+    private Action mAction;
     private List<Interceptor> mInterceptors;
 
     AbstractNavigation(Action action) {
-        this.action = action;
+        this.mAction = action;
     }
 
     @NonNull
     @Override
     public Action action() {
-        return action;
+        return mAction;
     }
 
     @Override
@@ -40,13 +42,13 @@ public abstract class AbstractNavigation implements Navigation {
 
     @Override
     public Navigation addIntentFlags(int flags) {
-        action.setIntentFlags(action.getIntentFlags() | flags);
+        mAction.setIntentFlags(mAction.getIntentFlags() | flags);
         return this;
     }
 
     @Override
     public Navigation setIntentFlags(int flags) {
-        action.setIntentFlags(flags);
+        mAction.setIntentFlags(flags);
         return this;
     }
 
@@ -70,20 +72,20 @@ public abstract class AbstractNavigation implements Navigation {
 
     @Override
     public Navigation redirect() {
-        action.setRedirect(true);
+        mAction.setRedirect(true);
         return this;
     }
 
     @Override
     public Navigation putExtra(@NonNull String key, Object value) {
-        Bundle extras = action.getExtras();
+        Bundle extras = mAction.getExtras();
         if (extras == null) {
             extras = new Bundle();
+            mAction.setExtras(extras);
         }
         if (value == null) {
             extras.remove(key);
         }
-        action.setExtras(extras);
         if (value instanceof Integer) {
             extras.putInt(key, (Integer) value);
         } else if (value instanceof String) {
@@ -159,9 +161,14 @@ public abstract class AbstractNavigation implements Navigation {
     @Override
     public Navigation putExtras(Bundle bundle) {
         if (bundle == null) {
-            action.setExtras(null);
+            mAction.setExtras(null);
         } else {
-            action.getExtras().putAll(bundle);
+            Bundle extras = mAction.getExtras();
+            if (extras == null) {
+                extras = new Bundle();
+                mAction.setExtras(extras);
+            }
+            extras.putAll(bundle);
         }
         return this;
     }
@@ -169,7 +176,7 @@ public abstract class AbstractNavigation implements Navigation {
     @Override
     public Navigation putExtras(Map<String, Object> extras) {
         if (extras == null) {
-            action.setExtras(null);
+            mAction.setExtras(null);
         } else {
             for (Map.Entry<String, Object> e : extras.entrySet()) {
                 putExtra(e.getKey(), e.getValue());
@@ -180,13 +187,13 @@ public abstract class AbstractNavigation implements Navigation {
 
     @Override
     public Navigation ignoreInterceptors() {
-        action.setIgnoreInterceptors(true);
+        mAction.setIgnoreInterceptors(true);
         return this;
     }
 
     @Override
     public Navigation ignoreFallback() {
-        action.setIgnoreFallback(true);
+        mAction.setIgnoreFallback(true);
         return this;
     }
 
@@ -210,19 +217,25 @@ public abstract class AbstractNavigation implements Navigation {
 
     @Override
     public Navigation justObtain() {
-        action.setJustObtain(true);
+        mAction.setJustObtain(true);
         return this;
     }
 
     @Override
     public Navigation forResult(int requestCode) {
-        action.setRequestCode(requestCode);
+        mAction.setRequestCode(requestCode);
         return this;
     }
 
     @Override
     public Navigation setTransitionAnimations(int[] transitionAnimations) {
-        action.setTransitionAnimations(transitionAnimations);
+        mAction.setTransitionAnimations(transitionAnimations);
+        return this;
+    }
+
+    @Override
+    public Navigation action(Action action) {
+        this.mAction.setAction(action);
         return this;
     }
 }

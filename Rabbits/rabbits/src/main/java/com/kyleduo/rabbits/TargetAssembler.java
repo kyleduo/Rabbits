@@ -3,6 +3,7 @@ package com.kyleduo.rabbits;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.support.v4.app.Fragment;
 
 /**
  * Assemble all the start information to target, which is an Intent or a Fragment object.
@@ -24,7 +25,16 @@ public class TargetAssembler implements Interceptor {
         // assemble Intent or Fragment instance.
         Object target = null;
         if (targetType == TargetInfo.TYPE_ACTIVITY) {
-            Intent intent = new Intent((Context) action.getFrom(), action.getTargetClass());
+            Intent intent;
+            if (action.getFrom() instanceof Context) {
+                intent = new Intent((Context) action.getFrom(), action.getTargetClass());
+            } else if (action.getFrom() instanceof Fragment) {
+                intent = new Intent(((Fragment) action.getFrom()).getActivity(), action.getTargetClass());
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && action.getFrom() instanceof android.app.Fragment) {
+                intent = new Intent(((android.app.Fragment) action.getFrom()).getActivity(), action.getTargetClass());
+            } else {
+                return DispatchResult.error("From object must be whether an Context or a Fragment instance.");
+            }
             intent.setFlags(action.getIntentFlags());
             intent.putExtras(action.getExtras());
             target = intent;
@@ -42,7 +52,7 @@ public class TargetAssembler implements Interceptor {
             }
         } else if (targetType == TargetInfo.TYPE_FRAGMENT_V4) {
             try {
-                android.support.v4.app.Fragment fragment = (android.support.v4.app.Fragment) action.getTargetClass().newInstance();
+                Fragment fragment = (Fragment) action.getTargetClass().newInstance();
                 fragment.setArguments(action.getExtras());
                 target = fragment;
             } catch (InstantiationException e) {

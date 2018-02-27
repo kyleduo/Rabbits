@@ -25,17 +25,17 @@ public class RuleSet extends RuleImpl {
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public boolean valid(Uri uri) {
+    public boolean verify(Uri uri) {
         if (mRelation == Relation.AND) {
             for (Rule rule : mRules) {
-                if (!rule.valid(uri)) {
+                if (!rule.verify(uri)) {
                     return false;
                 }
             }
             return true;
         } else if (mRelation == Relation.OR) {
             for (Rule rule : mRules) {
-                if (rule.valid(uri)) {
+                if (rule.verify(uri)) {
                     return true;
                 }
             }

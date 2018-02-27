@@ -10,7 +10,7 @@ import java.util.Map;
 
 /**
  * Storing the routes, this class is responsible for find the proper page that matches the uri.
- *
+ * <p>
  * Created by kyle on 24/01/2018.
  */
 
@@ -38,7 +38,10 @@ public class RouteTable {
             return null;
         }
         // 并不能先判断scheme 和 domain，因为可能有固定匹配的模式，特殊scheme和domain。
-        TargetInfo to = sMappings.get(uri.getPath());
+        TargetInfo to = null;
+        if (valid(uri)) {
+            to = sMappings.get(uri.getPath());
+        }
         if (to == null) {
             // 处理完全匹配的模式
             // 不能用完整uri来匹配，如果有参数，要先移除参数.
@@ -54,7 +57,7 @@ public class RouteTable {
     private static TargetInfo deepMatch(Uri uri) {
         boolean valid = valid(uri);
         if (!sHasCompletePattern && !valid) {
-            // Only execute deep match when there complete pattern and the uri is valid.
+            // Only execute deep match when there complete pattern and the uri is verify.
             return null;
         }
         String path = uri.getPath();
@@ -66,15 +69,17 @@ public class RouteTable {
             String patternPath;
             if (pattern.contains("://")) {
                 Uri patternUri = Uri.parse(pattern);
-                if (valid || (TextUtils.equals(patternUri.getScheme(), uri.getScheme()) && TextUtils.equals(patternUri.getAuthority(), uri.getAuthority()))) {
+                if (TextUtils.equals(patternUri.getScheme(), uri.getScheme()) && TextUtils.equals(patternUri.getAuthority(), uri.getAuthority())) {
                     // If one page has been annotated with a complete url, it can only be opened by
                     // url with same scheme and domain.
                     patternPath = Uri.parse(pattern).getPath();
                 } else {
-                    break;
+                    continue;
                 }
-            } else {
+            } else if (valid) {
                 patternPath = pattern;
+            } else {
+                break;
             }
             if (path.equals(patternPath)) {
                 // scheme和domain不同，但是pattern相同，认为匹配

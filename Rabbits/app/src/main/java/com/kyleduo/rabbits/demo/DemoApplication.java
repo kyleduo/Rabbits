@@ -11,16 +11,15 @@ import com.kyleduo.rabbits.Action;
 import com.kyleduo.rabbits.DispatchResult;
 import com.kyleduo.rabbits.Interceptor;
 import com.kyleduo.rabbits.Navigator;
+import com.kyleduo.rabbits.P;
 import com.kyleduo.rabbits.RConfig;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.Rule;
 import com.kyleduo.rabbits.Rules;
 import com.kyleduo.rabbits.TargetInfo;
-import com.kyleduo.rabbits.demo.base.BaseActivity;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
 
 /**
- *
  * Created by kyle on 2016/12/8.
  */
 
@@ -32,23 +31,24 @@ public class DemoApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Rabbit.init(RConfig.get().schemes("demo", "http", "https").domains("rabbits.kyleduo.com"))
+        Rabbit.init(RConfig.get().schemes("demo", "http", "https").domains("rabbits.kyleduo.com", "allowed.kyleduo.com"))
                 .addInterceptor(new Interceptor() {
                     @Override
                     public DispatchResult intercept(final Dispatcher dispatcher) {
                         final Action action = dispatcher.action();
                         if ((action.getTargetFlags() & 1) > 0) {
-//                            action.getExtras().putString("param", "拦截器中修改");
-                            new AlertDialog.Builder((Context) action.getFrom())
-                                    .setTitle("拦截")
-                                    .setPositiveButton("继续", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dispatcher.dispatch(action);
-                                        }
-                                    })
-                                    .setNegativeButton("取消", null).create().show();
-                            return null;
+                            if (action.getFrom() instanceof Context) {
+                                new AlertDialog.Builder((Context) action.getFrom())
+                                        .setTitle("拦截")
+                                        .setPositiveButton("继续", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dispatcher.dispatch(action);
+                                            }
+                                        })
+                                        .setNegativeButton("取消", null).create().show();
+                                return null;
+                            }
                         }
                         return dispatcher.dispatch(action);
                     }
@@ -71,7 +71,7 @@ public class DemoApplication extends Application {
                     }
                 }, new Rule() {
                     @Override
-                    public boolean valid(Uri uri) {
+                    public boolean verify(Uri uri) {
                         return false;
                     }
                 })
@@ -92,24 +92,17 @@ public class DemoApplication extends Application {
             Object from = action.getFrom();
             Object target = action.getTarget();
 
-            boolean f = target instanceof BaseFragment;
+            boolean isBase = target instanceof BaseFragment;
 
-            if (!f) {
+            if (!isBase) {
                 return DispatchResult.error("Target invalid");
             }
 
-            BaseFragment fragment = (BaseFragment) target;
-
-            if (from instanceof BaseActivity) {
-                BaseActivity act = (BaseActivity) from;
-                act.start(fragment);
-            } else if (from instanceof BaseFragment) {
-                ((BaseFragment) from).start(fragment);
-            } else {
-                return DispatchResult.error("From invalid");
-            }
-
-            return DispatchResult.success();
+            return Rabbit.from(from)
+                    .to(P.P_FRAGMENT_CONTAINER)
+                    .action(action)
+                    .putExtra(FragmentContainerActivity.KEY_FRAG_URL, action.getOriginUrl())
+                    .start();
         }
     }
 }
