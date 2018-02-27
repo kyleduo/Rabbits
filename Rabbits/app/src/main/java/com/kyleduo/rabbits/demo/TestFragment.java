@@ -14,7 +14,6 @@ import com.kyleduo.rabbits.demo.base.BaseFragment;
 /**
  * Created by kyle on 2016/12/12.
  */
-//@Page(name = "TEST_F", type = PageType.FRAGMENT, parent = "sub1.GENERAL", intExtras = {"index", "1"})
 @Page("/test_fragment")
 public class TestFragment extends BaseFragment {
     @Nullable

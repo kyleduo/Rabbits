@@ -40,6 +40,7 @@ public class RabbitsCompiler extends AbstractProcessor {
     private static final String ROUTE_MAP_CLASS = "RouteMap";
     private static final String ROUTE_MAP_ENTRY_CLASS = "RouteMapEntry";
     private static final String ROUTER_P_CLASS = "P";
+    private static final String REST_PATTERN = "\\{([^{}:]+):?([^{}]*)}";
 
     private static final int TYPE_ACTIVITY = 1;
     private static final int TYPE_FRAGMENT = 2;
@@ -91,6 +92,7 @@ public class RabbitsCompiler extends AbstractProcessor {
                 .addModifiers(Modifier.STATIC, Modifier.PUBLIC);
 
         List<PageInfo> pages = new ArrayList<>();
+        Set<String> addedPattern = new HashSet<>();
         for (Element e : roundEnv.getElementsAnnotatedWith(Page.class)) {
             Page page = e.getAnnotation(Page.class);
             if (page != null) {
@@ -116,11 +118,22 @@ public class RabbitsCompiler extends AbstractProcessor {
                     type = TYPE_FRAGMENT_V4;
                 }
 
+                String key = url.replaceAll(REST_PATTERN, "{}");
+
+                if (addedPattern.contains(key)) {
+                    throw new IllegalStateException(String.format("Pattern '%s' has already exist.", url));
+                }
+                addedPattern.add(key);
                 pages.add(new PageInfo(url, target, type, page.flags(), page.alias(), true));
 
                 String[] variety = page.variety();
                 if (variety.length > 0) {
                     for (String v : variety) {
+                        String vKey = v.replaceAll(REST_PATTERN, "{}");
+                        if (addedPattern.contains(vKey)) {
+                            throw new IllegalStateException(String.format("Pattern '%s' has already exist.", v));
+                        }
+                        addedPattern.add(vKey);
                         pages.add(new PageInfo(v, target, type, page.flags(), page.alias(), false));
                     }
                 }
@@ -189,8 +202,6 @@ public class RabbitsCompiler extends AbstractProcessor {
             e.printStackTrace();
         }
 
-        String restPattern = "\\{([^{}:]+):?([^{}]*)}";
-
         List<FieldSpec> pFields = new ArrayList<>();
         List<MethodSpec> pMethods = new ArrayList<>();
         for (PageInfo page : pages) {
@@ -221,7 +232,7 @@ public class RabbitsCompiler extends AbstractProcessor {
             }
 
             if (url.contains("{") && url.contains("}")) {
-                Pattern pattern = Pattern.compile(restPattern);
+                Pattern pattern = Pattern.compile(REST_PATTERN);
                 Matcher matcher = pattern.matcher(url);
                 List<ParameterSpec> params = new ArrayList<>();
                 List<String> holder = new ArrayList<>();
@@ -265,7 +276,7 @@ public class RabbitsCompiler extends AbstractProcessor {
                             break;
                     }
                     if (useUrl) {
-                        name = name.replaceFirst(restPattern, paramName.toUpperCase());
+                        name = name.replaceFirst(REST_PATTERN, paramName.toUpperCase());
                     }
                     params.add(ParameterSpec.builder(t, paramName).build());
                 }
@@ -282,7 +293,7 @@ public class RabbitsCompiler extends AbstractProcessor {
                 }
                 String format = url;
                 for (int i = 0; i < params.size(); i++) {
-                    format = format.replaceFirst(restPattern, holder.get(i));
+                    format = format.replaceFirst(REST_PATTERN, holder.get(i));
                 }
                 String statement = "return String.format(\"$L\", " + objBuilder.toString() + ")";
                 List<String> obj = new ArrayList<>();
