@@ -40,6 +40,8 @@ public class MainActivity extends BaseActivity {
         data.add(new Section("Fragment", "/test_fragment", "/web"));
         data.add(new Section("Dump route table", "/dump"));
         data.add(new Section("Multiple modules", "/sm1/activity"));
+        data.add(new Section("copyright @kyleduo 2018", null));
+        data.add(new Section("", null));
 
         RecyclerView rv = findViewById(R.id.recycler_view);
         rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -53,8 +55,10 @@ public class MainActivity extends BaseActivity {
         Section(String name, String... items) {
             this.name = name;
             this.items = new ArrayList<>();
-            for (String item : items) {
-                this.items.add(new Item(item));
+            if (items != null) {
+                for (String item : items) {
+                    this.items.add(new Item(item));
+                }
             }
         }
     }
