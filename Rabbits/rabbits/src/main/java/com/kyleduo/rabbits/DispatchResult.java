@@ -61,4 +61,23 @@ public class DispatchResult {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        switch (code) {
+            case STATUS_ERROR:
+                return "Result: ERROR, " + reason;
+            case STATUS_SUCCESS:
+                if (target == null) {
+                    return "Result: SUCCESS";
+                } else {
+                    return "Result: SUCCESS, " + target;
+                }
+            case STATUS_NOT_FOUND:
+                return "Result: NOT_FOUND, " + reason;
+            case STATUS_NOT_FINISH:
+                return "Result: NOT_FINISH";
+        }
+        return "Result: UNKNOWN";
+    }
 }

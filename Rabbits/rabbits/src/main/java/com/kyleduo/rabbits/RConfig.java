@@ -12,6 +12,7 @@ import java.util.List;
 public final class RConfig {
     private List<String> mSchemes;
     private List<String> mDomains;
+    private boolean mDebug;
 
     public static RConfig get() {
         return new RConfig();
@@ -27,6 +28,11 @@ public final class RConfig {
         return this;
     }
 
+    public RConfig debug(boolean debug) {
+        mDebug = debug;
+        return this;
+    }
+
     public boolean valid() {
         return mSchemes != null && mSchemes.size() > 0 && mDomains != null && mDomains.size() > 0;
     }
@@ -37,5 +43,9 @@ public final class RConfig {
 
     public List<String> getDomains() {
         return mDomains;
+    }
+
+    public boolean isDebug() {
+        return mDebug;
     }
 }

@@ -31,25 +31,37 @@ public class RouteTable {
         if (path.contains("://")) {
             sHasCompletePattern = true;
         }
+        Logger.d("Route rule inserted. PATTERN: " + path + " TARGET: " + targetInfo.target.getCanonicalName());
     }
 
     static TargetInfo match(Uri uri) {
         if (uri == null) {
             return null;
         }
+        Logger.d("Start matching. URI: " + uri.toString());
         // 并不能先判断scheme 和 domain，因为可能有固定匹配的模式，特殊scheme和domain。
         TargetInfo to = null;
         if (valid(uri)) {
+            Logger.d("[01] Matching use path.");
             to = sMappings.get(uri.getPath());
         }
         if (to == null) {
+            Logger.d("[02] Matching use pure uri.");
             // 处理完全匹配的模式
             // 不能用完整uri来匹配，如果有参数，要先移除参数.
             Uri pure = uri.buildUpon().query(null).build();
             to = sMappings.get(pure.toString());
         }
         if (to == null) {
-            return deepMatch(uri);
+            Logger.d("[03] Deeply matching.");
+            to = deepMatch(uri);
+        }
+        if (Rabbit.sDebug) {
+            if (to != null) {
+                Logger.d("[04] Target found: " + to.target.getCanonicalName());
+            } else {
+                Logger.d("[04] Not match.");
+            }
         }
         return to;
     }

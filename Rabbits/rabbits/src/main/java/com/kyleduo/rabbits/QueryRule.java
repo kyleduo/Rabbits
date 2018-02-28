@@ -36,4 +36,9 @@ public class QueryRule extends RuleImpl {
         String q = uri.getQueryParameter(mKey);
         return super.valid(q);
     }
+
+    @Override
+    public String toString() {
+        return "(" + mKey + " " + super.toString();
+    }
 }

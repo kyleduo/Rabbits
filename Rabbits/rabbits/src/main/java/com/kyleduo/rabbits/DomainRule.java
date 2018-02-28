@@ -16,4 +16,9 @@ public class DomainRule extends RuleImpl {
     public boolean verify(Uri uri) {
         return valid(uri.getAuthority());
     }
+
+    @Override
+    public String toString() {
+        return "(Domain " + super.toString();
+    }
 }

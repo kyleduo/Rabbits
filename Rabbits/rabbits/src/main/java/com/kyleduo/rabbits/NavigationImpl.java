@@ -3,6 +3,7 @@ package com.kyleduo.rabbits;
 import android.support.annotation.NonNull;
 
 /**
+ * Implementation of navigation.
  *
  * Created by kyle on 26/01/2018.
  */
@@ -13,6 +14,7 @@ public class NavigationImpl extends AbstractNavigation {
     NavigationImpl(Rabbit rabbit, Action action) {
         super(action);
         this.rabbit = rabbit;
+        Logger.d("Navigation created. FROM: " + action.getFrom().toString() + " URL: " + action.getOriginUrl());
     }
 
     @NonNull

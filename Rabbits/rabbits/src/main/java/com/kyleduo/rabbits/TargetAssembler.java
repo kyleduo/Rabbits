@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 public class TargetAssembler implements InternalInterceptor {
     @Override
     public DispatchResult intercept(Dispatcher dispatcher) {
+        Logger.i("[!] Assembling...");
         Action action = dispatcher.action();
         int targetType = action.getTargetType();
 

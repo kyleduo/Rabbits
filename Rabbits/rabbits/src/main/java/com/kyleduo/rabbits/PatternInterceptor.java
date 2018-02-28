@@ -24,4 +24,9 @@ final class PatternInterceptor implements Interceptor {
         }
         return dispatcher.dispatch(dispatcher.action());
     }
+
+    @Override
+    public String toString() {
+        return "Rule: " + mRule.toString() + " Interceptor: " + mInterceptor.toString();
+    }
 }

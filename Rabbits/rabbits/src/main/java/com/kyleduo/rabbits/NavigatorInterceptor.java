@@ -18,6 +18,7 @@ class NavigatorInterceptor implements InternalInterceptor {
 
     @Override
     public DispatchResult intercept(Dispatcher dispatcher) {
+        Logger.i("[!] Navigating...");
         if (mNavigators == null) {
             throw new NullPointerException("No verify navigator");
         }

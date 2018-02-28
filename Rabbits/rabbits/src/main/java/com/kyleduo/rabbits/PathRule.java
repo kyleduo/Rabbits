@@ -17,4 +17,9 @@ public class PathRule extends RuleImpl {
     public boolean verify(Uri uri) {
         return valid(uri.getPath());
     }
+
+    @Override
+    public String toString() {
+        return "(Path " + super.toString();
+    }
 }

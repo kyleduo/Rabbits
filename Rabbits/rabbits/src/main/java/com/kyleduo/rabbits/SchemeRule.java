@@ -17,4 +17,9 @@ public class SchemeRule extends RuleImpl {
     public boolean verify(Uri uri) {
         return valid(uri.getScheme());
     }
+
+    @Override
+    public String toString() {
+        return "(Scheme " + super.toString();
+    }
 }

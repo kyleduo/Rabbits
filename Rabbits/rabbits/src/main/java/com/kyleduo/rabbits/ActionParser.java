@@ -17,6 +17,7 @@ import java.util.Set;
 public class ActionParser implements InternalInterceptor {
     @Override
     public DispatchResult intercept(Dispatcher dispatcher) {
+        Logger.i("[!] Parsing...");
         Action action = dispatcher.action();
         Uri uri = action.getUri();
 

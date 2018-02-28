@@ -73,4 +73,9 @@ public abstract class RuleImpl implements Rule, Element {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return mOperator + " " + mValue + ")";
+    }
 }

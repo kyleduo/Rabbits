@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Rabbit instance can be obtained by {@link com.kyleduo.rabbits.Rabbit#from(Object)} method.
  * Normal usage likes this.
  * <pre>
  * Rabbit.from(activity)
@@ -36,6 +35,7 @@ public final class Rabbit {
     private SparseArray<Navigator> mNavigators = new SparseArray<>();
 
     private static Rabbit sInstance;
+    static boolean sDebug;
 
     private Rabbit(RConfig config) {
         this.registerNavigator(TargetInfo.TYPE_ACTIVITY, new ActivityNavigator());
@@ -66,8 +66,9 @@ public final class Rabbit {
     }
 
     public static synchronized Rabbit init(RConfig config) {
+        sDebug = config.isDebug();
         if (sInstance != null) {
-            throw new IllegalStateException("Rabbit has already initialed.");
+            throw new IllegalStateException("Rabbits has already initialed.");
         }
         if (!config.valid()) {
             throw new IllegalArgumentException("Config object not verify");
@@ -75,6 +76,7 @@ public final class Rabbit {
         if (sInstance == null) {
             sInstance = new Rabbit(config);
         }
+        Logger.v("Rabbits has been initialized successfully.");
         return sInstance;
     }
 
@@ -129,6 +131,7 @@ public final class Rabbit {
     }
 
     DispatchResult dispatch(Navigation navigation) {
+        Logger.i("[!] Dispatching...");
         final Action action = navigation.action();
 
         // interceptors
@@ -154,6 +157,7 @@ public final class Rabbit {
         if (result == null) {
             return DispatchResult.notFinished();
         }
+        Logger.i("[!] Result: " + result);
         return result;
     }
 

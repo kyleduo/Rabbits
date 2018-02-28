@@ -43,4 +43,15 @@ public class RuleSet extends RuleImpl {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (Rule rule : mRules) {
+            sb.append(rule.toString()).append(", ");
+        }
+        sb.append("]");
+        return sb.toString();
+    }
 }

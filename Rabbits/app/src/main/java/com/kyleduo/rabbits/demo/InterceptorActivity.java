@@ -2,7 +2,6 @@ package com.kyleduo.rabbits.demo;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -22,8 +21,6 @@ public class InterceptorActivity extends BaseActivity {
 
         TextView tv = (TextView) findViewById(R.id.params_tv);
         tv.setText("param = " + getIntent().getStringExtra("param"));
-
-        Log.d("s", "pattern: " + getIntent().getStringExtra(Rabbit.KEY_PATTERN));
 
         findViewById(R.id.back_home_bt).setOnClickListener(new View.OnClickListener() {
             @Override
