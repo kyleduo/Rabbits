@@ -46,7 +46,7 @@ public final class Rabbit {
             Class<?> routerClass = Class.forName(ROUTER_CLASS_NAME);
             Method generateMethod = routerClass.getMethod(GENERATE_METHOD_NAME);
             generateMethod.invoke(routerClass);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             throw new IllegalStateException("Generate route table failed.");
         }
