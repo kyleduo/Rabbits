@@ -28,6 +28,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -44,18 +49,18 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$supportVersion"
     implementation "com.android.support:recyclerview-v7:$supportVersion"
 
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    androidTestCompile('com.android.support.test:runner:0.5', {
+    androidTestImplementation('com.android.support.test:runner:0.5', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 
     // Rabbits
-    compile project(':rabbits')
+    implementation project(':rabbits')
     annotationProcessor project(':compiler')
 
     // Fragmentation
-    compile 'me.yokeyword:fragmentation:0.10.0'
+    implementation 'me.yokeyword:fragmentation:0.10.0'
 }
