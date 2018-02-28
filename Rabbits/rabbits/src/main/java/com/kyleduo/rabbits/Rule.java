@@ -10,7 +10,7 @@ import android.net.Uri;
 
 public interface Rule {
     enum Operator {
-        IS, STARTS_WITH, ENDS_WITH, IN, CONTAINS, EXISTS
+        IS, NOT, STARTS_WITH, ENDS_WITH, IN, CONTAINS, EXISTS
     }
 
     boolean verify(Uri uri);

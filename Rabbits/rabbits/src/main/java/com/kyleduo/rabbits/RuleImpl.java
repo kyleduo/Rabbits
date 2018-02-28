@@ -29,6 +29,11 @@ public abstract class RuleImpl implements Rule, Element {
     }
 
     @Override
+    public Rule not(String value) {
+        return operator(Operator.NOT, value);
+    }
+
+    @Override
     public Rule startsWith(String value) {
         return operator(Operator.STARTS_WITH, value);
     }
@@ -62,6 +67,8 @@ public abstract class RuleImpl implements Rule, Element {
                 return source != null && source.length() > 0;
             case IS:
                 return source != null && source.equals(mValue);
+            case NOT:
+                return source == null || !source.equals(mValue);
             case STARTS_WITH:
                 return source != null && source.startsWith(mValue);
             case ENDS_WITH:
