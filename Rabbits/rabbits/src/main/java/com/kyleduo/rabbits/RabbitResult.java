@@ -54,6 +54,10 @@ public class RabbitResult {
         return target;
     }
 
+    public boolean isSuccess() {
+        return getCode() == STATUS_SUCCESS;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof RabbitResult) {
