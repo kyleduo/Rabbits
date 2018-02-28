@@ -9,26 +9,26 @@ import java.util.List;
  */
 
 @SuppressWarnings("WeakerAccess")
-public final class RConfig {
+public final class RabbitConfig {
     private List<String> mSchemes;
     private List<String> mDomains;
     private boolean mDebug;
 
-    public static RConfig get() {
-        return new RConfig();
+    public static RabbitConfig get() {
+        return new RabbitConfig();
     }
 
-    public RConfig schemes(String... schemes) {
+    public RabbitConfig schemes(String... schemes) {
         mSchemes = Arrays.asList(schemes);
         return this;
     }
 
-    public RConfig domains(String... domains) {
+    public RabbitConfig domains(String... domains) {
         mDomains = Arrays.asList(domains);
         return this;
     }
 
-    public RConfig debug(boolean debug) {
+    public RabbitConfig debug(boolean debug) {
         mDebug = debug;
         return this;
     }

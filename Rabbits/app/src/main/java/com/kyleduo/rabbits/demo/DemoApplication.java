@@ -12,7 +12,7 @@ import com.kyleduo.rabbits.RabbitResult;
 import com.kyleduo.rabbits.Interceptor;
 import com.kyleduo.rabbits.Navigator;
 import com.kyleduo.rabbits.P;
-import com.kyleduo.rabbits.RConfig;
+import com.kyleduo.rabbits.RabbitConfig;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.Rule;
 import com.kyleduo.rabbits.RuleSet;
@@ -43,7 +43,7 @@ public class DemoApplication extends Application {
         super.onCreate();
         sApp = this;
 
-        Rabbit.init(RConfig.get().schemes("demo", "http", "https").domains("rabbits.kyleduo.com", "blog.kyleduo.com").debug(true))
+        Rabbit.init(RabbitConfig.get().schemes("demo", "http", "https").domains("rabbits.kyleduo.com", "blog.kyleduo.com").debug(true))
                 // do not open any native pages when there is a query named 'greenChannel'
                 // and it's value equals '1'. This useful when use Rabbit as a bridge between
                 // native and web page.

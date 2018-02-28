@@ -37,7 +37,7 @@ public final class Rabbit {
     private static Rabbit sInstance;
     static boolean sDebug;
 
-    private Rabbit(RConfig config) {
+    private Rabbit(RabbitConfig config) {
         this.registerNavigator(TargetInfo.TYPE_ACTIVITY, new ActivityNavigator());
         this.mSchemes = config.getSchemes();
         this.mDomains = config.getDomains();
@@ -65,7 +65,7 @@ public final class Rabbit {
         return sInstance;
     }
 
-    public static synchronized Rabbit init(RConfig config) {
+    public static synchronized Rabbit init(RabbitConfig config) {
         sDebug = config.isDebug();
         if (sInstance != null) {
             throw new IllegalStateException("Rabbits has already initialed.");
