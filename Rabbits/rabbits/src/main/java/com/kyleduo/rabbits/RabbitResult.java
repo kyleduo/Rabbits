@@ -6,7 +6,7 @@ package com.kyleduo.rabbits;
  * Created by kyle on 19/12/2017.
  */
 
-public class DispatchResult {
+public class RabbitResult {
     public static final int STATUS_ERROR = 0;
     public static final int STATUS_SUCCESS = 1;
     public static final int STATUS_NOT_FOUND = 2;
@@ -16,30 +16,30 @@ public class DispatchResult {
     private String reason;
     private Object target;
 
-    public DispatchResult(int code, String reason, Object target) {
+    public RabbitResult(int code, String reason, Object target) {
         this.code = code;
         this.reason = reason;
         this.target = target;
     }
 
-    public static DispatchResult error(String reason) {
-        return new DispatchResult(STATUS_ERROR, reason, null);
+    public static RabbitResult error(String reason) {
+        return new RabbitResult(STATUS_ERROR, reason, null);
     }
 
-    public static DispatchResult notFound(String url) {
-        return new DispatchResult(STATUS_NOT_FOUND, "Page not found: " + url, null);
+    public static RabbitResult notFound(String url) {
+        return new RabbitResult(STATUS_NOT_FOUND, "Page not found: " + url, null);
     }
 
-    public static DispatchResult success(Object target) {
-        return new DispatchResult(STATUS_SUCCESS, "success", target);
+    public static RabbitResult success(Object target) {
+        return new RabbitResult(STATUS_SUCCESS, "success", target);
     }
 
-    public static DispatchResult success() {
+    public static RabbitResult success() {
         return success(null);
     }
 
-    public static DispatchResult notFinished() {
-        return new DispatchResult(STATUS_NOT_FINISH, "", null);
+    public static RabbitResult notFinished() {
+        return new RabbitResult(STATUS_NOT_FINISH, "", null);
     }
 
     public int getCode() {
@@ -56,8 +56,8 @@ public class DispatchResult {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof DispatchResult) {
-            return this.code == ((DispatchResult) obj).code && this.target == ((DispatchResult) obj).target;
+        if (obj instanceof RabbitResult) {
+            return this.code == ((RabbitResult) obj).code && this.target == ((RabbitResult) obj).target;
         }
         return false;
     }

@@ -130,7 +130,7 @@ public final class Rabbit {
         return this;
     }
 
-    DispatchResult dispatch(Navigation navigation) {
+    RabbitResult dispatch(Navigation navigation) {
         Logger.i("[!] Dispatching...");
         final Action action = navigation.action();
 
@@ -153,9 +153,9 @@ public final class Rabbit {
 
         RealDispatcher dispatcher = new RealDispatcher(action, interceptors, 0);
 
-        DispatchResult result = dispatcher.dispatch(action);
+        RabbitResult result = dispatcher.dispatch(action);
         if (result == null) {
-            return DispatchResult.notFinished();
+            return RabbitResult.notFinished();
         }
         Logger.i("[!] Result: " + result);
         return result;

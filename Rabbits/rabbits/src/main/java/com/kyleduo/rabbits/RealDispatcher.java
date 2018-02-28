@@ -19,9 +19,9 @@ public class RealDispatcher implements Interceptor.Dispatcher {
     }
 
     @Override
-    public DispatchResult dispatch(Action action) {
+    public RabbitResult dispatch(Action action) {
         if (mIndex >= mInterceptors.size()) {
-            return DispatchResult.error("Action has not been performed.");
+            return RabbitResult.error("Action has not been performed.");
         }
 
         Interceptor interceptor = mInterceptors.get(mIndex);
@@ -37,7 +37,7 @@ public class RealDispatcher implements Interceptor.Dispatcher {
         RealDispatcher next = new RealDispatcher(mAction, mInterceptors, mIndex + 1);
 
         //noinspection UnnecessaryLocalVariable
-        DispatchResult result = interceptor.intercept(next);
+        RabbitResult result = interceptor.intercept(next);
 
         return result;
     }

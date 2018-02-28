@@ -45,7 +45,7 @@ public final class Action {
     /**
      * Whether ignore fallback navigator.
      * If false and no page matched, fallback navigator would not be executed and a result with
-     * status {@link com.kyleduo.rabbits.DispatchResult#STATUS_NOT_FOUND} will be returned.
+     * status {@link RabbitResult#STATUS_NOT_FOUND} will be returned.
      */
     private boolean mIgnoreFallback;
     /**

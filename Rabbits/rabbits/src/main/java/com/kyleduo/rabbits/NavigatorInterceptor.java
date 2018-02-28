@@ -17,7 +17,7 @@ class NavigatorInterceptor implements InternalInterceptor {
     }
 
     @Override
-    public DispatchResult intercept(Dispatcher dispatcher) {
+    public RabbitResult intercept(Dispatcher dispatcher) {
         Logger.i("[!] Navigating...");
         if (mNavigators == null) {
             throw new NullPointerException("No verify navigator");
@@ -26,14 +26,14 @@ class NavigatorInterceptor implements InternalInterceptor {
 
         // Just return the target when "justObtain" was specific.
         if (action.isJustObtain() && action.getTarget() != null) {
-            return DispatchResult.success(action.getTarget());
+            return RabbitResult.success(action.getTarget());
         }
 
         boolean notFound = false;
         if (action.getTarget() == null || action.getTargetType() == TargetInfo.TYPE_NONE) {
             notFound = true;
             if (action.isIgnoreFallback()) {
-                return DispatchResult.notFound(action.getOriginUrl());
+                return RabbitResult.notFound(action.getOriginUrl());
             }
         }
 
@@ -43,7 +43,7 @@ class NavigatorInterceptor implements InternalInterceptor {
             if (notFound) {
                 // need to be handled by fallback.
                 // fallback handler isn't set.
-                return DispatchResult.notFound(action.getOriginUrl());
+                return RabbitResult.notFound(action.getOriginUrl());
             } else {
                 throw new IllegalStateException("Navigator not found");
             }

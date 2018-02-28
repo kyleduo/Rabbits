@@ -13,7 +13,7 @@ import android.support.v4.app.Fragment;
 
 public class TargetAssembler implements InternalInterceptor {
     @Override
-    public DispatchResult intercept(Dispatcher dispatcher) {
+    public RabbitResult intercept(Dispatcher dispatcher) {
         Logger.i("[!] Assembling...");
         Action action = dispatcher.action();
         int targetType = action.getTargetType();
@@ -34,7 +34,7 @@ public class TargetAssembler implements InternalInterceptor {
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && action.getFrom() instanceof android.app.Fragment) {
                 intent = new Intent(((android.app.Fragment) action.getFrom()).getActivity(), action.getTargetClass());
             } else {
-                return DispatchResult.error("From object must be whether an Context or a Fragment instance.");
+                return RabbitResult.error("From object must be whether an Context or a Fragment instance.");
             }
             intent.setFlags(action.getIntentFlags());
             intent.putExtras(action.getExtras());

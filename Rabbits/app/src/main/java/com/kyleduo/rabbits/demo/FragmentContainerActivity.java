@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import com.kyleduo.rabbits.DispatchResult;
+import com.kyleduo.rabbits.RabbitResult;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.demo.base.BaseActivity;
@@ -31,7 +31,7 @@ public class FragmentContainerActivity extends BaseActivity {
                 extras.remove(KEY_FRAG_URL);
             }
             if (uri != null) {
-                DispatchResult ret = Rabbit.from(this)
+                RabbitResult ret = Rabbit.from(this)
                         .to(uri)
                         .putExtras(extras)
                         .obtain();

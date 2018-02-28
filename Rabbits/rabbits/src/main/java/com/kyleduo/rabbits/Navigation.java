@@ -49,13 +49,13 @@ public interface Navigation {
     Navigation action(Action action);
 
     @NonNull
-    DispatchResult start();
+    RabbitResult start();
 
     @NonNull
-    DispatchResult startForResult(int requestCode);
+    RabbitResult startForResult(int requestCode);
 
     @NonNull
-    DispatchResult obtain();
+    RabbitResult obtain();
 
     @NonNull
     Action action();

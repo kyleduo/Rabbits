@@ -8,10 +8,10 @@ package com.kyleduo.rabbits;
  */
 
 public interface Interceptor {
-    DispatchResult intercept(Dispatcher dispatcher);
+    RabbitResult intercept(Dispatcher dispatcher);
 
     interface Dispatcher {
-        DispatchResult dispatch(Action action);
+        RabbitResult dispatch(Action action);
 
         Action action();
     }

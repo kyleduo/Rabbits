@@ -14,18 +14,18 @@ import android.support.v4.app.Fragment;
 
 public class ActivityNavigator implements Navigator {
     @Override
-    public DispatchResult perform(Action action) {
+    public RabbitResult perform(Action action) {
         Object target = action.getTarget();
         if (target == null) {
-            return DispatchResult.notFound(action.getOriginUrl());
+            return RabbitResult.notFound(action.getOriginUrl());
         }
         if (action.isJustObtain()) {
-            return DispatchResult.success(target);
+            return RabbitResult.success(target);
         }
 
         Object from = action.getFrom();
         if (from == null) {
-            return DispatchResult.error("The \"from\" can not be null");
+            return RabbitResult.error("The \"from\" can not be null");
         }
         Activity activity = null;
         if (from instanceof Activity) {
@@ -49,7 +49,7 @@ public class ActivityNavigator implements Navigator {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 ((Context) from).startActivity(intent);
             } else {
-                return DispatchResult.error("Invalid from.");
+                return RabbitResult.error("Invalid from.");
             }
         }
 
@@ -66,6 +66,6 @@ public class ActivityNavigator implements Navigator {
             activity.overridePendingTransition(animations[0], animations[1]);
         }
 
-        return DispatchResult.success();
+        return RabbitResult.success();
     }
 }

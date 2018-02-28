@@ -19,20 +19,20 @@ public class NavigationImpl extends AbstractNavigation {
 
     @NonNull
     @Override
-    public DispatchResult start() {
+    public RabbitResult start() {
         return rabbit.dispatch(this);
     }
 
     @NonNull
     @Override
-    public DispatchResult startForResult(int requestCode) {
+    public RabbitResult startForResult(int requestCode) {
         forResult(requestCode);
         return start();
     }
 
     @NonNull
     @Override
-    public DispatchResult obtain() {
+    public RabbitResult obtain() {
         justObtain();
         return rabbit.dispatch(this);
     }

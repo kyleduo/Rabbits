@@ -8,7 +8,7 @@ import android.net.Uri;
 import android.widget.Toast;
 
 import com.kyleduo.rabbits.Action;
-import com.kyleduo.rabbits.DispatchResult;
+import com.kyleduo.rabbits.RabbitResult;
 import com.kyleduo.rabbits.Interceptor;
 import com.kyleduo.rabbits.Navigator;
 import com.kyleduo.rabbits.P;
@@ -49,14 +49,14 @@ public class DemoApplication extends Application {
                 // native and web page.
                 .addInterceptor(new Interceptor() {
                     @Override
-                    public DispatchResult intercept(Dispatcher dispatcher) {
+                    public RabbitResult intercept(Dispatcher dispatcher) {
                         dispatcher.action().discard();
                         return dispatcher.dispatch(dispatcher.action());
                     }
                 }, Rules.set(RuleSet.Relation.OR, Rules.query("greenChannel").is("1"), Rules.query("ignore").is("1")))
                 .addInterceptor(new Interceptor() {
                     @Override
-                    public DispatchResult intercept(Dispatcher dispatcher) {
+                    public RabbitResult intercept(Dispatcher dispatcher) {
                         // ignore other following interceptors.
                         dispatcher.action().getExtras().putString("param", "rules");
                         dispatcher.action().setIgnoreInterceptors(true);
@@ -66,7 +66,7 @@ public class DemoApplication extends Application {
                 }, Rules.path().contains("/rules"))
                 .addInterceptor(new Interceptor() {
                     @Override
-                    public DispatchResult intercept(final Dispatcher dispatcher) {
+                    public RabbitResult intercept(final Dispatcher dispatcher) {
                         final Action action = dispatcher.action();
                         if ((action.getTargetFlags() & 1) > 0) {
                             if (action.getFrom() instanceof Context) {
@@ -90,7 +90,7 @@ public class DemoApplication extends Application {
                 // add Interceptor with totally custom rules
                 .addInterceptor(new Interceptor() {
                     @Override
-                    public DispatchResult intercept(Dispatcher dispatcher) {
+                    public RabbitResult intercept(Dispatcher dispatcher) {
                         return null;
                     }
                 }, new Rule() {
@@ -102,7 +102,7 @@ public class DemoApplication extends Application {
                 .registerNavigator(TargetInfo.TYPE_FRAGMENT_V4, new FragmentNavigator())
                 .registerFallbackNavigator(new Navigator() {
                     @Override
-                    public DispatchResult perform(Action action) {
+                    public RabbitResult perform(Action action) {
                         Uri uri = Uri.parse(action.getOriginUrl());
                         Uri.Builder builder = uri.buildUpon();
                         if (uri.getScheme() == null || !uri.getScheme().startsWith("http")) {
@@ -123,23 +123,23 @@ public class DemoApplication extends Application {
     public static class FragmentNavigator implements Navigator {
 
         @Override
-        public DispatchResult perform(Action action) {
+        public RabbitResult perform(Action action) {
             Object from = action.getFrom();
             Object target = action.getTarget();
 
             boolean isBase = target instanceof BaseFragment;
 
             if (!isBase) {
-                return DispatchResult.error("Target invalid");
+                return RabbitResult.error("Target invalid");
             }
 
             if ((action.getTargetFlags() & Constants.FLAG_FRAG_EMBED) > 0) {
                 if (from instanceof BaseFragment) {
                     ((BaseFragment) from).start((SupportFragment) target);
-                    return DispatchResult.success();
+                    return RabbitResult.success();
                 } else if (from instanceof BaseActivity) {
                     ((BaseActivity) from).start((SupportFragment) target);
-                    return DispatchResult.success();
+                    return RabbitResult.success();
                 }
             }
 
