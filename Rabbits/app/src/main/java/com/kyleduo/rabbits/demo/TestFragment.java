@@ -11,7 +11,6 @@ import android.widget.LinearLayout;
 import com.kyleduo.rabbits.P;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.annotations.Page;
-import com.kyleduo.rabbits.annotations.PageType;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
 
 import java.util.Random;
@@ -19,27 +18,29 @@ import java.util.Random;
 /**
  * Created by kyle on 2016/12/12.
  */
-@Page(name = "TEST_F", type = PageType.FRAGMENT, parent = "sub1.GENERAL", intExtras = {"index", "1"})
+@Page("/test_fragment")
 public class TestFragment extends BaseFragment {
-	@Nullable
-	@Override
-	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-		LinearLayout ll = (LinearLayout) super.onCreateView(inflater, container, savedInstanceState);
-		assert ll != null;
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        LinearLayout ll = (LinearLayout) super.onCreateView(inflater, container, savedInstanceState);
+        assert ll != null;
 
-		Button button = new Button(getActivity());
-		button.setText("Start Second Fragment");
-		button.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-		button.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
+        Button button = new Button(getActivity());
+        button.setText("Start Second Fragment");
+        button.setTextColor(0xFF49A1FF);
+        button.setBackgroundDrawable(null);
+        button.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 				Rabbit.from(TestFragment.this)
-						.to(P.SECOND(new Random().nextInt(10)))
+						.to(P.P_SECOND_ID(new Random().nextInt(10)))
 						.start();
-			}
-		});
-		ll.addView(button);
+            }
+        });
+        ll.addView(button);
 
-		return ll;
-	}
+        return ll;
+    }
 }

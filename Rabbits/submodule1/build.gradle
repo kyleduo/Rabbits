@@ -1,21 +1,27 @@
-if (demoStandAlone) {
-    apply plugin: 'com.android.application'
-} else {
-    apply plugin: 'com.android.library'
-}
+apply plugin: 'com.android.library'
 
 android {
+<<<<<<< HEAD
     compileSdkVersion 25
     buildToolsVersion '26.0.2'
+=======
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+>>>>>>> dispatch
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [rabbits_moduleName: "sm1", rabbits_submodules: "sm2"]
+            }
+        }
     }
     buildTypes {
         release {
@@ -23,31 +29,21 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets {
-        main {
-            if (demoStandAlone) {
-                manifest.srcFile 'src/main/standalone/AndroidManifest.xml'
-                java.srcDirs = ['src/main/java', 'src/main/standalone']
-            } else {
-                manifest.srcFile 'src/main/library/AndroidManifest.xml'
-                java.srcDirs = ['src/main/java', 'src/main/library']
-            }
-        }
-    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':submodule2')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    testCompile 'junit:junit:4.12'
+    implementation "com.android.support:appcompat-v7:$supportVersion"
+    testImplementation 'junit:junit:4.12'
 
     // Rabbits
-    compile project(':rabbits')
+    implementation project(':rabbits')
     annotationProcessor project(':compiler')
 
     // Fragmentation
-    compile 'me.yokeyword:fragmentation:0.9.3'
+    implementation 'me.yokeyword:fragmentation:0.10.0'
 }

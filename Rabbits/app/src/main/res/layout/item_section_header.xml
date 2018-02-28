@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/section_title"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="10dp"
+    android:paddingLeft="20dp"
+    android:paddingTop="22dp"
+    android:textColor="#C0C7D3"
+    android:textSize="14sp"
+    android:textStyle="bold"
+    tools:ignore="RtlHardcoded,RtlSymmetry">
+
+</TextView>

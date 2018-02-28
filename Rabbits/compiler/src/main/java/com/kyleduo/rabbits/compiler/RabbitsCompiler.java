@@ -1,12 +1,7 @@
 package com.kyleduo.rabbits.compiler;
 
 import com.google.auto.service.AutoService;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.kyleduo.rabbits.annotations.Module;
 import com.kyleduo.rabbits.annotations.Page;
-import com.kyleduo.rabbits.annotations.PageType;
-import com.kyleduo.rabbits.annotations.utils.NameParser;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -14,17 +9,12 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,70 +30,65 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 
+@SuppressWarnings("unused")
 @AutoService(Processor.class)
 public class RabbitsCompiler extends AbstractProcessor {
     private static final String PACKAGE = "com.kyleduo.rabbits";
-    private static final String NAVIGATOR_PACKAGE = "com.kyleduo.rabbits.navigator";
     private static final String ROUTER_CLASS = "Router";
-    private static final String ROUTERS_CLASS = "Routers";
+    private static final String ROUTE_TABLE_CLASS = "RouteTable";
+    private static final String TARGET_INFO_CLASS = "TargetInfo";
     private static final String ROUTER_P_CLASS = "P";
+    private static final String REST_PATTERN = "\\{([^{}:]+):?([^{}]*)}";
+    private static final String OPTION_MODULE_NAME = "rabbits_moduleName";
+    private static final String OPTION_SUB_MODULES = "rabbits_submodules";
+
+    private static final int TYPE_ACTIVITY = 1;
+    private static final int TYPE_FRAGMENT = 2;
+    private static final int TYPE_FRAGMENT_V4 = 3;
+
+    private Types types;
+    private TypeMirror activityType;
+    private TypeMirror fragmentType;
+    private TypeMirror fragmentV4Type;
 
     private Filer mFiler;
-    private LinkedHashMap<String, String> mTable = new LinkedHashMap<>();
+    private String mModuleName;
+    private List<String> mSubModules;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         mFiler = processingEnv.getFiler();
-    }
 
-    private File findMappings(String srcPath) throws IOException, URISyntaxException {
-        FileObject resource = mFiler.createResource(StandardLocation.SOURCE_OUTPUT, PACKAGE, "dummy" + System.currentTimeMillis() + ".tmp");
-        String dummySourceFilePath = resource.toUri().toString();
+        Elements elements = processingEnv.getElementUtils();
+        types = processingEnv.getTypeUtils();
 
-        if (dummySourceFilePath.startsWith("file:")) {
-            if (!dummySourceFilePath.startsWith("file://")) {
-                dummySourceFilePath = "file://" + dummySourceFilePath.substring("file:".length());
-            }
-        } else {
-            dummySourceFilePath = "file://" + dummySourceFilePath;
-        }
+        activityType = elements.getTypeElement("android.app.Activity").asType();
+        fragmentType = elements.getTypeElement("android.app.Fragment").asType();
+        fragmentV4Type = elements.getTypeElement("android.support.v4.app.Fragment").asType();
 
-        URI cleanURI = new URI(dummySourceFilePath);
-        File dummyFile = new File(cleanURI);
-        File projectRoot = null;
-        while (projectRoot == null || projectRoot.getAbsolutePath().contains("build")) {
-            if (projectRoot == null) {
-                projectRoot = dummyFile.getParentFile();
-            } else {
-                projectRoot = projectRoot.getParentFile();
-            }
-        }
-        File assets = new File(projectRoot.getAbsolutePath() + "/src/" + srcPath + "/assets");
-        if (assets.exists()) {
-            String[] filenames = assets.list(new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.startsWith("mappings") && name.endsWith(".json");
+        Map<String, String> options = processingEnv.getOptions();
+        if (options != null && options.size() > 0) {
+            mModuleName = options.get(OPTION_MODULE_NAME);
+            String subModuleNames = options.get(OPTION_SUB_MODULES);
+            if (subModuleNames != null && subModuleNames.length() > 0) {
+                String[] names = subModuleNames.split(",");
+                if (names.length > 0) {
+                    mSubModules = Arrays.asList(names);
                 }
-            });
-            if (filenames == null || filenames.length == 0) {
-                return null;
             }
-            return new File(assets, filenames[0]);
         }
-        return null;
     }
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> types = new HashSet<>();
         types.add(Page.class.getName());
-        types.add(Module.class.getName());
         return types;
     }
 
@@ -118,172 +103,169 @@ public class RabbitsCompiler extends AbstractProcessor {
             return false;
         }
 
-        Module module = parseRabbits(roundEnv);
-        if (module == null) {
-            throw new IllegalStateException("A Module annotation is required.");
-        }
-        String moduleName = module.name();
-        String[] subModules = module.subModules();
-        boolean standalone = module.standalone();
+        ClassName routeTable = ClassName.get(PACKAGE, ROUTE_TABLE_CLASS);
+        ClassName targetInfo = ClassName.get(PACKAGE, TARGET_INFO_CLASS);
 
-        if (standalone) {
-            if (subModules.length == 0) {
-                if (moduleName.length() != 0) {
-                    // In standalone mode.
-                    String[] m = {moduleName};
-                    generateRouters(m);
+        List<PageInfo> pages = new ArrayList<>();
+        Set<String> addedPattern = new HashSet<>();
+        for (Element e : roundEnv.getElementsAnnotatedWith(Page.class)) {
+            Page page = e.getAnnotation(Page.class);
+            if (page != null) {
+                TypeMirror mirror = e.asType();
+                String url = page.value();
+
+                // 只接受这种格式的url
+                // (scheme://domain)/(path/path)
+
+                while (url.length() > 1 && url.endsWith("/")) {
+                    url = url.substring(0, url.length() - 1);
                 }
-            } else {
-                String[] m = new String[subModules.length + 1];
-                m[0] = "";
-                System.arraycopy(subModules, 0, m, 1, subModules.length);
-                generateRouters(m);
+
+                // path
+                ClassName target = ClassName.get((TypeElement) e);
+                int type = 0;
+
+                if (types.isSubtype(mirror, activityType)) {
+                    type = TYPE_ACTIVITY;
+                } else if (types.isSubtype(mirror, fragmentType)) {
+                    type = TYPE_FRAGMENT;
+                } else if (types.isSubtype(mirror, fragmentV4Type)) {
+                    type = TYPE_FRAGMENT_V4;
+                }
+
+                String key = url.replaceAll(REST_PATTERN, "{}");
+
+                if (addedPattern.contains(key)) {
+                    throw new IllegalStateException(String.format("Pattern '%s' has already exist.", url));
+                }
+                addedPattern.add(key);
+                pages.add(new PageInfo(url, target, type, page.flags(), page.alias(), true));
+
+                String[] variety = page.variety();
+                if (variety.length > 0) {
+                    for (String v : variety) {
+                        String vKey = v.replaceAll(REST_PATTERN, "{}");
+                        if (addedPattern.contains(vKey)) {
+                            throw new IllegalStateException(String.format("Pattern '%s' has already exist.", v));
+                        }
+                        addedPattern.add(vKey);
+                        pages.add(new PageInfo(v, target, type, page.flags(), page.alias(), false));
+                    }
+                }
             }
         }
 
-        List<MethodSpec> methods = parsePages(roundEnv);
-        String routerClassName = getRouterClassName(moduleName);
+        // sort pages
+        Collections.sort(pages, new Comparator<PageInfo>() {
+            @Override
+            public int compare(PageInfo p1, PageInfo p2) {
+                String u1 = p1.url;
+                String u2 = p2.url;
 
-        TypeSpec routerTypeSpec = TypeSpec.classBuilder(routerClassName)
+                if (u1.contains("://") && !u2.contains("://")) {
+                    return -1;
+                } else if (u2.contains("://") && !u1.contains("://")) {
+                    return 1;
+                }
+
+                int c1 = 0, c2 = 0, last = 0, index;
+                index = u1.indexOf("{", last);
+                last = index;
+                while (index >= 0) {
+                    c1++;
+                    index = u1.indexOf("{", last + 1);
+                    last = index;
+                }
+                index = u2.indexOf("{", last);
+                last = index;
+                while (index >= 0) {
+                    c2++;
+                    index = u2.indexOf("{", last + 1);
+                    last = index;
+                }
+
+                if (c1 < c2) {
+                    return -1;
+                } else if (c2 > c1) {
+                    return 1;
+                }
+
+                return 0;
+            }
+        });
+
+        MethodSpec.Builder generateBuilder = MethodSpec.methodBuilder("generate")
+                .addModifiers(Modifier.STATIC, Modifier.PUBLIC);
+
+        if (mSubModules != null && mSubModules.size() > 0) {
+            for (String name : mSubModules) {
+                generateBuilder.addStatement("$T.generate()", ClassName.get(PACKAGE + "." + name, ROUTER_CLASS));
+            }
+        }
+
+        for (PageInfo p : pages) {
+            generateBuilder.addStatement("$T.map(\"$L\", new $T(\"$L\", $T.class, $L, $L))",
+                    routeTable,
+                    p.url,
+                    targetInfo,
+                    p.url,
+                    p.target,
+                    String.valueOf(p.type),
+                    String.valueOf(p.flag));
+        }
+
+        TypeSpec router = TypeSpec.classBuilder(ROUTER_CLASS)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addMethods(methods)
+                .addMethod(generateBuilder.build())
                 .build();
         try {
-            JavaFile.builder(PACKAGE, routerTypeSpec)
+            String packageName = PACKAGE;
+            if (mModuleName != null) {
+                packageName += "." + mModuleName;
+            }
+            JavaFile.builder(packageName, router)
                     .build()
                     .writeTo(mFiler);
         } catch (Throwable e) {
-//			e.printStackTrace();
+            e.printStackTrace();
         }
 
-        generateP(moduleName, module.srcPath());
+            generateP(pages);
 
         return true;
     }
 
-    private String getRouterClassName(String moduleName) {
-        String routerClassName = ROUTER_CLASS;
-        if (moduleName.length() > 0) {
-            moduleName = moduleName.substring(0, 1).toUpperCase() + moduleName.substring(1).toLowerCase();
-            routerClassName += moduleName;
-        }
-        return routerClassName;
-    }
-
-    private Module parseRabbits(RoundEnvironment roundEnv) {
-        Module module = null;
-        for (Element e : roundEnv.getElementsAnnotatedWith(Module.class)) {
-            module = e.getAnnotation(Module.class);
-            if (module != null) {
-                break;
-            }
-        }
-        return module;
-    }
-
-    private List<MethodSpec> parsePages(RoundEnvironment roundEnv) {
-        List<MethodSpec> methods = new ArrayList<>();
-        for (Element e : roundEnv.getElementsAnnotatedWith(Page.class)) {
-            Page page = e.getAnnotation(Page.class);
-            if (page != null) {
-                PageType type = page.type();
-                String name = page.name();
-                if (type == PageType.ACTIVITY) {
-                    String methodName = NameParser.parseRoute(name);
-                    ClassName className = ClassName.get((TypeElement) e);
-
-                    // route
-                    MethodSpec.Builder methodSpecBuilder = MethodSpec.methodBuilder(methodName)
-                            .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
-                            .returns(Class.class)
-                            .addStatement("return $T.class", className);
-                    methods.add(methodSpecBuilder.build());
-                } else if (type == PageType.FRAGMENT) {
-                    String parent = page.parent();
-                    boolean hasParent = !parent.equals("");
-
-                    ClassName className = ClassName.get((TypeElement) e);
-                    // route
-                    String methodName = NameParser.parseRoute(name);
-                    MethodSpec.Builder methodSpecBuilder;
-                    if (hasParent) {
-                        methodSpecBuilder = MethodSpec.methodBuilder(methodName)
-                                .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC);
-                        methodSpecBuilder.returns(ClassName.get(NAVIGATOR_PACKAGE, "AbstractNavigator"));
-                        String parentMethodName;
-                        ClassName moduleClass = null;
-                        if (parent.contains(".")) {
-                            String[] parts = parent.split("\\.");
-                            moduleClass = ClassName.get(PACKAGE, getRouterClassName(parts[0]));
-                            parentMethodName = NameParser.parseRoute(parts[1]);
-                        } else {
-                            parentMethodName = NameParser.parseRoute(parent);
-                        }
-                        methodSpecBuilder.addStatement("android.os.Bundle bundle = new android.os.Bundle()");
-                        parseExtras(methodSpecBuilder, page);
-                        ClassName targetClass = ClassName.get(PACKAGE, "Target");
-                        methodSpecBuilder.addStatement("$T target = new $T(null)", targetClass, targetClass);
-                        if (moduleClass != null) {
-                            methodSpecBuilder.addStatement("target.setTo($T.$L())", moduleClass, parentMethodName);
-                        } else {
-                            methodSpecBuilder.addStatement("target.setTo($L())", parentMethodName);
-                        }
-                        methodSpecBuilder.addStatement("target.setExtras(bundle)");
-                        methodSpecBuilder.addStatement("return new $T(null, target, null)", ClassName.get(NAVIGATOR_PACKAGE, "DefaultNavigator"));
-                        methods.add(methodSpecBuilder.build());
-
-                        // obtain
-                        methodName = NameParser.parseObtain(name);
-                        methodSpecBuilder = MethodSpec.methodBuilder(methodName)
-                                .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC);
-                        methodSpecBuilder.returns(className)
-                                .addStatement("return new $T()", className);
-                        methods.add(methodSpecBuilder.build());
-                    } else {
-                        methodSpecBuilder = MethodSpec.methodBuilder(methodName)
-                                .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC);
-                        methodSpecBuilder.returns(className)
-                                .addStatement("return new $T()", className);
-                        methods.add(methodSpecBuilder.build());
-                    }
-                }
-            }
-        }
-        return methods;
-    }
-
-    private void generateP(String moduleName, String srcPath) {
-        try {
-            File mappingsFile = findMappings(srcPath);
-            if (mappingsFile != null && mappingsFile.exists()) {
-                Gson gson = new Gson();
-                MappingTable table = gson.fromJson(new InputStreamReader(new FileInputStream(mappingsFile)), MappingTable.class);
-                for (Map.Entry<String, JsonElement> e : table.mappings.entrySet()) {
-                    String url = e.getKey();
-                    String name = table.mappings.get(url).getAsString();
-                    if (name == null || url == null || "".equals(name) || "".equals(url)) {
-                        continue;
-                    }
-                    if (mTable.containsKey(name)) {
-                        continue;
-                    }
-                    mTable.put(name, url);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    private void generateP(List<PageInfo> pages) {
         List<FieldSpec> pFields = new ArrayList<>();
         List<MethodSpec> pMethods = new ArrayList<>();
-        for (Map.Entry<String, String> e : mTable.entrySet()) {
-            String name = e.getKey();
-            String url = e.getValue();
+        for (PageInfo page : pages) {
+            if (!page.main) {
+                continue;
+            }
+            String alias = page.alias;
+            String url = page.url;
+            final boolean useUrl = isEmpty(alias);
+
+            String name = useUrl ? url : alias;
+            if (name.contains("://")) {
+                name = name.replaceAll("(://|\\.)", "_");
+            }
+            while (name.startsWith("/")) {
+                name = name.substring(1);
+            }
+            while (name.endsWith("/")) {
+                name = name.substring(0, name.length() - 1);
+            }
+            name = name.replaceAll("/", "_").toUpperCase();
+            if (name.contains(" ")) {
+                name = name.replaceAll(" ", "_");
+            }
+            if (useUrl) {
+                name = "P_" + name;
+            }
+
             if (url.contains("{") && url.contains("}")) {
-                MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(name)
-                        .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
-                        .returns(String.class);
-                Pattern pattern = Pattern.compile("\\{([^{}:]+):?([^{}]*)\\}");
+                Pattern pattern = Pattern.compile(REST_PATTERN);
                 Matcher matcher = pattern.matcher(url);
                 List<ParameterSpec> params = new ArrayList<>();
                 List<String> holder = new ArrayList<>();
@@ -296,6 +278,7 @@ public class RabbitsCompiler extends AbstractProcessor {
                     String paramType = "";
                     if (count == 3) {
                         paramType = matcher.group(2);
+                        paramType = paramType.toLowerCase();
                     }
                     Type t;
                     switch (paramType) {
@@ -325,8 +308,14 @@ public class RabbitsCompiler extends AbstractProcessor {
                             holder.add("%s");
                             break;
                     }
+                    if (useUrl) {
+                        name = name.replaceFirst(REST_PATTERN, paramName.toUpperCase());
+                    }
                     params.add(ParameterSpec.builder(t, paramName).build());
                 }
+                MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(name)
+                        .addModifiers(Modifier.PUBLIC, Modifier.FINAL, Modifier.STATIC)
+                        .returns(String.class);
                 methodBuilder.addParameters(params);
                 StringBuilder objBuilder = new StringBuilder();
                 for (int i = 0; i < params.size(); i++) {
@@ -337,7 +326,7 @@ public class RabbitsCompiler extends AbstractProcessor {
                 }
                 String format = url;
                 for (int i = 0; i < params.size(); i++) {
-                    format = format.replaceFirst("\\{([^{}:]+):?([^{}]*)\\}", holder.get(i));
+                    format = format.replaceFirst(REST_PATTERN, holder.get(i));
                 }
                 String statement = "return String.format(\"$L\", " + objBuilder.toString() + ")";
                 List<String> obj = new ArrayList<>();
@@ -353,21 +342,19 @@ public class RabbitsCompiler extends AbstractProcessor {
                 FieldSpec fieldSpec = fieldBuilder.build();
                 pFields.add(fieldSpec);
             }
-
         }
 
-        String className = ROUTER_P_CLASS;
-        if (moduleName != null && moduleName.length() > 0) {
-            className += "_" + moduleName.toUpperCase();
-        }
-
-        TypeSpec pTypeSpec = TypeSpec.classBuilder(className)
+        TypeSpec pTypeSpec = TypeSpec.classBuilder(ROUTER_P_CLASS)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addFields(pFields)
                 .addMethods(pMethods)
                 .build();
         try {
-            JavaFile.builder(PACKAGE, pTypeSpec)
+            String packageName = PACKAGE;
+            if (mModuleName != null) {
+                packageName += "." + mModuleName;
+            }
+            JavaFile.builder(packageName, pTypeSpec)
                     .build()
                     .writeTo(mFiler);
         } catch (Throwable e) {
@@ -375,72 +362,15 @@ public class RabbitsCompiler extends AbstractProcessor {
         }
     }
 
-    private void generateRouters(String[] subModules) {
-        ArrayList<String> routerNames = new ArrayList<>();
-        for (String module : subModules) {
-            routerNames.add(getRouterClassName(module));
-        }
-
-        StringBuilder init = new StringBuilder();
-        for (String name : routerNames) {
-            init.append('"').append(name).append('"').append(",");
-        }
-        init.deleteCharAt(init.length() - 1);
-
-        FieldSpec routersField = FieldSpec.builder(String[].class, "routers", Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-                .initializer("new String[]{$L}", init.toString())
-                .build();
-
-        TypeSpec routersTypeSpec = TypeSpec.classBuilder(ROUTERS_CLASS)
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addField(routersField)
-                .build();
-        try {
-            JavaFile.builder(PACKAGE, routersTypeSpec)
-                    .build()
-                    .writeTo(mFiler);
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void parseExtras(MethodSpec.Builder methodSpecBuilder, Page page) {
-        String[] extras = page.stringExtras();
-        if (extras.length >= 2) {
-            for (int i = 0; i < extras.length; i += 2) {
-                String key = extras[i];
-                String value = extras[i + 1];
-                methodSpecBuilder.addStatement("bundle.putString($S, $S)", key, value);
-            }
-        }
-        extras = page.intExtras();
-        if (extras.length >= 2) {
-            for (int i = 0; i < extras.length; i += 2) {
-                String key = extras[i];
-                int value = Integer.parseInt(extras[i + 1]);
-                methodSpecBuilder.addStatement("bundle.putInt($S, $L)", key, value);
-            }
-        }
-        extras = page.floatExtras();
-        if (extras.length >= 2) {
-            for (int i = 0; i < extras.length; i += 2) {
-                String key = extras[i];
-                float value = Float.parseFloat(extras[i + 1]);
-                methodSpecBuilder.addStatement("bundle.putFloat($S, $L)", key, value);
-            }
-        }
-        extras = page.doubleExtras();
-        if (extras.length >= 2) {
-            for (int i = 0; i < extras.length; i += 2) {
-                String key = extras[i];
-                double value = Double.parseDouble(extras[i + 1]);
-                methodSpecBuilder.addStatement("bundle.putDouble($S, $L)", key, value);
-            }
-        }
+    private boolean isEmpty(String text) {
+        return text == null || text.length() == 0;
     }
 
     private void debug(String message) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, message);
+    }
+
+    private String valid(String str) {
+        return str.replaceAll("[^0-9a-z]+", "");
     }
 }

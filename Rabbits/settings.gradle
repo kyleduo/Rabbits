@@ -1,1 +1,1 @@
-include ':app', ':rabbits', ':annotations', ':compiler', ':submodule1'
+include ':app', ':rabbits', ':annotations', ':compiler', ':submodule1', ':submodule2'

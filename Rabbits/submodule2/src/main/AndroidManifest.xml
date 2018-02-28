@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.kyleduo.rabbits.demo.submodule2">
+
+    <application>
+        <activity android:name=".SM2Activity"
+            android:theme="@style/Sub2Theme"  />
+    </application>
+</manifest>
