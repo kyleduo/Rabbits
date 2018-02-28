@@ -89,6 +89,10 @@ public class ActionParser implements InternalInterceptor {
             bundle.putString(Rabbit.KEY_PATTERN, target.pattern);
 
             action.setExtras(bundle);
+        } else {
+            if (action.getExtras() == null) {
+                action.setExtras(new Bundle());
+            }
         }
 
         return dispatcher.dispatch(action);
