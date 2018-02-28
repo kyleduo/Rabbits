@@ -33,10 +33,11 @@ public class MainActivity extends BaseActivity {
                 "/test?param=value",
                 "/test/value",
                 "demo://rabbits.kyleduo.com/test/value",
-                "/test_variety"
+                "/test_variety",
+                "xxx://xxx.xxx/xxx?param=xxx"
         ));
         data.add(new Section("Interceptors", "/test/interceptor", "/test/rules"));
-        data.add(new Section("Fallback", "https://github.com/kyleduo"));
+        data.add(new Section("Fallback", "https://kyleduo.com"));
         data.add(new Section("Fragment", "/test_fragment", "/web"));
         data.add(new Section("Dump route table", "/dump"));
         data.add(new Section("Multiple modules", "/sm1/activity", "/sm2/activity"));

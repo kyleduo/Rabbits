@@ -11,7 +11,7 @@ import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.demo.base.BaseActivity;
 
-@Page(value = "/test", variety = {"/test_variety", "/test/{param}"})
+@Page(value = "/test", variety = {"/test_variety", "/test/{param}", "xxx://xxx.xxx/xxx"})
 public class TestActivity extends BaseActivity {
 
     @SuppressLint("SetTextI18n")
