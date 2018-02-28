@@ -1,13 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-<<<<<<< HEAD
-    compileSdkVersion 25
-    buildToolsVersion '26.0.2'
-=======
     compileSdkVersion 27
     buildToolsVersion buildToolsVersion
->>>>>>> dispatch
     defaultConfig {
         applicationId "com.kyleduo.rabbits.demo"
         minSdkVersion 14
