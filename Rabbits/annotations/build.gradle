@@ -1,8 +1,7 @@
 apply plugin: 'java'
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-//    compileOnly 'com.google.android:android:4.1.1.4'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 sourceCompatibility = "1.7"

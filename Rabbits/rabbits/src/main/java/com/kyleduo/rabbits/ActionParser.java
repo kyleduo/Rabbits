@@ -46,10 +46,6 @@ public class ActionParser implements InternalInterceptor {
         if (target != null) {
             Bundle bundle = new Bundle();
 
-            // Rabbits param
-            bundle.putString(Rabbit.KEY_ORIGIN_URL, action.getOriginUrl());
-            bundle.putString(Rabbit.KEY_PATTERN, target.pattern);
-
             // params from REST url
             Map<String, Object> urlParams = target.params;
             if (urlParams != null) {
@@ -87,6 +83,11 @@ public class ActionParser implements InternalInterceptor {
             if (action.getExtras() != null) {
                 bundle.putAll(action.getExtras());
             }
+
+            // Rabbits param, high priority.
+            bundle.putString(Rabbit.KEY_ORIGIN_URL, action.getOriginUrl());
+            bundle.putString(Rabbit.KEY_PATTERN, target.pattern);
+
             action.setExtras(bundle);
         }
 
