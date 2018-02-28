@@ -28,6 +28,8 @@ public class TestFragment extends BaseFragment {
 
         Button button = new Button(getActivity());
         button.setText("Start Second Fragment");
+        button.setTextColor(0xFF49A1FF);
+        button.setBackgroundDrawable(null);
         button.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         button.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -18,10 +18,13 @@ import com.kyleduo.rabbits.Rule;
 import com.kyleduo.rabbits.RuleSet;
 import com.kyleduo.rabbits.Rules;
 import com.kyleduo.rabbits.TargetInfo;
+import com.kyleduo.rabbits.demo.base.BaseActivity;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
+import com.kyleduo.rabbits.demo.utils.Constants;
+
+import me.yokeyword.fragmentation.SupportFragment;
 
 /**
- *
  * Created by kyle on 2016/12/8.
  */
 
@@ -128,6 +131,16 @@ public class DemoApplication extends Application {
 
             if (!isBase) {
                 return DispatchResult.error("Target invalid");
+            }
+
+            if ((action.getTargetFlags() & Constants.FLAG_FRAG_EMBED) > 0) {
+                if (from instanceof BaseFragment) {
+                    ((BaseFragment) from).start((SupportFragment) target);
+                    return DispatchResult.success();
+                } else if (from instanceof BaseActivity) {
+                    ((BaseActivity) from).start((SupportFragment) target);
+                    return DispatchResult.success();
+                }
             }
 
             return Rabbit.from(from)
