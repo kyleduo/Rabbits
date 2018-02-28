@@ -3,6 +3,7 @@
 buildscript {
     repositories {
         jcenter()
+        google()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
@@ -15,6 +16,7 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        google()
     }
 }
 
@@ -26,7 +28,7 @@ ext {
     compileSdkVersion = 25
     minSdkVersion = 9
     targetSdkVersion = 25
-    buildToolsVersion = '25.0.2'
+    buildToolsVersion = '26.0.3'
 
-    demoStandAlone = false
+    supportVersion = '27.0.2'
 }

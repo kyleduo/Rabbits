@@ -1,15 +1,21 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion buildToolsVersion
     defaultConfig {
         applicationId "com.kyleduo.rabbits.demo"
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [rabbits_submodules: "sm1"]
+            }
+        }
     }
 
     signingConfigs {
@@ -32,13 +38,11 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    if (!demoStandAlone) {
-        compile project(':submodule1')
-    }
+    compile project(':submodule1')
     // App's dependencies, including test
-    compile 'com.android.support:support-annotations:25.1.0'
-    compile 'com.android.support:appcompat-v7:25.1.0'
-    compile 'com.android.support:recyclerview-v7:25.1.0'
+    compile "com.android.support:support-annotations:$supportVersion"
+    compile "com.android.support:appcompat-v7:$supportVersion"
+    compile "com.android.support:recyclerview-v7:$supportVersion"
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -53,5 +57,5 @@ dependencies {
     annotationProcessor project(':compiler')
 
     // Fragmentation
-    compile 'me.yokeyword:fragmentation:0.9.3'
+    compile 'me.yokeyword:fragmentation:0.10.0'
 }

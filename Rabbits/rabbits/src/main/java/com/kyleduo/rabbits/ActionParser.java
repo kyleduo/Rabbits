@@ -46,7 +46,8 @@ public class ActionParser implements InternalInterceptor {
             Bundle bundle = new Bundle();
 
             // Rabbits param
-            bundle.putString(Rabbit.KEY_RABBITS_PATTERN, target.pattern);
+            bundle.putString(Rabbit.KEY_ORIGIN_URL, action.getOriginUrl());
+            bundle.putString(Rabbit.KEY_PATTERN, target.pattern);
 
             // params from REST url
             Map<String, Object> urlParams = target.params;

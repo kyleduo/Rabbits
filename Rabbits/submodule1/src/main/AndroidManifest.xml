@@ -1,0 +1,16 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.kyleduo.rabbits.demo.submodule1">
+
+    <application android:allowBackup="false">
+
+        <activity
+            android:name=".SMActivity"
+            android:theme="@style/SubTheme" />
+
+        <activity
+            android:name=".SMActivity2"
+            android:theme="@style/SubTheme" />
+
+    </application>
+
+</manifest>

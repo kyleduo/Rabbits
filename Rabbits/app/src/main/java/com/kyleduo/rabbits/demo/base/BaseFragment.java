@@ -50,7 +50,7 @@ public class BaseFragment extends SupportFragment {
 	@Override
 	public void onSupportVisible() {
 		super.onSupportVisible();
-		String pattern = getArguments().getString(Rabbit.KEY_RABBITS_PATTERN);
+		String pattern = getArguments().getString(Rabbit.KEY_PATTERN);
 		getActivity().setTitle(pattern + " @" + getClass().getSimpleName());
 	}
 }

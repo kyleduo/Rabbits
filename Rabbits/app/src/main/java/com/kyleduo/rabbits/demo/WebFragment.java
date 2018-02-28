@@ -1,5 +1,6 @@
 package com.kyleduo.rabbits.demo;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,9 +24,11 @@ import com.kyleduo.rabbits.demo.base.BaseFragment;
  */
 @Page("/web")
 public class WebFragment extends BaseFragment {
+    public static final String KEY_URL = "url";
 
     private WebView mWebView;
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -41,12 +44,9 @@ public class WebFragment extends BaseFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Bundle extras = getArguments();
-        if (extras != null) {
-            extras.putAll(getActivity().getIntent().getExtras());
-        }
         String url = "file:///android_asset/web.html";
         if (extras != null) {
-            url = extras.getString("url", url);
+            url = extras.getString(KEY_URL, url);
         }
         mWebView.loadUrl(url);
     }

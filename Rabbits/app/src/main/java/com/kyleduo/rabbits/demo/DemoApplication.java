@@ -21,6 +21,7 @@ import com.kyleduo.rabbits.TargetInfo;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
 
 /**
+ *
  * Created by kyle on 2016/12/8.
  */
 
@@ -39,7 +40,7 @@ public class DemoApplication extends Application {
         super.onCreate();
         sApp = this;
 
-        Rabbit.init(RConfig.get().schemes("demo", "http", "https").domains("rabbits.kyleduo.com", "allowed.kyleduo.com"))
+        Rabbit.init(RConfig.get().schemes("demo", "http", "https").domains("rabbits.kyleduo.com", "blog.kyleduo.com"))
                 // do not open any native pages when there is a query named 'greenChannel'
                 // and it's value equals '1'. This useful when use Rabbit as a bridge between
                 // native and web page.

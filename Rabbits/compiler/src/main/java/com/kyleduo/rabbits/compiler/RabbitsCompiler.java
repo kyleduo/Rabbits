@@ -11,10 +11,12 @@ import com.squareup.javapoet.TypeSpec;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,10 +39,13 @@ import javax.tools.Diagnostic;
 @AutoService(Processor.class)
 public class RabbitsCompiler extends AbstractProcessor {
     private static final String PACKAGE = "com.kyleduo.rabbits";
+    private static final String ROUTER_CLASS = "Router";
     private static final String ROUTE_TABLE_CLASS = "RouteTable";
     private static final String TARGET_INFO_CLASS = "TargetInfo";
     private static final String ROUTER_P_CLASS = "P";
     private static final String REST_PATTERN = "\\{([^{}:]+):?([^{}]*)}";
+    private static final String OPTION_MODULE_NAME = "rabbits_moduleName";
+    private static final String OPTION_SUB_MODULES = "rabbits_submodules";
 
     private static final int TYPE_ACTIVITY = 1;
     private static final int TYPE_FRAGMENT = 2;
@@ -52,6 +57,8 @@ public class RabbitsCompiler extends AbstractProcessor {
     private TypeMirror fragmentV4Type;
 
     private Filer mFiler;
+    private String mModuleName;
+    private List<String> mSubModules;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -64,6 +71,18 @@ public class RabbitsCompiler extends AbstractProcessor {
         activityType = elements.getTypeElement("android.app.Activity").asType();
         fragmentType = elements.getTypeElement("android.app.Fragment").asType();
         fragmentV4Type = elements.getTypeElement("android.support.v4.app.Fragment").asType();
+
+        Map<String, String> options = processingEnv.getOptions();
+        if (options != null && options.size() > 0) {
+            mModuleName = options.get(OPTION_MODULE_NAME);
+            String subModuleNames = options.get(OPTION_SUB_MODULES);
+            if (subModuleNames != null && subModuleNames.length() > 0) {
+                String[] names = subModuleNames.split(",");
+                if (names.length > 0) {
+                    mSubModules = Arrays.asList(names);
+                }
+            }
+        }
     }
 
     @Override
@@ -86,9 +105,6 @@ public class RabbitsCompiler extends AbstractProcessor {
 
         ClassName routeTable = ClassName.get(PACKAGE, ROUTE_TABLE_CLASS);
         ClassName targetInfo = ClassName.get(PACKAGE, TARGET_INFO_CLASS);
-
-        MethodSpec.Builder generateBuilder = MethodSpec.methodBuilder("generate")
-                .addModifiers(Modifier.STATIC, Modifier.PUBLIC);
 
         List<PageInfo> pages = new ArrayList<>();
         Set<String> addedPattern = new HashSet<>();
@@ -178,8 +194,17 @@ public class RabbitsCompiler extends AbstractProcessor {
             }
         });
 
+        MethodSpec.Builder generateBuilder = MethodSpec.methodBuilder("generate")
+                .addModifiers(Modifier.STATIC, Modifier.PUBLIC);
+
+        if (mSubModules != null && mSubModules.size() > 0) {
+            for (String name : mSubModules) {
+                generateBuilder.addStatement("$T.generate()", ClassName.get(PACKAGE + "." + name, ROUTER_CLASS));
+            }
+        }
+
         for (PageInfo p : pages) {
-            generateBuilder.addStatement("$T.map(\"$L\", new $T(\"$L\", $T.class, $L, $L));",
+            generateBuilder.addStatement("$T.map(\"$L\", new $T(\"$L\", $T.class, $L, $L))",
                     routeTable,
                     p.url,
                     targetInfo,
@@ -189,18 +214,28 @@ public class RabbitsCompiler extends AbstractProcessor {
                     String.valueOf(p.flag));
         }
 
-        TypeSpec router = TypeSpec.classBuilder("Router")
+        TypeSpec router = TypeSpec.classBuilder(ROUTER_CLASS)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addMethod(generateBuilder.build())
                 .build();
         try {
-            JavaFile.builder(PACKAGE, router)
+            String packageName = PACKAGE;
+            if (mModuleName != null) {
+                packageName += "." + mModuleName;
+            }
+            JavaFile.builder(packageName, router)
                     .build()
                     .writeTo(mFiler);
         } catch (Throwable e) {
             e.printStackTrace();
         }
 
+            generateP(pages);
+
+        return true;
+    }
+
+    private void generateP(List<PageInfo> pages) {
         List<FieldSpec> pFields = new ArrayList<>();
         List<MethodSpec> pMethods = new ArrayList<>();
         for (PageInfo page : pages) {
@@ -315,14 +350,16 @@ public class RabbitsCompiler extends AbstractProcessor {
                 .addMethods(pMethods)
                 .build();
         try {
-            JavaFile.builder(PACKAGE, pTypeSpec)
+            String packageName = PACKAGE;
+            if (mModuleName != null) {
+                packageName += "." + mModuleName;
+            }
+            JavaFile.builder(packageName, pTypeSpec)
                     .build()
                     .writeTo(mFiler);
         } catch (Throwable e) {
             e.printStackTrace();
         }
-
-        return true;
     }
 
     private boolean isEmpty(String text) {
@@ -331,5 +368,9 @@ public class RabbitsCompiler extends AbstractProcessor {
 
     private void debug(String message) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, message);
+    }
+
+    private String valid(String str) {
+        return str.replaceAll("[^0-9a-z]+", "");
     }
 }

@@ -26,10 +26,14 @@ public class FragmentContainerActivity extends BaseActivity {
 
         if (getTopFragment() == null) {
             String uri = getIntent().getStringExtra(KEY_FRAG_URL);
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                extras.remove(KEY_FRAG_URL);
+            }
             if (uri != null) {
                 DispatchResult ret = Rabbit.from(this)
                         .to(uri)
-                        .putExtras(getIntent().getExtras())
+                        .putExtras(extras)
                         .obtain();
                 Object target = ret.getTarget();
                 if (target instanceof BaseFragment) {
@@ -42,11 +46,14 @@ public class FragmentContainerActivity extends BaseActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        String pattern = intent.getStringExtra(Rabbit.KEY_RABBITS_PATTERN);
-
+        String pattern = intent.getStringExtra(Rabbit.KEY_PATTERN);
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            extras.remove(KEY_FRAG_URL);
+        }
         BaseFragment fragment = (BaseFragment) Rabbit.from(this)
                 .to(intent.getStringExtra(KEY_FRAG_URL))
-                .putExtras(intent.getExtras())
+                .putExtras(extras)
                 .obtain().getTarget();
 
         if (fragment == null) {
@@ -54,7 +61,7 @@ public class FragmentContainerActivity extends BaseActivity {
         }
 
         SupportFragment topFragment = getTopFragment();
-        if (topFragment != null && topFragment.getArguments().getString(Rabbit.KEY_RABBITS_PATTERN, "").equals(pattern)) {
+        if (topFragment != null && topFragment.getArguments().getString(Rabbit.KEY_PATTERN, "").equals(pattern)) {
             topFragment.replaceFragment(fragment, false);
         } else if (topFragment == null) {
             loadRootFragment(R.id.common_fragment_container, fragment);

@@ -4,8 +4,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -38,27 +36,13 @@ public class MainActivity extends BaseActivity {
                 "/test_variety"
         ));
         data.add(new Section("Interceptors", "/test/interceptor", "/test/rules", "/test/interceptor?greenChannel=1", "/test/interceptor?ignore=1"));
-        data.add(new Section("Fragment", "/test_fragment"));
+        data.add(new Section("Fragment", "/test_fragment", "/web"));
+        data.add(new Section("Dump route table", "/dump"));
+        data.add(new Section("Multiple modules", "/sm1/activity"));
 
-
-        RecyclerView rv = (RecyclerView) findViewById(R.id.recycler_view);
+        RecyclerView rv = findViewById(R.id.recycler_view);
         rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rv.setAdapter(new TestAdapter(this, data));
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.show_mappings) {
-            Rabbit.from(this).to("/dump").start();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     static class Section {

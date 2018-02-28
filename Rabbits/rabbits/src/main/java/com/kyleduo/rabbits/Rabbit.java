@@ -27,7 +27,8 @@ public final class Rabbit {
     private static final String PACKAGE = "com.kyleduo.rabbits";
     private static final String ROUTER_CLASS_NAME = PACKAGE + ".Router";
     private static final String GENERATE_METHOD_NAME = "generate";
-    public static final String KEY_RABBITS_PATTERN = "rabbits_pattern";
+    public static final String KEY_ORIGIN_URL = "rabbits_origin_url";
+    public static final String KEY_PATTERN = "rabbits_pattern";
 
     private List<String> mSchemes;
     private List<String> mDomains;
@@ -75,6 +76,10 @@ public final class Rabbit {
             sInstance = new Rabbit(config);
         }
         return sInstance;
+    }
+
+    public static String dump() {
+        return RouteTable.dump();
     }
 
     /**

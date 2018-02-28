@@ -23,7 +23,7 @@ public class InterceptorActivity extends BaseActivity {
         TextView tv = (TextView) findViewById(R.id.params_tv);
         tv.setText("param = " + getIntent().getStringExtra("param"));
 
-        Log.d("s", "pattern: " + getIntent().getStringExtra(Rabbit.KEY_RABBITS_PATTERN));
+        Log.d("s", "pattern: " + getIntent().getStringExtra(Rabbit.KEY_PATTERN));
 
         findViewById(R.id.back_home_bt).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -40,6 +40,6 @@ public class InterceptorActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        setTitle(getIntent().getStringExtra(Rabbit.KEY_RABBITS_PATTERN) + "@" + this.getClass().getSimpleName());
+        setTitle(getIntent().getStringExtra(Rabbit.KEY_PATTERN) + "@" + this.getClass().getSimpleName());
     }
 }

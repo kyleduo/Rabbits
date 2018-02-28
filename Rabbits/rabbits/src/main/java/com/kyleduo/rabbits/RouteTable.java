@@ -150,4 +150,13 @@ public class RouteTable {
         return Rabbit.get().getSchemes().contains(scheme)
                 && Rabbit.get().getDomains().contains(domain);
     }
+
+    static String dump() {
+        StringBuilder dump = new StringBuilder();
+        for (Map.Entry<String, TargetInfo> e : sMappings.entrySet()) {
+            dump.append("pattern: ").append(e.getKey()).append("\n")
+                    .append("class: ").append(e.getValue().target.getCanonicalName()).append("\n\n");
+        }
+        return dump.toString();
+    }
 }
