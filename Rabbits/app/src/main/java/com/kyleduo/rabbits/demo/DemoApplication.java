@@ -100,8 +100,19 @@ public class DemoApplication extends Application {
                 .registerFallbackNavigator(new Navigator() {
                     @Override
                     public DispatchResult perform(Action action) {
-                        Toast.makeText((Context) action.getFrom(), "fallback", Toast.LENGTH_SHORT).show();
-                        return DispatchResult.success();
+                        Uri uri = Uri.parse(action.getOriginUrl());
+                        Uri.Builder builder = uri.buildUpon();
+                        if (uri.getScheme() == null || !uri.getScheme().startsWith("http")) {
+                            builder.scheme("https");
+                        }
+                        if (uri.getAuthority() == null) {
+                            builder.authority("kyleduo.com");
+                        }
+                        uri = builder.build();
+                        return Rabbit.from(action.getFrom())
+                                .to(P.P_WEB)
+                                .putExtra(WebFragment.KEY_URL, uri.toString())
+                                .start();
                     }
                 });
     }

@@ -35,7 +35,8 @@ public class MainActivity extends BaseActivity {
                 "demo://rabbits.kyleduo.com/test/value",
                 "/test_variety"
         ));
-        data.add(new Section("Interceptors", "/test/interceptor", "/test/rules", "/test/interceptor?greenChannel=1", "/test/interceptor?ignore=1"));
+        data.add(new Section("Interceptors", "/test/interceptor", "/test/rules"));
+        data.add(new Section("Fallback", "https://github.com/kyleduo"));
         data.add(new Section("Fragment", "/test_fragment", "/web"));
         data.add(new Section("Dump route table", "/dump"));
         data.add(new Section("Multiple modules", "/sm1/activity"));
