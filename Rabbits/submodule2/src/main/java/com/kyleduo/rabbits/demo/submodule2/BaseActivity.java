@@ -1,4 +1,4 @@
-package com.kyleduo.rabbits.demo.submodule1;
+package com.kyleduo.rabbits.demo.submodule2;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -26,7 +26,7 @@ public class BaseActivity extends AppCompatActivity {
                 setSupportActionBar(toolbar);
 
 
-                toolbar.setBackgroundColor(0xFF7A8790);
+                toolbar.setBackgroundColor(0xFF857694);
                 toolbar.setTitleTextColor(Color.WHITE);
             }
         });

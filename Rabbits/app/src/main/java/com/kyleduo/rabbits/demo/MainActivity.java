@@ -39,11 +39,11 @@ public class MainActivity extends BaseActivity {
         data.add(new Section("Fallback", "https://github.com/kyleduo"));
         data.add(new Section("Fragment", "/test_fragment", "/web"));
         data.add(new Section("Dump route table", "/dump"));
-        data.add(new Section("Multiple modules", "/sm1/activity"));
+        data.add(new Section("Multiple modules", "/sm1/activity", "/sm2/activity"));
         data.add(new Section("copyright @kyleduo 2018", null));
         data.add(new Section("", null));
 
-        RecyclerView rv = findViewById(R.id.recycler_view);
+        RecyclerView rv = (RecyclerView) findViewById(R.id.recycler_view);
         rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rv.setAdapter(new TestAdapter(this, data));
     }

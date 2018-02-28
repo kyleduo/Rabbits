@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/common_fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -13,15 +14,12 @@
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/back_home"
+            android:id="@+id/open_submodule2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:text="Back to home."
-            android:textColor="#49A1FF"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
+            android:text="Activity in submodule1"
+            android:textColor="#A6ABB0"
+            android:textSize="14sp" />
     </LinearLayout>
 
 </LinearLayout>

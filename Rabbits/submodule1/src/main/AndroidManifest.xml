@@ -11,6 +11,10 @@
             android:name=".SMActivity2"
             android:theme="@style/SubTheme" />
 
+        <activity
+            android:name=".SMTestActivity"
+            android:theme="@style/SubTheme" />
+
     </application>
 
 </manifest>

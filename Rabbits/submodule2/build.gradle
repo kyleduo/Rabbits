@@ -14,26 +14,27 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = [rabbits_moduleName: "sm1", rabbits_submodules: "sm2"]
+                arguments = [rabbits_moduleName: "sm2"]
             }
         }
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':submodule2')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
+
     implementation "com.android.support:appcompat-v7:$supportVersion"
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
     // Rabbits
     compile project(':rabbits')

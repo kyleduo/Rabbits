@@ -15,7 +15,7 @@ public class GeneralActivity extends SupportActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_general);
+        setContentView(R.layout.act_sm1_test);
 
         if (getTopFragment() == null) {
 //            String uri = getIntent().getStringExtra(Rabbit.KEY_ORIGIN_URI);

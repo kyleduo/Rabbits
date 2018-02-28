@@ -27,6 +27,9 @@ public class RouteTable {
     private static boolean sHasCompletePattern = false;
 
     public static void map(String path, TargetInfo targetInfo) {
+        if (sMappings.containsKey(path)) {
+            Logger.e("Same pattern exists. Overwriting...");
+        }
         sMappings.put(path, targetInfo);
         if (path.contains("://")) {
             sHasCompletePattern = true;
