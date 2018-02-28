@@ -17,7 +17,7 @@ public class InterceptorActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.act_sm1_test);
+        setContentView(R.layout.activity_test);
 
         TextView tv = (TextView) findViewById(R.id.params_tv);
         tv.setText("param = " + getIntent().getStringExtra("param"));
