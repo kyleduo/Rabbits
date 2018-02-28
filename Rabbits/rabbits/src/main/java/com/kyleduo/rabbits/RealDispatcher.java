@@ -25,6 +25,11 @@ public class RealDispatcher implements Interceptor.Dispatcher {
         }
 
         Interceptor interceptor = mInterceptors.get(mIndex);
+        if (action.isIgnoreInterceptors()) {
+            while (!(interceptor instanceof InternalInterceptor)) {
+                interceptor = mInterceptors.get(++mIndex);
+            }
+        }
 
         RealDispatcher next = new RealDispatcher(mAction, mInterceptors, mIndex + 1);
 

@@ -19,6 +19,8 @@
 		</activity>
 		<activity android:name=".TestActivity">
 		</activity>
+		<activity android:name=".InterceptorActivity">
+		</activity>
 		<activity android:name=".FragmentContainerActivity">
 		</activity>
 	</application>

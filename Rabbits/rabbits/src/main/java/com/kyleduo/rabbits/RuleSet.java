@@ -11,7 +11,7 @@ import java.util.List;
  */
 
 public class RuleSet extends RuleImpl {
-    enum Relation {
+    public enum Relation {
         AND, OR
     }
 

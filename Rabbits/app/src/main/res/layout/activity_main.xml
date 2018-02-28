@@ -1,95 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:id="@+id/activity_main"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.kyleduo.rabbits.demo.MainActivity">
 
-    <TextView
-        style="@style/Contents"
-        android:text="demo://rabbits.kyleduo.com/test"
-        />
+    <include layout="@layout/toolbar" />
 
-    <TextView
-        style="@style/Contents"
-        android:text="demo://rabbits.kyleduo.com/test/Params"
-        />
-
-    <TextView
-        style="@style/Contents"
-        android:text="demo://rabbits.kyleduo.com/test/Params?greenChannel=1"
-        />
-
-    <TextView
-        style="@style/Contents"
-        android:text="https://blog.kyleduo.com/test/LALALA"
-        />
-
-    <TextView
-        style="@style/Contents"
-        android:text="demo://rabbits.kyleduo.com/test2/Params"
-        />
-
-    <TextView
-        style="@style/Contents"
-        android:text="demo://rabbits.kyleduo.com/test/test/test"
-        />
-
-    <TextView
-        style="@style/Contents"
-        android:text="demo://rabbits.kyleduo.com/test?testing=Params"
-        />
-
-    <TextView
-        style="@style/Contents"
-        android:text="demo://rabbits.kyleduo.com/test/listing"
-        />
-
-    <TextView
-        style="@style/Contents"
-        android:text="demo://rabbits.kyleduo.com/test_fragment"
-        />
-
-    <TextView
-        style="@style/Contents"
-        android:text="demo://rabbits.kyleduo.com/web"
-        />
-
-    <TextView
-        style="@style/Contents"
-        android:text="demo://blog.kyleduo.com?this_will_be_handled_by_not_found_handler"
-        />
-
-    <TextView
-        style="@style/Contents"
-        android:text="demo://rabbits.kyleduo.com/second/1"
-        />
-
-    <TextView
-        style="@style/Contents"
-        android:text="demo://rabbits.kyleduo.com/submodule1"
-        />
-
-    <TextView
-        style="@style/Contents"
-        android:text="demo://rabbits.kyleduo.com/submodule2"
-        />
-
-
-    <Button
-        android:id="@+id/update_bt"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:minHeight="40dp"
-        android:text="test update"/>
+        android:layout_height="match_parent"
+        android:background="#F5F6FA" />
 
 </LinearLayout>

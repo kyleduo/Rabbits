@@ -8,7 +8,7 @@ import android.util.SparseArray;
  * Created by kyle on 26/01/2018.
  */
 
-class NavigatorInterceptor implements Interceptor {
+class NavigatorInterceptor implements InternalInterceptor {
 
     private SparseArray<Navigator> mNavigators;
 

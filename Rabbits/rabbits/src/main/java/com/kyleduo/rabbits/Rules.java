@@ -19,14 +19,14 @@ public final class Rules {
     }
 
     public static Element path() {
-        return new DomainRule();
+        return new PathRule();
     }
 
     public static Element query(String key) {
         return new QueryRule(key);
     }
 
-    public static Element set(RuleSet.Relation relation, Rule... rules) {
+    public static Rule set(RuleSet.Relation relation, Rule... rules) {
         return new RuleSet(Arrays.asList(rules), relation);
     }
 }

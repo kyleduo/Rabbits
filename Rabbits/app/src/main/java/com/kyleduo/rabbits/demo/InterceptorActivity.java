@@ -11,8 +11,8 @@ import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.demo.base.BaseActivity;
 
-@Page(value = "/test", variety = {"/test_variety", "/test/{param}"})
-public class TestActivity extends BaseActivity {
+@Page(value = "/test/interceptor", flags = 1, variety = {"/test/rules"})
+public class InterceptorActivity extends BaseActivity {
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -28,7 +28,7 @@ public class TestActivity extends BaseActivity {
         findViewById(R.id.back_home_bt).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Rabbit.from(TestActivity.this)
+                Rabbit.from(InterceptorActivity.this)
                         .to(P.P_)
                         .clearTop()
                         .singleTop()

@@ -11,7 +11,7 @@ import android.support.v4.app.Fragment;
  * Created by kyle on 26/01/2018.
  */
 
-public class TargetAssembler implements Interceptor {
+public class TargetAssembler implements InternalInterceptor {
     @Override
     public DispatchResult intercept(Dispatcher dispatcher) {
         Action action = dispatcher.action();

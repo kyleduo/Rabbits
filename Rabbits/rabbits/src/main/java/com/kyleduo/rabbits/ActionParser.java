@@ -14,7 +14,7 @@ import java.util.Set;
  * Created by kyle on 30/01/2018.
  */
 
-public class ActionParser implements Interceptor {
+public class ActionParser implements InternalInterceptor {
     @Override
     public DispatchResult intercept(Dispatcher dispatcher) {
         Action action = dispatcher.action();
@@ -23,10 +23,6 @@ public class ActionParser implements Interceptor {
         // generate uri
         if (uri == null) {
             String url = action.getOriginUrl();
-//            "" ~ "/"
-//            if (TextUtils.isEmpty(url)) {
-//                return DispatchResult.error("Url can not be empty");
-//            }
             if (url.contains("://")) {
                 uri = Uri.parse(url);
             } else {

@@ -15,6 +15,7 @@ import com.kyleduo.rabbits.P;
 import com.kyleduo.rabbits.RConfig;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.Rule;
+import com.kyleduo.rabbits.RuleSet;
 import com.kyleduo.rabbits.Rules;
 import com.kyleduo.rabbits.TargetInfo;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
@@ -27,9 +28,16 @@ public class DemoApplication extends Application {
     @SuppressWarnings("unused")
     private static final String TAG = "DemoApplication";
 
+    private static DemoApplication sApp;
+
+    public static DemoApplication get() {
+        return sApp;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        sApp = this;
 
         Rabbit.init(RConfig.get().schemes("demo", "http", "https").domains("rabbits.kyleduo.com", "allowed.kyleduo.com"))
                 // do not open any native pages when there is a query named 'greenChannel'
@@ -41,22 +49,34 @@ public class DemoApplication extends Application {
                         dispatcher.action().discard();
                         return dispatcher.dispatch(dispatcher.action());
                     }
-                }, Rules.query("greenChannel").is("1"))
+                }, Rules.set(RuleSet.Relation.OR, Rules.query("greenChannel").is("1"), Rules.query("ignore").is("1")))
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public DispatchResult intercept(Dispatcher dispatcher) {
+                        // ignore other following interceptors.
+                        dispatcher.action().getExtras().putString("param", "rules");
+                        dispatcher.action().setIgnoreInterceptors(true);
+                        Toast.makeText(DemoApplication.this, "Interceptor by Rules", Toast.LENGTH_SHORT).show();
+                        return dispatcher.dispatch(dispatcher.action());
+                    }
+                }, Rules.path().contains("/rules"))
                 .addInterceptor(new Interceptor() {
                     @Override
                     public DispatchResult intercept(final Dispatcher dispatcher) {
                         final Action action = dispatcher.action();
                         if ((action.getTargetFlags() & 1) > 0) {
                             if (action.getFrom() instanceof Context) {
+                                action.getExtras().putString("param", "interceptor");
                                 new AlertDialog.Builder((Context) action.getFrom())
-                                        .setTitle("拦截")
-                                        .setPositiveButton("继续", new DialogInterface.OnClickListener() {
+                                        .setTitle("Intercepted")
+                                        .setMessage("The navigation has been intercepted by interceptor. \nA param has been set in the interceptor.")
+                                        .setPositiveButton("Go on", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dispatcher.dispatch(action);
                                             }
                                         })
-                                        .setNegativeButton("取消", null).create().show();
+                                        .setNegativeButton("Cancel", null).create().show();
                                 return null;
                             }
                         }
@@ -79,7 +99,7 @@ public class DemoApplication extends Application {
                 .registerFallbackNavigator(new Navigator() {
                     @Override
                     public DispatchResult perform(Action action) {
-                        Toast.makeText((Context) action.getFrom(), "NOT_FOUND", Toast.LENGTH_SHORT).show();
+                        Toast.makeText((Context) action.getFrom(), "fallback", Toast.LENGTH_SHORT).show();
                         return DispatchResult.success();
                     }
                 });
