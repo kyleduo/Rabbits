@@ -53,9 +53,17 @@ public class ActivityNavigator implements Navigator {
             }
         }
 
-        // only finish activity when navigate from an Activity.
-        if (activity != null && activity == action.getFrom() && action.isRedirect()) {
-            activity.finish();
+        // finish previous Activity
+        if (action.isRedirect()) {
+            if (activity != null && activity == action.getFrom()) {
+                activity.finish();
+            } else if (action.getFrom() instanceof Fragment) {
+                ((Fragment) action.getFrom()).getActivity().finish();
+            } else if (action.getFrom() instanceof android.app.Fragment) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                    ((android.app.Fragment) action.getFrom()).getActivity().finish();
+                }
+            }
         }
 
         int[] animations = action.getTransitionAnimations();
