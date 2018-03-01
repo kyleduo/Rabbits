@@ -45,7 +45,7 @@ class NavigatorInterceptor implements InternalInterceptor {
                 // fallback handler isn't set.
                 return RabbitResult.notFound(action.getOriginUrl());
             } else {
-                throw new IllegalStateException("Navigator not found");
+                return RabbitResult.error("Navigator not found for type " + action.getTargetType());
             }
         }
         return navigator.perform(action);
