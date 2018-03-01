@@ -1,6 +1,8 @@
 package com.kyleduo.rabbits;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -19,12 +21,12 @@ public final class RabbitConfig {
     }
 
     public RabbitConfig schemes(String... schemes) {
-        mSchemes = Arrays.asList(schemes);
+        mSchemes = new ArrayList<>(new HashSet<>(Arrays.asList(schemes)));
         return this;
     }
 
     public RabbitConfig domains(String... domains) {
-        mDomains = Arrays.asList(domains);
+        mDomains = new ArrayList<>(new HashSet<>(Arrays.asList(domains)));
         return this;
     }
 
