@@ -17,24 +17,9 @@ public class QueryRule extends RuleImpl {
     }
 
     @Override
-    public Rule startsWith(String value) {
-        throw new IllegalStateException("Not supported by Query");
-    }
-
-    @Override
-    public Rule endsWith(String value) {
-        throw new IllegalStateException("Not supported by Query");
-    }
-
-    @Override
-    public Rule contains(String value) {
-        throw new IllegalStateException("Not supported by Query");
-    }
-
-    @Override
     public boolean verify(Uri uri) {
         String q = uri.getQueryParameter(mKey);
-        return super.valid(q);
+        return super.verify(q);
     }
 
     @Override

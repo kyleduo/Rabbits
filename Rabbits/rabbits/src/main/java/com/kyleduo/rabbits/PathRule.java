@@ -15,7 +15,7 @@ public class PathRule extends RuleImpl {
 
     @Override
     public boolean verify(Uri uri) {
-        return valid(uri.getPath());
+        return verify(uri.getPath());
     }
 
     @Override

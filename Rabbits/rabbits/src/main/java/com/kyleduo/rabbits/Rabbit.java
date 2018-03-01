@@ -61,7 +61,7 @@ public final class Rabbit {
         return mSchemes;
     }
 
-    static Rabbit get() {
+    public static Rabbit get() {
         return sInstance;
     }
 

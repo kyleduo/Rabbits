@@ -77,7 +77,7 @@ public class DemoApplication extends Application {
                                 action.getExtras().putString("param", "interceptor");
                                 new AlertDialog.Builder((Context) action.getFrom())
                                         .setTitle("Intercepted")
-                                        .setMessage("The navigation has been intercepted by interceptor. \nA param has been set in the interceptor.")
+                                        .setMessage("The navigation has been intercepted by interceptor. \n\nA param has been set in the interceptor.")
                                         .setPositiveButton("Go on", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {

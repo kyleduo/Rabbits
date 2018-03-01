@@ -61,7 +61,7 @@ public abstract class RuleImpl implements Rule, Element {
         return this;
     }
 
-    boolean valid(String source) {
+    boolean verify(String source) {
         switch (mOperator) {
             case EXISTS:
                 return source != null && source.length() > 0;
