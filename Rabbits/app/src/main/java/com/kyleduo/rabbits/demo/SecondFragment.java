@@ -1,5 +1,7 @@
 package com.kyleduo.rabbits.demo;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -20,7 +22,7 @@ import com.kyleduo.rabbits.demo.base.BaseFragment;
 public class SecondFragment extends BaseFragment {
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         LinearLayout ll = (LinearLayout) super.onCreateView(inflater, container, savedInstanceState);
         assert ll != null;
 
@@ -39,6 +41,23 @@ public class SecondFragment extends BaseFragment {
             }
         });
         ll.addView(button);
+
+
+        Button button1 = new Button(getActivity());
+        button1.setText("Set Result");
+        button1.setTextColor(0xFF49A1FF);
+        button1.setBackgroundDrawable(null);
+        button1.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.putExtra("result", "Result content");
+                getActivity().setResult(Activity.RESULT_OK, intent);
+                getActivity().finish();
+            }
+        });
+        ll.addView(button1);
 
         return ll;
     }

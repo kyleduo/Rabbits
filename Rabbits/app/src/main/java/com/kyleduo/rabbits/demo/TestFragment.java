@@ -1,5 +1,7 @@
 package com.kyleduo.rabbits.demo;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -7,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.kyleduo.rabbits.P;
 import com.kyleduo.rabbits.Rabbit;
@@ -49,6 +52,17 @@ public class TestFragment extends BaseFragment {
         });
         ll.addView(button1);
 
+        Button button2 = createButton("start for Result in Fragment");
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Rabbit.from(TestFragment.this)
+                        .to(P.P_SECOND_ID(new Random().nextInt(10)))
+                        .startForResult(100);
+            }
+        });
+        ll.addView(button2);
+
         return ll;
     }
 
@@ -59,5 +73,17 @@ public class TestFragment extends BaseFragment {
         button.setBackgroundDrawable(null);
         button.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         return button;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                Toast.makeText(getActivity(), "Result: " + data.getStringExtra("result"), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), "Result: " + resultCode, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

@@ -26,23 +26,35 @@ public class ActivityNavigator implements Navigator {
         if (from == null) {
             return RabbitResult.error("The \"from\" can not be null");
         }
+        final int requestCode = action.getRequestCode();
+        final Intent intent = (Intent) action.getTarget();
+
         Activity activity = null;
-        if (from instanceof Activity) {
-            activity = (Activity) from;
-        } else if (from instanceof Fragment) {
-            activity = ((Fragment) from).getActivity();
-        } else if (from instanceof android.app.Fragment) {
-            activity = ((android.app.Fragment) from).getActivity();
-        }
-        if (activity != null) {
-            if (action.getRequestCode() > 0) {
-                activity.startActivityForResult((Intent) action.getTarget(), action.getRequestCode());
+        
+        if (requestCode > 0) {
+            if (from instanceof Activity) {
+                ((Activity) from).startActivityForResult(intent, requestCode);
+            } else if (from instanceof Fragment) {
+                ((Fragment) from).startActivityForResult(intent, requestCode);
+            } else if (from instanceof android.app.Fragment) {
+                ((android.app.Fragment) from).startActivityForResult(intent, requestCode);
+            } else if (from instanceof Context) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                ((Context) from).startActivity(intent);
             } else {
-                activity.startActivity((Intent) action.getTarget());
+                return RabbitResult.error("Invalid from.");
             }
         } else {
-            if (from instanceof Context) {
-                Intent intent = (Intent) target;
+            if (from instanceof Activity) {
+                activity = (Activity) from;
+            } else if (from instanceof Fragment) {
+                activity = ((Fragment) from).getActivity();
+            } else if (from instanceof android.app.Fragment) {
+                activity = ((android.app.Fragment) from).getActivity();
+            }
+            if (activity != null) {
+                activity.startActivity((Intent) action.getTarget());
+            } else if (from instanceof Context) {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 ((Context) from).startActivity(intent);
             } else {

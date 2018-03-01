@@ -1,5 +1,7 @@
 package com.kyleduo.rabbits.demo;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kyleduo.rabbits.P;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.RabbitResult;
 import com.kyleduo.rabbits.annotations.Page;
@@ -38,6 +41,7 @@ public class MainActivity extends BaseActivity {
                 "/test_variety",
                 "xxx://xxx.xxx/xxx?param=xxx"
         ));
+        data.add(new Section("startForResult", "Result: " + P.P_SECOND_ID(1)));
         data.add(new Section("Interceptors", "/test/interceptor", "/test/rules"));
         data.add(new Section("Fallback", "https://kyleduo.com"));
         data.add(new Section("Control", "Redirect: /test/redirect", "Anim: /test/animation", "IgnoreInterceptor: /test/interceptor?not_intercepted", "IgnoreFallback: https://kyleduo.com"));
@@ -50,6 +54,18 @@ public class MainActivity extends BaseActivity {
         RecyclerView rv = (RecyclerView) findViewById(R.id.recycler_view);
         rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rv.setAdapter(new TestAdapter(this, data));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100) {
+            if (resultCode == Activity.RESULT_OK && data != null) {
+                Toast.makeText(this, "Result: " + data.getStringExtra("result"), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Result: " + resultCode, Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     static class Section {
@@ -156,6 +172,9 @@ public class MainActivity extends BaseActivity {
                             } else if (url.startsWith("IgnoreFallback: ")) {
                                 url = url.substring(16);
                                 result = Rabbit.from(mActRef.get()).to(url).ignoreFallback().start();
+                            } else if (url.startsWith("Result: ")) {
+                                url = url.substring(8);
+                                result = Rabbit.from(mActRef.get()).to(url).startForResult(100);
                             } else {
                                 result = Rabbit.from(mActRef.get()).to(url).start();
                             }
