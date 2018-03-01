@@ -9,7 +9,7 @@ import android.support.v4.app.Fragment;
  * Created by kyle on 01/03/2018.
  */
 
-public class CleanUpInterceptor implements Interceptor {
+public class CleanUpInterceptor implements InternalInterceptor {
     @Override
     public RabbitResult intercept(Dispatcher dispatcher) {
         Action action = dispatcher.action();
