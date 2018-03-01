@@ -1,7 +1,5 @@
 package com.kyleduo.rabbits;
 
-import android.net.Uri;
-
 /**
  * Rules used when matching url.
  *
@@ -10,8 +8,8 @@ import android.net.Uri;
 
 public interface Rule {
     enum Operator {
-        IS, NOT, STARTS_WITH, ENDS_WITH, IN, CONTAINS, EXISTS
+        IS, STARTS_WITH, ENDS_WITH, IN, CONTAINS, EXISTS
     }
 
-    boolean verify(Uri uri);
+    boolean verify(Action action);
 }

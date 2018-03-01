@@ -9,7 +9,7 @@ import android.net.Uri;
  */
 
 @SuppressWarnings("unused")
-public class PathRule extends RuleImpl {
+public class PathRule extends UriRule {
     PathRule() {
     }
 

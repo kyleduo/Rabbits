@@ -1,5 +1,7 @@
 package com.kyleduo.rabbits;
 
+import android.net.Uri;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,13 +11,13 @@ import java.util.List;
  * Created by kyle on 11/02/2018.
  */
 
-public abstract class RuleImpl implements Rule, Element {
+public abstract class UriRule implements Rule, Element {
 
     private Operator mOperator;
     private String mValue;
     private List<String> mValues;
 
-    RuleImpl() {
+    UriRule() {
     }
 
     @Override
@@ -26,11 +28,6 @@ public abstract class RuleImpl implements Rule, Element {
     @Override
     public Rule is(String value) {
         return operator(Operator.IS, value);
-    }
-
-    @Override
-    public Rule not(String value) {
-        return operator(Operator.NOT, value);
     }
 
     @Override
@@ -61,14 +58,19 @@ public abstract class RuleImpl implements Rule, Element {
         return this;
     }
 
+    @Override
+    public boolean verify(Action action) {
+        return verify(action.getUri());
+    }
+
+    protected abstract boolean verify(Uri uri);
+
     boolean verify(String source) {
         switch (mOperator) {
             case EXISTS:
                 return source != null && source.length() > 0;
             case IS:
                 return source != null && source.equals(mValue);
-            case NOT:
-                return source == null || !source.equals(mValue);
             case STARTS_WITH:
                 return source != null && source.startsWith(mValue);
             case ENDS_WITH:

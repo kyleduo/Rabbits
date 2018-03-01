@@ -1,7 +1,5 @@
 package com.kyleduo.rabbits;
 
-import android.net.Uri;
-
 import java.util.List;
 
 /**
@@ -10,7 +8,7 @@ import java.util.List;
  * Created by kyle on 11/02/2018.
  */
 
-public class RuleSet extends RuleImpl {
+public class RuleSet implements Rule {
     public enum Relation {
         AND, OR
     }
@@ -25,17 +23,17 @@ public class RuleSet extends RuleImpl {
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public boolean verify(Uri uri) {
+    public boolean verify(Action action) {
         if (mRelation == Relation.AND) {
             for (Rule rule : mRules) {
-                if (!rule.verify(uri)) {
+                if (!rule.verify(action)) {
                     return false;
                 }
             }
             return true;
         } else if (mRelation == Relation.OR) {
             for (Rule rule : mRules) {
-                if (rule.verify(uri)) {
+                if (rule.verify(action)) {
                     return true;
                 }
             }

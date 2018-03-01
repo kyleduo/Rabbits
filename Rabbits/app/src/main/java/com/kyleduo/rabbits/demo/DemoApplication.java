@@ -72,25 +72,23 @@ public class DemoApplication extends Application {
                     @Override
                     public RabbitResult intercept(final Dispatcher dispatcher) {
                         final Action action = dispatcher.action();
-                        if ((action.getTargetFlags() & 1) > 0) {
-                            if (action.getFrom() instanceof Context) {
-                                action.getExtras().putString("param", "interceptor");
-                                new AlertDialog.Builder((Context) action.getFrom())
-                                        .setTitle("Intercepted")
-                                        .setMessage("The navigation has been intercepted by interceptor. \n\nA param has been set in the interceptor.")
-                                        .setPositiveButton("Go on", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dispatcher.dispatch(action);
-                                            }
-                                        })
-                                        .setNegativeButton("Cancel", null).create().show();
-                                return null;
-                            }
+                        if (action.getFrom() instanceof Context) {
+                            action.getExtras().putString("param", "interceptor");
+                            new AlertDialog.Builder((Context) action.getFrom())
+                                    .setTitle("Intercepted")
+                                    .setMessage("The navigation has been intercepted by interceptor. \n\nA param has been set in the interceptor.")
+                                    .setPositiveButton("Go on", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dispatcher.dispatch(action);
+                                        }
+                                    })
+                                    .setNegativeButton("Cancel", null).create().show();
+                            return null;
                         }
                         return dispatcher.dispatch(action);
                     }
-                })
+                }, Rules.flags().has(1))
                 // add Interceptor with totally custom rules
                 .addInterceptor(new Interceptor() {
                     @Override
@@ -99,7 +97,7 @@ public class DemoApplication extends Application {
                     }
                 }, new Rule() {
                     @Override
-                    public boolean verify(Uri uri) {
+                    public boolean verify(Action action) {
                         return false;
                     }
                 })

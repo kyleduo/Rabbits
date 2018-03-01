@@ -8,7 +8,7 @@ import android.net.Uri;
  * Created by kyle on 11/02/2018.
  */
 
-public class DomainRule extends RuleImpl {
+public class DomainRule extends UriRule {
     DomainRule() {
     }
 
