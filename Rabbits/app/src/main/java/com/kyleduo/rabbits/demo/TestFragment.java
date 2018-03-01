@@ -26,11 +26,7 @@ public class TestFragment extends BaseFragment {
         LinearLayout ll = (LinearLayout) super.onCreateView(inflater, container, savedInstanceState);
         assert ll != null;
 
-        Button button = new Button(getActivity());
-        button.setText("Start Second Fragment");
-        button.setTextColor(0xFF49A1FF);
-        button.setBackgroundDrawable(null);
-        button.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        Button button = createButton("Start Second Fragment");
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -41,6 +37,27 @@ public class TestFragment extends BaseFragment {
         });
         ll.addView(button);
 
+        Button button1 = createButton("Redirect to Second Fragment");
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Rabbit.from(TestFragment.this)
+                        .to(P.P_SECOND_ID(new Random().nextInt(10)))
+                        .redirect()
+                        .start();
+            }
+        });
+        ll.addView(button1);
+
         return ll;
+    }
+
+    private Button createButton(String text) {
+        Button button = new Button(getActivity());
+        button.setText(text);
+        button.setTextColor(0xFF49A1FF);
+        button.setBackgroundDrawable(null);
+        button.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        return button;
     }
 }

@@ -7,8 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kyleduo.rabbits.Rabbit;
+import com.kyleduo.rabbits.RabbitResult;
 import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.demo.base.BaseActivity;
 
@@ -38,6 +40,7 @@ public class MainActivity extends BaseActivity {
         ));
         data.add(new Section("Interceptors", "/test/interceptor", "/test/rules"));
         data.add(new Section("Fallback", "https://kyleduo.com"));
+        data.add(new Section("Control", "Redirect: /test/redirect", "Anim: /test/animation", "IgnoreInterceptor: /test/interceptor?not_intercepted", "IgnoreFallback: https://kyleduo.com"));
         data.add(new Section("Fragment", "/test_fragment", "/web"));
         data.add(new Section("Dump route table", "/dump"));
         data.add(new Section("Multiple modules", "/sm1/activity", "/sm2/activity"));
@@ -140,7 +143,25 @@ public class MainActivity extends BaseActivity {
                         if (indexPath.index >= 0) {
                             Item item = mData.get(indexPath.section).items.get(indexPath.index);
                             String url = item.name;
-                            Rabbit.from(mActRef.get()).to(url).start();
+                            RabbitResult result;
+                            if (url.startsWith("Redirect: ")) {
+                                url = url.substring(10);
+                                result = Rabbit.from(mActRef.get()).to(url).redirect().start();
+                            } else if (url.startsWith("Anim: ")) {
+                                url = url.substring(6);
+                                result = Rabbit.from(mActRef.get()).to(url).setTransitionAnimations(new int[]{R.anim.fadein, R.anim.fadeout}).start();
+                            } else if (url.startsWith("IgnoreInterceptor: ")) {
+                                url = url.substring(19);
+                                result = Rabbit.from(mActRef.get()).to(url).ignoreInterceptors().start();
+                            } else if (url.startsWith("IgnoreFallback: ")) {
+                                url = url.substring(16);
+                                result = Rabbit.from(mActRef.get()).to(url).ignoreFallback().start();
+                            } else {
+                                result = Rabbit.from(mActRef.get()).to(url).start();
+                            }
+                            if (!result.isSuccess()) {
+                                Toast.makeText(mActRef.get(), "Navigation Fail", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 });

@@ -3,7 +3,6 @@ package com.kyleduo.rabbits;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.support.v4.app.Fragment;
 
 /**
@@ -33,9 +32,7 @@ public class ActivityNavigator implements Navigator {
         } else if (from instanceof Fragment) {
             activity = ((Fragment) from).getActivity();
         } else if (from instanceof android.app.Fragment) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                activity = ((android.app.Fragment) from).getActivity();
-            }
+            activity = ((android.app.Fragment) from).getActivity();
         }
         if (activity != null) {
             if (action.getRequestCode() > 0) {
@@ -51,27 +48,6 @@ public class ActivityNavigator implements Navigator {
             } else {
                 return RabbitResult.error("Invalid from.");
             }
-        }
-
-        // finish previous Activity
-        if (action.isRedirect()) {
-            if (activity != null && activity == action.getFrom()) {
-                activity.finish();
-            } else if (action.getFrom() instanceof Fragment) {
-                ((Fragment) action.getFrom()).getActivity().finish();
-            } else if (action.getFrom() instanceof android.app.Fragment) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    ((android.app.Fragment) action.getFrom()).getActivity().finish();
-                }
-            }
-        }
-
-        int[] animations = action.getTransitionAnimations();
-
-        if (activity != null
-                && animations != null
-                && animations.length == 2) {
-            activity.overridePendingTransition(animations[0], animations[1]);
         }
 
         return RabbitResult.success();

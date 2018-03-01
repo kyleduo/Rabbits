@@ -135,10 +135,20 @@ public class DemoApplication extends Application {
 
             if ((action.getTargetFlags() & Constants.FLAG_FRAG_EMBED) > 0) {
                 if (from instanceof BaseFragment) {
-                    ((BaseFragment) from).start((SupportFragment) target);
+                    if (action.isRedirect()) {
+                        ((BaseFragment) from).replaceFragment((SupportFragment) target, false);
+                    } else {
+                        ((BaseFragment) from).start((SupportFragment) target);
+                    }
                     return RabbitResult.success();
                 } else if (from instanceof BaseActivity) {
-                    ((BaseActivity) from).start((SupportFragment) target);
+                    if (((BaseActivity) from).getTopFragment() != null) {
+                        if (action.isRedirect()) {
+                            ((BaseActivity) from).getTopFragment().replaceFragment((SupportFragment) target, false);
+                        } else {
+                            ((BaseActivity) from).start((SupportFragment) target);
+                        }
+                    }
                     return RabbitResult.success();
                 }
             }

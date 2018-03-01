@@ -149,6 +149,7 @@ public final class Rabbit {
         }
 
         interceptors.add(new TargetAssembler());
+        interceptors.add(new CleanUpInterceptor());
         interceptors.add(new NavigatorInterceptor(mNavigators));
 
         RealDispatcher dispatcher = new RealDispatcher(action, interceptors, 0);
