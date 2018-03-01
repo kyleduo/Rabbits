@@ -14,7 +14,6 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.kyleduo.rabbits.RabbitResult;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.Rules;
 import com.kyleduo.rabbits.annotations.Page;
@@ -68,7 +67,7 @@ public class WebFragment extends BaseFragment {
                     .to(url)
                     .ignoreFallback()
                     .start()
-                    .getCode() == RabbitResult.STATUS_SUCCESS;
+                    .isSuccess();
             if (ret) {
                 return true;
             }

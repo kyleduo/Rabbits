@@ -21,38 +21,38 @@ public abstract class UriRule implements Rule, Element {
     }
 
     @Override
-    public Rule exists() {
+    public UriRule exists() {
         return operator(Operator.EXISTS, null);
     }
 
     @Override
-    public Rule is(String value) {
+    public UriRule is(String value) {
         return operator(Operator.IS, value);
     }
 
     @Override
-    public Rule startsWith(String value) {
+    public UriRule startsWith(String value) {
         return operator(Operator.STARTS_WITH, value);
     }
 
     @Override
-    public Rule endsWith(String value) {
+    public UriRule endsWith(String value) {
         return operator(Operator.STARTS_WITH, value);
     }
 
     @Override
-    public Rule in(String... values) {
+    public UriRule in(String... values) {
         mValues = Arrays.asList(values);
         mOperator = Operator.IN;
         return this;
     }
 
     @Override
-    public Rule contains(String value) {
+    public UriRule contains(String value) {
         return operator(Operator.CONTAINS, value);
     }
 
-    private Rule operator(Operator operator, String value) {
+    private UriRule operator(Operator operator, String value) {
         mOperator = operator;
         mValue = value;
         return this;
@@ -63,7 +63,7 @@ public abstract class UriRule implements Rule, Element {
         return verify(action.getUri());
     }
 
-    protected abstract boolean verify(Uri uri);
+    public abstract boolean verify(Uri uri);
 
     boolean verify(String source) {
         switch (mOperator) {

@@ -10,19 +10,19 @@ import java.util.Arrays;
 
 public final class Rules {
 
-    public static Element scheme() {
+    public static UriRule scheme() {
         return new SchemeRule();
     }
 
-    public static Element domain() {
+    public static UriRule domain() {
         return new DomainRule();
     }
 
-    public static Element path() {
+    public static UriRule path() {
         return new PathRule();
     }
 
-    public static Element query(String key) {
+    public static UriRule query(String key) {
         return new QueryRule(key);
     }
 
