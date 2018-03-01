@@ -62,6 +62,9 @@ public final class Rabbit {
     }
 
     public static Rabbit get() {
+        if (sInstance == null) {
+            throw new IllegalStateException("Rabbits has not been initialed.");
+        }
         return sInstance;
     }
 
