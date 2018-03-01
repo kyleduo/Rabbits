@@ -25,15 +25,6 @@ public interface Element {
     Rule is(String value);
 
     /**
-     * Check whether the source NOT exists or NOT equals to the {@param value}
-     * using {@link java.lang.String#equals} method.
-     *
-     * @param value value
-     * @return a Rule instance
-     */
-    Rule not(String value);
-
-    /**
      * Check whether the source has the {@param value} as prefix
      * using {@link java.lang.String#startsWith} method.
      *
