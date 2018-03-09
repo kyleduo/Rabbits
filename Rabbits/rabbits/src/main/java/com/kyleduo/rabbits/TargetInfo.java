@@ -34,4 +34,9 @@ public class TargetInfo {
         this.type = info.type;
         this.flags = info.flags;
     }
+
+    @Override
+    public String toString() {
+        return target.getCanonicalName();
+    }
 }

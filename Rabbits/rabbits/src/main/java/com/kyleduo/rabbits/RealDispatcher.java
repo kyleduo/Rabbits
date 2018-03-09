@@ -31,7 +31,7 @@ public class RealDispatcher implements Interceptor.Dispatcher {
             }
         }
         if (!(interceptor instanceof InternalInterceptor)) {
-            Logger.d("Intercept: " + interceptor.toString());
+            Logger.d("Interceptor: " + interceptor.toString());
         }
 
         RealDispatcher next = new RealDispatcher(mAction, mInterceptors, mIndex + 1);

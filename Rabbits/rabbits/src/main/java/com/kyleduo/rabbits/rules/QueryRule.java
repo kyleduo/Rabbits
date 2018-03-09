@@ -27,6 +27,6 @@ public class QueryRule extends UriRule {
 
     @Override
     public String toString() {
-        return "(" + mKey + " " + super.toString();
+        return "(q:" + mKey + " " + super.toString();
     }
 }

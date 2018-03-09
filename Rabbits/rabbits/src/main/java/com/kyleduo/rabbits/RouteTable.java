@@ -28,7 +28,7 @@ public class RouteTable {
 
     public static void map(String path, TargetInfo targetInfo) {
         if (sMappings.containsKey(path)) {
-            Logger.e("Same pattern exists. Overwriting...");
+            Logger.e("Same pattern exists. Overwriting path: " + path + " target: \"" + sMappings.get(path) + "\" to \"" + targetInfo + "\"");
         }
         sMappings.put(path, targetInfo);
         if (path.contains("://")) {
@@ -61,9 +61,9 @@ public class RouteTable {
         }
         if (Rabbit.sDebug) {
             if (to != null) {
-                Logger.d("[04] Target found: " + to.target.getCanonicalName());
+                Logger.d("[--] Target found: " + to.target.getCanonicalName());
             } else {
-                Logger.d("[04] Not match.");
+                Logger.d("[--] Not match.");
             }
         }
         return to;

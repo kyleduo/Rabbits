@@ -21,4 +21,9 @@ public class TargetFlagsRule implements Rule {
     public boolean verify(Action action) {
         return (action.getTargetFlags() & mMask) > 0;
     }
+
+    @Override
+    public String toString() {
+        return "(flags HAS " + Integer.toHexString(mMask) + ")";
+    }
 }
