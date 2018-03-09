@@ -73,7 +73,7 @@ public class DemoApplication extends Application {
                     public RabbitResult intercept(final Dispatcher dispatcher) {
                         final Action action = dispatcher.action();
                         if (action.getFrom() instanceof Context) {
-                            action.getExtras().putString("param", "interceptor");
+                            action.getExtras().putString("param", "set in interceptor");
                             new AlertDialog.Builder((Context) action.getFrom())
                                     .setTitle("Intercepted")
                                     .setMessage("The navigation has been intercepted by interceptor. \n\nA param has been set in the interceptor.")
