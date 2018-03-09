@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Representing an navigation request.
@@ -62,6 +63,11 @@ public final class Action {
      * finish current parent after navigation
      */
     private boolean mRedirect;
+
+    /**
+     * Interceptors set by caller.
+     */
+    private List<Interceptor> mInterceptors;
 
     /* *****************************
      *   Generate during dispatch
@@ -248,6 +254,14 @@ public final class Action {
 
     public void setTargetPattern(String targetPattern) {
         mTargetPattern = targetPattern;
+    }
+
+    List<Interceptor> getInterceptors() {
+        return mInterceptors;
+    }
+
+    void setInterceptors(List<Interceptor> interceptors) {
+        mInterceptors = interceptors;
     }
 
     @Override

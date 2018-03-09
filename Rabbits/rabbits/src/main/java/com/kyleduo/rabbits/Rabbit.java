@@ -177,8 +177,8 @@ public final class Rabbit {
             interceptors.addAll(mInterceptors);
 
             // mAction specific interceptors
-            if (navigation.interceptors() != null) {
-                interceptors.addAll(navigation.interceptors());
+            if (action.getInterceptors() != null) {
+                interceptors.addAll(action.getInterceptors());
             }
         }
 

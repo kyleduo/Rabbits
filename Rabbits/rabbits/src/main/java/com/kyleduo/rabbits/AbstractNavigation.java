@@ -25,7 +25,6 @@ import java.util.Map;
 
 public abstract class AbstractNavigation implements Navigation {
     private Action mAction;
-    private List<Interceptor> mInterceptors;
 
     AbstractNavigation(Action action) {
         this.mAction = action;
@@ -35,11 +34,6 @@ public abstract class AbstractNavigation implements Navigation {
     @Override
     public Action action() {
         return mAction;
-    }
-
-    @Override
-    public List<Interceptor> interceptors() {
-        return mInterceptors;
     }
 
     @Override
@@ -201,19 +195,23 @@ public abstract class AbstractNavigation implements Navigation {
 
     @Override
     public Navigation addInterceptor(Interceptor interceptor) {
-        if (mInterceptors == null) {
-            mInterceptors = new ArrayList<>();
+        List<Interceptor> l = action().getInterceptors();
+        if (l == null) {
+            l = new ArrayList<>();
+            action().setInterceptors(l);
         }
-        mInterceptors.add(interceptor);
+        l.add(interceptor);
         return this;
     }
 
     @Override
     public Navigation addInterceptor(Interceptor interceptor, Rule rule) {
-        if (mInterceptors == null) {
-            mInterceptors = new ArrayList<>();
+        List<Interceptor> l = action().getInterceptors();
+        if (l == null) {
+            l = new ArrayList<>();
+            action().setInterceptors(l);
         }
-        mInterceptors.add(new PatternInterceptor(interceptor, rule));
+        l.add(new PatternInterceptor(interceptor, rule));
         return this;
     }
 
