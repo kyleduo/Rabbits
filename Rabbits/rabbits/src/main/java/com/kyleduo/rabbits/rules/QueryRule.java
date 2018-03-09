@@ -1,4 +1,4 @@
-package com.kyleduo.rabbits;
+package com.kyleduo.rabbits.rules;
 
 import android.net.Uri;
 
@@ -18,6 +18,9 @@ public class QueryRule extends UriRule {
 
     @Override
     public boolean verify(Uri uri) {
+        if (uri.isOpaque()) {
+            return false;
+        }
         String q = uri.getQueryParameter(mKey);
         return super.verify(q);
     }

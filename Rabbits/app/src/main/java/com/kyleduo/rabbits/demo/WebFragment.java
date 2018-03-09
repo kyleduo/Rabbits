@@ -2,7 +2,6 @@ package com.kyleduo.rabbits.demo;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -14,10 +13,12 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.kyleduo.rabbits.Interceptor;
 import com.kyleduo.rabbits.Rabbit;
-import com.kyleduo.rabbits.Rules;
+import com.kyleduo.rabbits.RabbitResult;
 import com.kyleduo.rabbits.annotations.Page;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
+import com.kyleduo.rabbits.rules.Rules;
 
 /**
  * Created by kyle on 2016/12/12.
@@ -65,19 +66,18 @@ public class WebFragment extends BaseFragment {
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             boolean ret = Rabbit.from(WebFragment.this)
                     .to(url)
+                    .addInterceptor(new Interceptor() {
+                        @Override
+                        public RabbitResult intercept(Dispatcher dispatcher) {
+                            Intent intent = new Intent(Intent.ACTION_DIAL, dispatcher.action().getUri());
+                            startActivity(intent);
+                            return RabbitResult.success();
+                        }
+                    }, Rules.scheme().is("tel"))
                     .ignoreFallback()
                     .start()
                     .isSuccess();
-            if (ret) {
-                return true;
-            }
-            if (Rules.scheme().is("tel").verify(Uri.parse(url))) {
-                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(url));
-                startActivity(intent);
-                view.reload();
-                return true;
-            }
-            return super.shouldOverrideUrlLoading(view, url);
+            return ret || super.shouldOverrideUrlLoading(view, url);
         }
 
         @Override

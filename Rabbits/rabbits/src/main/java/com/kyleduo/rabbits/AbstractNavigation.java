@@ -9,6 +9,8 @@ import android.util.Size;
 import android.util.SizeF;
 import android.util.SparseArray;
 
+import com.kyleduo.rabbits.rules.Rule;
+
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;

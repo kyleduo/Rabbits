@@ -1,6 +1,8 @@
-package com.kyleduo.rabbits;
+package com.kyleduo.rabbits.rules;
 
 import android.net.Uri;
+
+import com.kyleduo.rabbits.Action;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,34 +23,34 @@ public abstract class UriRule implements Rule, Element {
     }
 
     @Override
-    public UriRule exists() {
+    public Rule exists() {
         return operator(Operator.EXISTS, null);
     }
 
     @Override
-    public UriRule is(String value) {
+    public Rule is(String value) {
         return operator(Operator.IS, value);
     }
 
     @Override
-    public UriRule startsWith(String value) {
+    public Rule startsWith(String value) {
         return operator(Operator.STARTS_WITH, value);
     }
 
     @Override
-    public UriRule endsWith(String value) {
+    public Rule endsWith(String value) {
         return operator(Operator.STARTS_WITH, value);
     }
 
     @Override
-    public UriRule in(String... values) {
+    public Rule in(String... values) {
         mValues = Arrays.asList(values);
         mOperator = Operator.IN;
         return this;
     }
 
     @Override
-    public UriRule contains(String value) {
+    public Rule contains(String value) {
         return operator(Operator.CONTAINS, value);
     }
 

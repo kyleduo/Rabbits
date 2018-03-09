@@ -76,6 +76,9 @@ public class RouteTable {
             return null;
         }
         String path = uri.getPath();
+        if (TextUtils.isEmpty(path)) {
+            return null;
+        }
         String[] segs = path.split("/");
 
         outer:
@@ -99,6 +102,9 @@ public class RouteTable {
             if (path.equals(patternPath)) {
                 // scheme和domain不同，但是pattern相同，认为匹配
                 return entry.getValue();
+            }
+            if (TextUtils.isEmpty(patternPath)) {
+                continue;
             }
             if (!patternPath.contains("{")) {
                 continue;

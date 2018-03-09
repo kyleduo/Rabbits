@@ -1,5 +1,7 @@
 package com.kyleduo.rabbits;
 
+import com.kyleduo.rabbits.rules.Rule;
+
 /**
  * Used for Interceptor which wants to be invoked when the url match the pattern
  *

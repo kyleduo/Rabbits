@@ -1,28 +1,28 @@
-package com.kyleduo.rabbits;
+package com.kyleduo.rabbits.rules;
 
 import java.util.Arrays;
 
 /**
- * Factory class of {@link com.kyleduo.rabbits.Rule}
+ * Factory class of {@link Rule}
  * <p>
  * Created by kyle on 11/02/2018.
  */
 
 public final class Rules {
 
-    public static UriRule scheme() {
+    public static Element scheme() {
         return new SchemeRule();
     }
 
-    public static UriRule domain() {
+    public static Element domain() {
         return new DomainRule();
     }
 
-    public static UriRule path() {
+    public static Element path() {
         return new PathRule();
     }
 
-    public static UriRule query(String key) {
+    public static Element query(String key) {
         return new QueryRule(key);
     }
 

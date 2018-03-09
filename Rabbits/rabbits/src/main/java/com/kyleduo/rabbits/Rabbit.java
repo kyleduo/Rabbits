@@ -5,6 +5,8 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.util.SparseArray;
 
+import com.kyleduo.rabbits.rules.Rule;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.kyleduo.rabbits;
+package com.kyleduo.rabbits.rules;
 
 import android.net.Uri;
 

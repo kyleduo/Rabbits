@@ -16,9 +16,9 @@ import com.kyleduo.rabbits.P;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.RabbitConfig;
 import com.kyleduo.rabbits.RabbitResult;
-import com.kyleduo.rabbits.Rule;
-import com.kyleduo.rabbits.RuleSet;
-import com.kyleduo.rabbits.Rules;
+import com.kyleduo.rabbits.rules.Rule;
+import com.kyleduo.rabbits.rules.RuleSet;
+import com.kyleduo.rabbits.rules.Rules;
 import com.kyleduo.rabbits.TargetInfo;
 import com.kyleduo.rabbits.demo.base.BaseActivity;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
@@ -67,7 +67,7 @@ public class DemoApplication extends Application {
                         Toast.makeText(DemoApplication.this, "Interceptor by Rules", Toast.LENGTH_SHORT).show();
                         return dispatcher.dispatch(dispatcher.action());
                     }
-                }, Rules.path().contains("/rules"))
+                }, Rules.set(RuleSet.Relation.AND, Rules.scheme().startsWith("demo"), Rules.domain().contains("kyleduo"), Rules.path().contains("/rules")))
                 .addInterceptor(new Interceptor() {
                     @Override
                     public RabbitResult intercept(final Dispatcher dispatcher) {

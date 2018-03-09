@@ -1,4 +1,6 @@
-package com.kyleduo.rabbits;
+package com.kyleduo.rabbits.rules;
+
+import com.kyleduo.rabbits.Action;
 
 import java.util.List;
 

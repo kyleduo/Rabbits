@@ -1,4 +1,4 @@
-package com.kyleduo.rabbits;
+package com.kyleduo.rabbits.rules;
 
 import android.net.Uri;
 
@@ -15,6 +15,9 @@ public class PathRule extends UriRule {
 
     @Override
     public boolean verify(Uri uri) {
+        if (uri.isOpaque()) {
+            return false;
+        }
         return verify(uri.getPath());
     }
 

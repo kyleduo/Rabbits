@@ -22,7 +22,7 @@ public class ActionParser implements InternalInterceptor {
         // generate uri
         if (uri == null) {
             String url = action.getOriginUrl();
-            if (url.contains("://")) {
+            if (url.contains(":")) {
                 uri = Uri.parse(url);
             } else {
                 if (!url.startsWith("/")) {

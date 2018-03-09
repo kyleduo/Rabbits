@@ -1,4 +1,6 @@
-package com.kyleduo.rabbits;
+package com.kyleduo.rabbits.rules;
+
+import com.kyleduo.rabbits.Action;
 
 /**
  * Created by kyle on 01/03/2018.

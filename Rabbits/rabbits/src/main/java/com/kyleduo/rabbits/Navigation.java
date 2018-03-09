@@ -3,6 +3,8 @@ package com.kyleduo.rabbits;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.kyleduo.rabbits.rules.Rule;
+
 import java.util.List;
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package com.kyleduo.rabbits;
+package com.kyleduo.rabbits.rules;
 
 /**
  * Operators used when create a Rule.
