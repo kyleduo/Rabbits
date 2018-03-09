@@ -61,6 +61,13 @@ public class DemoApplication extends Application {
                 .addInterceptor(new Interceptor() {
                     @Override
                     public RabbitResult intercept(Dispatcher dispatcher) {
+                        dispatcher.action().setRedirect(true);
+                        return dispatcher.dispatch(dispatcher.action());
+                    }
+                }, Rules.query("redirect").is("1"))
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public RabbitResult intercept(Dispatcher dispatcher) {
                         // ignore other following interceptors.
                         dispatcher.action().getExtras().putString("param", "rules");
                         dispatcher.action().setIgnoreInterceptors(true);

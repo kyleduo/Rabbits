@@ -158,7 +158,7 @@ public final class Action {
         return mRedirect;
     }
 
-    void setRedirect(boolean redirect) {
+    public void setRedirect(boolean redirect) {
         mRedirect = redirect;
     }
 
