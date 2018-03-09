@@ -2,7 +2,6 @@ package com.kyleduo.rabbits;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.support.v4.app.Fragment;
 
 /**
@@ -31,7 +30,7 @@ public class TargetAssembler implements InternalInterceptor {
                 intent = new Intent((Context) action.getFrom(), action.getTargetClass());
             } else if (action.getFrom() instanceof Fragment) {
                 intent = new Intent(((Fragment) action.getFrom()).getActivity(), action.getTargetClass());
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && action.getFrom() instanceof android.app.Fragment) {
+            } else if (action.getFrom() instanceof android.app.Fragment) {
                 intent = new Intent(((android.app.Fragment) action.getFrom()).getActivity(), action.getTargetClass());
             } else {
                 return RabbitResult.error("From object must be whether an Context or a Fragment instance.");
@@ -41,11 +40,9 @@ public class TargetAssembler implements InternalInterceptor {
             target = intent;
         } else if (targetType == TargetInfo.TYPE_FRAGMENT) {
             try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    android.app.Fragment fragment = (android.app.Fragment) action.getTargetClass().newInstance();
-                    fragment.setArguments(action.getExtras());
-                    target = fragment;
-                }
+                android.app.Fragment fragment = (android.app.Fragment) action.getTargetClass().newInstance();
+                fragment.setArguments(action.getExtras());
+                target = fragment;
             } catch (InstantiationException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {

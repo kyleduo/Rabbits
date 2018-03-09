@@ -36,6 +36,10 @@ public final class Rabbit {
     private List<Interceptor> mInterceptors = new ArrayList<>();
     private SparseArray<Navigator> mNavigators = new SparseArray<>();
 
+    private ActionParser mActionParser;
+    private TargetAssembler mTargetAssembler;
+    private CleanUpInterceptor mCleanUpInterceptor;
+
     private static Rabbit sInstance;
     static boolean sDebug;
 
@@ -135,13 +139,38 @@ public final class Rabbit {
         return this;
     }
 
+    private ActionParser getActionParser() {
+        if (mActionParser == null) {
+            mActionParser = new ActionParser();
+        }
+        return mActionParser;
+    }
+
+    public TargetAssembler getTargetAssembler() {
+        if (mTargetAssembler == null) {
+            mTargetAssembler = new TargetAssembler();
+        }
+        return mTargetAssembler;
+    }
+
+    public CleanUpInterceptor getCleanUpInterceptor() {
+        if (mCleanUpInterceptor == null) {
+            mCleanUpInterceptor = new CleanUpInterceptor();
+        }
+        return mCleanUpInterceptor;
+    }
+
+    public NavigatorInterceptor getNavigatorInterceptor() {
+        return new NavigatorInterceptor(mNavigators);
+    }
+
     RabbitResult dispatch(Navigation navigation) {
         Logger.i("[!] Dispatching...");
         final Action action = navigation.action();
 
         // interceptors
         List<Interceptor> interceptors = new ArrayList<>();
-        interceptors.add(new ActionParser());
+        interceptors.add(getActionParser());
 
         if (!action.isIgnoreInterceptors()) {
             // custom interceptors
@@ -153,9 +182,9 @@ public final class Rabbit {
             }
         }
 
-        interceptors.add(new TargetAssembler());
-        interceptors.add(new CleanUpInterceptor());
-        interceptors.add(new NavigatorInterceptor(mNavigators));
+        interceptors.add(getTargetAssembler());
+        interceptors.add(getCleanUpInterceptor());
+        interceptors.add(getNavigatorInterceptor());
 
         RealDispatcher dispatcher = new RealDispatcher(action, interceptors, 0);
 
