@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.kyleduo.rabbits.Rabbit;
+import com.kyleduo.rabbits.demo.R;
 
 import java.util.Set;
 
@@ -39,7 +40,7 @@ public class BaseFragment extends SupportFragment {
         TextView tv = new TextView(getActivity());
         ViewGroup.LayoutParams lp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         tv.setLayoutParams(lp);
-        tv.setTextColor(0xFFA6ABB0);
+        tv.setTextColor(getResources().getColor(R.color.textColor));
         tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
 
         StringBuilder params = new StringBuilder();

@@ -178,7 +178,7 @@ public class MainActivity extends BaseActivity {
                             } else {
                                 result = Rabbit.from(mActRef.get()).to(url).start();
                             }
-                            if (!result.isSuccess()) {
+                            if (result.isFinished() && !result.isSuccess()) {
                                 Toast.makeText(mActRef.get(), "Navigation Fail", Toast.LENGTH_SHORT).show();
                             }
                         }
