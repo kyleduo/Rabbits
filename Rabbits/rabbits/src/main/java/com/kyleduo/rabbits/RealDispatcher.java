@@ -3,6 +3,8 @@ package com.kyleduo.rabbits;
 import java.util.List;
 
 /**
+ * Real dispatcher.
+ *
  * Created by kyle on 24/01/2018.
  */
 
