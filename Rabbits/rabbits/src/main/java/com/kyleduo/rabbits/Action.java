@@ -130,20 +130,14 @@ public final class Action {
     }
 
     /**
-     * Create complete uri from url and param. This will parse all param to String and append them
-     * to the uri.
+     * Create uri from url and param. This will parse all param to String and append
+     * them to the uri.
      *
      * @return Uri
      */
-    public Uri createCompleteUri() {
+    public Uri createUri() {
         Uri uri = Uri.parse(getOriginUrl());
         Uri.Builder builder = uri.buildUpon();
-        if (uri.getScheme() == null || !uri.getScheme().startsWith("http")) {
-            builder.scheme("https");
-        }
-        if (uri.getAuthority() == null) {
-            builder.authority("kyleduo.com");
-        }
         Bundle extras = getExtras();
         if (extras != null) {
             Set<String> keys = extras.keySet();

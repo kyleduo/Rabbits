@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.kyleduo.rabbits.Action;
@@ -156,9 +158,16 @@ public class DemoApplication extends Application {
 
         @Override
         public RabbitResult perform(Action action) {
+            Uri uri = action.createUri();
+            if (TextUtils.isEmpty(uri.getScheme()) || !uri.getScheme().startsWith("http")) {
+                uri = uri.buildUpon().scheme("https").build();
+            }
+            if (TextUtils.isEmpty(uri.getAuthority())) {
+                uri = uri.buildUpon().authority("kyleduo.com").build();
+            }
             return Rabbit.from(action.getFrom())
                     .to(P.P_WEB)
-                    .putExtra(WebFragment.KEY_URL, action.createCompleteUri().toString())
+                    .putExtra(WebFragment.KEY_URL, uri.toString())
                     .start();
         }
     }
