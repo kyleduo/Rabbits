@@ -4,9 +4,6 @@ import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.net.Uri;
-import android.os.Bundle;
-import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.kyleduo.rabbits.Action;
@@ -16,15 +13,13 @@ import com.kyleduo.rabbits.P;
 import com.kyleduo.rabbits.Rabbit;
 import com.kyleduo.rabbits.RabbitConfig;
 import com.kyleduo.rabbits.RabbitResult;
-import com.kyleduo.rabbits.rules.Rule;
-import com.kyleduo.rabbits.rules.RuleSet;
-import com.kyleduo.rabbits.rules.Rules;
 import com.kyleduo.rabbits.TargetInfo;
 import com.kyleduo.rabbits.demo.base.BaseActivity;
 import com.kyleduo.rabbits.demo.base.BaseFragment;
 import com.kyleduo.rabbits.demo.utils.Constants;
-
-import java.util.Set;
+import com.kyleduo.rabbits.rules.Rule;
+import com.kyleduo.rabbits.rules.RuleSet;
+import com.kyleduo.rabbits.rules.Rules;
 
 import me.yokeyword.fragmentation.SupportFragment;
 
@@ -161,32 +156,9 @@ public class DemoApplication extends Application {
 
         @Override
         public RabbitResult perform(Action action) {
-            Uri uri = Uri.parse(action.getOriginUrl());
-            Uri.Builder builder = uri.buildUpon();
-            if (uri.getScheme() == null || !uri.getScheme().startsWith("http")) {
-                builder.scheme("https");
-            }
-            if (uri.getAuthority() == null) {
-                builder.authority("kyleduo.com");
-            }
-            Bundle extras = action.getExtras();
-            if (extras != null) {
-                Set<String> keys = extras.keySet();
-                for (String key : keys) {
-                    if (TextUtils.equals(key, Rabbit.KEY_ORIGIN_URL) || TextUtils.equals(key, Rabbit.KEY_PATTERN)) {
-                        continue;
-                    }
-                    Object value = extras.get(key);
-                    if (value == null) {
-                        continue;
-                    }
-                    builder.appendQueryParameter(key, value.toString());
-                }
-            }
-            uri = builder.build();
             return Rabbit.from(action.getFrom())
                     .to(P.P_WEB)
-                    .putExtra(WebFragment.KEY_URL, uri.toString())
+                    .putExtra(WebFragment.KEY_URL, action.createCompleteUri().toString())
                     .start();
         }
     }

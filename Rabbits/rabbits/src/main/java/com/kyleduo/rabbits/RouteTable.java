@@ -117,7 +117,7 @@ public class RouteTable {
             Map<String, Object> params = null;
 
             for (int i = 0; i < pSegs.length; i++) {
-                String part = Utils.decode(segs[i]);
+                String part = URLEncodeUtils.decode(segs[i]);
                 String patternPart = pSegs[i];
 
                 if (patternPart.startsWith("{")) {

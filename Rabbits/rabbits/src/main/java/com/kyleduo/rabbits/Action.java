@@ -3,9 +3,11 @@ package com.kyleduo.rabbits;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Representing an navigation request.
@@ -125,6 +127,39 @@ public final class Action {
         this.setJustObtain(action.isJustObtain());
         this.setRequestCode(action.getRequestCode());
         this.setRedirect(action.isRedirect());
+    }
+
+    /**
+     * Create complete uri from url and param. This will parse all param to String and append them
+     * to the uri.
+     *
+     * @return Uri
+     */
+    public Uri createCompleteUri() {
+        Uri uri = Uri.parse(getOriginUrl());
+        Uri.Builder builder = uri.buildUpon();
+        if (uri.getScheme() == null || !uri.getScheme().startsWith("http")) {
+            builder.scheme("https");
+        }
+        if (uri.getAuthority() == null) {
+            builder.authority("kyleduo.com");
+        }
+        Bundle extras = getExtras();
+        if (extras != null) {
+            Set<String> keys = extras.keySet();
+            for (String key : keys) {
+                if (TextUtils.equals(key, Rabbit.KEY_ORIGIN_URL) || TextUtils.equals(key, Rabbit.KEY_PATTERN)) {
+                    continue;
+                }
+                Object value = extras.get(key);
+                if (value == null) {
+                    continue;
+                }
+                builder.appendQueryParameter(key, URLEncodeUtils.encode(value.toString()));
+            }
+        }
+        uri = builder.build();
+        return uri;
     }
 
     public Object getFrom() {
