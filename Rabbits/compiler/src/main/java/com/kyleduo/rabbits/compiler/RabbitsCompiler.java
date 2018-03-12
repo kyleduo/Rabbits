@@ -26,6 +26,8 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedOptions;
+import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
@@ -37,6 +39,11 @@ import javax.tools.Diagnostic;
 
 @SuppressWarnings("unused")
 @AutoService(Processor.class)
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedOptions({
+        RabbitsCompiler.OPTION_MODULE_NAME,
+        RabbitsCompiler.OPTION_SUB_MODULES
+})
 public class RabbitsCompiler extends AbstractProcessor {
     private static final String PACKAGE = "com.kyleduo.rabbits";
     private static final String ROUTER_CLASS = "Router";
@@ -44,8 +51,8 @@ public class RabbitsCompiler extends AbstractProcessor {
     private static final String TARGET_INFO_CLASS = "TargetInfo";
     private static final String ROUTER_P_CLASS = "P";
     private static final String REST_PATTERN = "\\{([^{}:]+):?([^{}]*)}";
-    private static final String OPTION_MODULE_NAME = "rabbits_moduleName";
-    private static final String OPTION_SUB_MODULES = "rabbits_submodules";
+    static final String OPTION_MODULE_NAME = "rabbits_moduleName";
+    static final String OPTION_SUB_MODULES = "rabbits_submodules";
 
     private static final int TYPE_ACTIVITY = 1;
     private static final int TYPE_FRAGMENT = 2;
@@ -230,7 +237,7 @@ public class RabbitsCompiler extends AbstractProcessor {
             e.printStackTrace();
         }
 
-            generateP(pages);
+        generateP(pages);
 
         return true;
     }

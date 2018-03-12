@@ -2,6 +2,8 @@
 
 [中文](./README_CN.md)
 
+[Demo](./demo/demo.apk)
+
 **NOTICE** Rabbits has a lot of changes after version 1.0.0. If you’re using Rabbits, read wiki before update.
 
 ### Changes in version 1.0.0
