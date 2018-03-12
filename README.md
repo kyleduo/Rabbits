@@ -20,7 +20,7 @@ Since I redesigned Rabbits from the bottom. Almost all of the APIs have changed.
 
 1. `mappings.json` has been removed. You need to annotated name on every page’s class. `@Page()` has changed and you can use it like this: `@Page("/page/path")`.
 2. Initialization API has changed a lot but the new API becomes more fluent and you can finish the initialization by a single link of invocations.
-3. `P` class is still there. Since `mappings.json` is gone so Rabbits generate P using url path specified in `@Page` or you can provide a `alias` field to name that page a friendly name. Field generated from a path may looks like this: *P_PAGE_PATH*. Yes, there is a prefix, `P_`.
+3. `P` class is still there. Since `mappings.json` is gone so Rabbits generate P using url path specified in `@Page` or you can provide a `alias` field to name that page a friendly name. Field generated from a path may looks like this: **P_PAGE_PATH**. Yes, there is a prefix, `P_`.
 4. The execution chain has been redesigned and interceptors are recommended set during initialization phase.
 
 ### Use with Gradle
