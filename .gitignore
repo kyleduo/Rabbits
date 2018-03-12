@@ -40,4 +40,4 @@ captures/
 *.jks
 
 .idea/
-gradle.properties
+#gradle.properties
