@@ -1,10 +1,29 @@
 # Rabbits
 
-[中文](./README_CN.md)
+[EN](./README.md)
 
 [Demo](./demo/demo.apk)
 
 **注意：** Rabbits在1.0.0版本上有非常大的改变，如果你正在使用，请在更新之前阅读wiki。
+
+### Quick Glance
+
+```java
+@Page(value="/test", alias="TEST_ACT", variety=["/test_variety", "/test/{param}"])
+public class TestActivity extends AppCompatActivity {}
+
+// somewhere else
+public class MainActivity extends AppCompatActivity {
+  public void onButtonClicked() {
+    // every statement works same
+		Rabbit.from(this).to(P.TEST_ACT).putExtra("param", "value").start();
+    Rabbit.from(this).to("/test?param=value").start();
+    Rabbit.from(this).to(P.P_TEST_PARAM("value")).start();
+  }
+}
+```
+
+
 
 ### 1.0.0版本的变化
 

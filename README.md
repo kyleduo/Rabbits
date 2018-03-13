@@ -6,6 +6,27 @@
 
 **NOTICE** Rabbits has a lot of changes after version 1.0.0. If you’re using Rabbits, read wiki before update.
 
+
+
+### Quick Glance
+
+```java
+@Page(value="/test", alias="TEST_ACT", variety=["/test_variety", "/test/{param}"])
+public class TestActivity extends AppCompatActivity {}
+
+// somewhere else
+public class MainActivity extends AppCompatActivity {
+  public void onButtonClicked() {
+    // every statement works same
+		Rabbit.from(this).to(P.TEST_ACT).putExtra("param", "value").start();
+    Rabbit.from(this).to("/test?param=value").start();
+    Rabbit.from(this).to(P.P_TEST_PARAM("value")).start();
+  }
+}
+```
+
+
+
 ### Changes in version 1.0.0
 
 I released Rabbits last year and have been using it since then. Everything works fine and the “**From-To-Start**” pattern make me almost forget the `new Intent()` stuff. Rabbits simplify the navigation between pages hosted by Activities and Fragments and, with URI as the protocol, navigation between web pages and native pages becomes easier. 
