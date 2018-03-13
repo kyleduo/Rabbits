@@ -16,7 +16,7 @@ public class TestActivity extends AppCompatActivity {}
 public class MainActivity extends AppCompatActivity {
   public void onButtonClicked() {
     // every statement works same
-		Rabbit.from(this).to(P.TEST_ACT).putExtra("param", "value").start();
+    Rabbit.from(this).to(P.TEST_ACT).putExtra("param", "value").start();
     Rabbit.from(this).to("/test?param=value").start();
     Rabbit.from(this).to(P.P_TEST_PARAM("value")).start();
   }
