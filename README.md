@@ -1,10 +1,16 @@
 # Rabbits
 
-[中文](./README_CN.md)
-
-[Demo](./demo/demo.apk)
+[中文 README](./README_CN.md)   [Blog](https://blog.kyleduo.com/2018/03/22/rabbits-100/)
 
 **NOTICE** Rabbits has a lot of changes after version 1.0.0. If you’re using Rabbits, read wiki before update.
+
+
+
+### Demo
+
+[Download Link](./demo/demo.apk)
+
+![preview](demo/preview.png)
 
 
 

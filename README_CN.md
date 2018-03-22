@@ -1,10 +1,19 @@
 # Rabbits
 
-[EN](./README.md)
+[EN](./README.md)    [Blog](https://blog.kyleduo.com/2018/03/22/rabbits-100/)
 
-[Demo](./demo/demo.apk)
 
 **注意：** Rabbits在1.0.0版本上有非常大的改变，如果你正在使用，请在更新之前阅读wiki。
+
+
+
+### Demo
+
+[下载链接](./demo/demo.apk)
+
+![preview](demo/preview.png)
+
+
 
 ### Quick Glance
 
