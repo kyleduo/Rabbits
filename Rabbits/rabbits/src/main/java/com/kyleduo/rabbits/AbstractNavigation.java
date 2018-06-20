@@ -19,7 +19,7 @@ import java.util.Map;
 
 /**
  * Abstract class implements {@link Navigation} interface. Used to assemble a navigation.
- *
+ * <p>
  * Created by kyle on 26/01/2018.
  */
 
@@ -112,14 +112,10 @@ public abstract class AbstractNavigation implements Navigation {
             extras.putFloat(key, (Float) value);
         } else if (value instanceof CharSequence) {
             extras.putCharSequence(key, (CharSequence) value);
-        } else if (value instanceof Size) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                extras.putSize(key, (Size) value);
-            }
-        } else if (value instanceof SizeF) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                extras.putSizeF(key, (SizeF) value);
-            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && value instanceof Size) {
+            extras.putSize(key, (Size) value);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && value instanceof SizeF) {
+            extras.putSizeF(key, (SizeF) value);
         } else if (value instanceof Parcelable[]) {
             extras.putParcelableArray(key, (Parcelable[]) value);
         } else if (value instanceof ArrayList<?>) {
