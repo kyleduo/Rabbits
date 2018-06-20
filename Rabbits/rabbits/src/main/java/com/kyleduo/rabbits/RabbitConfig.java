@@ -1,8 +1,6 @@
 package com.kyleduo.rabbits;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -12,8 +10,8 @@ import java.util.List;
 
 @SuppressWarnings("WeakerAccess")
 public final class RabbitConfig {
-    private List<String> mSchemes;
-    private List<String> mDomains;
+    private List<String> mSchemes = new ArrayList<>();
+    private List<String> mDomains = new ArrayList<>();
     private boolean mDebug;
 
     public static RabbitConfig get() {
@@ -21,12 +19,26 @@ public final class RabbitConfig {
     }
 
     public RabbitConfig schemes(String... schemes) {
-        mSchemes = new ArrayList<>(new HashSet<>(Arrays.asList(schemes)));
+        mSchemes.clear();
+        if (schemes != null) {
+            for (String scheme : schemes) {
+                if (!mSchemes.contains(scheme)) {
+                    mSchemes.add(scheme);
+                }
+            }
+        }
         return this;
     }
 
     public RabbitConfig domains(String... domains) {
-        mDomains = new ArrayList<>(new HashSet<>(Arrays.asList(domains)));
+        mDomains.clear();
+        if (domains != null) {
+            for (String domain : domains) {
+                if (!mDomains.contains(domain)) {
+                    mDomains.add(domain);
+                }
+            }
+        }
         return this;
     }
 
