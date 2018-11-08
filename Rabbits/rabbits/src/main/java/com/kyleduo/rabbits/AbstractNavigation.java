@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.text.ParcelableSpan;
 import android.util.Size;
 import android.util.SizeF;
 import android.util.SparseArray;
@@ -145,6 +146,8 @@ public abstract class AbstractNavigation implements Navigation {
             extras.putCharSequenceArray(key, (CharSequence[]) value);
         } else if (value instanceof Serializable) {
             extras.putSerializable(key, (Serializable) value);
+        } else if (value instanceof Parcelable) {
+            extras.putParcelable(key, (Parcelable) value);
         }
 
         return this;
