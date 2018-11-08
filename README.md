@@ -2,9 +2,9 @@
 
 [中文 README](./README_CN.md)   [Blog](https://blog.kyleduo.com/2018/03/22/rabbits-100/)
 
-**NOTICE** Rabbits has a lot of changes after version 1.0.0. If you’re using Rabbits, read wiki before update.
+> **NOTICE** Rabbits has a lot of changes after version 1.0.0. If you’re using Rabbits, read wiki before update.
 
-
+![version](https://img.shields.io/badge/version-1.0.2-blue.svg)
 
 ### Demo
 
@@ -57,8 +57,8 @@ Since I redesigned Rabbits from the bottom. Almost all of the APIs have changed.
 
 ```groovy
 dependencies {
-    implementation "com.kyleduo.rabbits:rabbits:1.0.0"
-    annotationProcessor "com.kyleduo.rabbits:compiler:1.0.0"
+    implementation "com.kyleduo.rabbits:rabbits:{latest-version}"
+    annotationProcessor "com.kyleduo.rabbits:compiler:{latest-version}"
 }
 ```
 

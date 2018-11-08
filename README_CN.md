@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity {
 
 ```groovy
 dependencies {
-    implementation "com.kyleduo.rabbits:rabbits:1.0.0"
-    annotationProcessor "com.kyleduo.rabbits:compiler:1.0.0"
+    implementation "com.kyleduo.rabbits:rabbits:{latest-version}"
+    annotationProcessor "com.kyleduo.rabbits:compiler:{latest-version}"
 }
 ```
 
