@@ -40,3 +40,5 @@ captures/
 
 .idea/
 #gradle.properties
+
+.DS_Store
